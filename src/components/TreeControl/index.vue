@@ -4,12 +4,12 @@
     <el-tree
       ref="tree"
       node-key="id"
-      :tree-data="treeData"
+      :data="treeData"
       default-expand-all
       :expand-on-click-node="false"
       @node-click="handleLeftclick"
     >
-      <span slot-scope="{node,data}" class="custom-tree-node">
+         <span slot-scope="{node,data}" class="custom-tree-node">
         <span>{{ node.label }}</span>
         <span>
           <i class="el-icon-plus" @click="addChildNode" /><!--增加分组-->
@@ -37,53 +37,28 @@
 
 <script>
 export default {
-  name: 'Index',
-  // props: {
-  //   treeData: {
-  //     type: Object,
-  //     required: true
-  //   }
-  // },
+  props: {
+    treeData: {
+      type: Array,
+      required: true
+    }
+  },
   data() {
     return {
-      treeData: [
-        {
-          id: 1,
-          label: '一级 2',
-          isEdit: true,
-          children: [{
-            id: 3,
-            label: '二级 2-1',
-            isEdit: true,
-            children: [{
-              id: 4,
-              isEdit: true,
-              label: '三级 3-1-1'
-            }, {
-              id: 5,
-              isEdit: true,
-              label: '三级 3-1-2',
-              disabled: true
-            }]
-          }, {
-            id: 2,
-            isEdit: true,
-            label: '二级 2-2',
-            disabled: true,
-            children: [{
-              id: 6,
-              isEdit: true,
-              label: '三级 3-2-1'
-            }, {
-              id: 7,
-              isEdit: true,
-              label: '三级 3-2-2',
-              disabled: true
-            }]
-          }]
-        }
-      ]
+      isShow: false,
+      currentData: '',
+      currentNode: '',
+      level: '',
+      menuVisible: false,
+      firstLevel: false,
+      lastLevel: false,
+      filterText: '',
+      maxexpandId: 4
     }
+  },
+  created() {
+    console.log('eeeeeee')
+    console.log(this.treeData)
   },
   methods: {
     append(data) {
@@ -92,6 +67,8 @@ export default {
         this.$set(data, 'children', [])
       }
       data.children.push(newChild)
+    },
+    filterNode(){
     },
     // 鼠标左击事件
     handleLeftclick(data, node) {
@@ -121,30 +98,31 @@ export default {
 
       })
     },
+
     // 增加子级节点事件
+
     addChildNode() {
       console.log(this.currentData)
       console.log(this.currentNode)
-      this.dialogVisible = true
-      this.isEdit = false
-      this.community = Object.assign({}, defaultCommunity)
       if (this.currentNode.level >= 3) {
         this.$message.error('最多只支持三级！')
+
         return false
       }
       const id = Math.ceil(Math.random() * 100)
-      // this.$prompt('请输入节点名称', '提示', {
-      //   confirmButtonText: '确定',
-      //   cancelButtonText: '取消'
-      // }).then(({ value }) => {
-      //   console.log('>>>>>>>', value)
-      //   const treeD = { id: id, label: value }
-      //   this.$refs.tree.append(treeD, this.currentNode)
-      // }).catch(() => {
-      //
-      // })
+      this.$prompt('请输入节点名称', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        console.log('>>>>>>>', value)
+        const treeD = { id: id, label: value }
+        this.$refs.tree.append(treeD, this.currentNode)
+      }).catch(() => {
+
+      })
     },
     // 删除节点
+
     deleteNode() {
       this.$confirm(`确定删除'${this.currentNode.label}'节点, 是否继续?`, '提示', {
         confirmButtonText: '确定',
@@ -171,6 +149,7 @@ export default {
         })
       }
     }
+
   }
 }
 </script>

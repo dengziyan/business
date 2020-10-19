@@ -50,11 +50,11 @@
 </template>
 
 <!--<script>-->
-<!--import formIcon from '@/components/ElForm'-->
-<!--import BaseTable from '@/components/ElTable'-->
+<!--import formIcon from '@/components/FormVue'-->
+<!--import BaseTable from '@/components/TableVue'-->
 <!--import TreeControl from '@/components/TreeControl'-->
 <!--let id = 1000-->
-<!--const defaultCommunity = {-->
+<!--const  = {-->
 <!--  name: '',-->
 <!--  category: '',-->
 <!--  totalResident: '',-->

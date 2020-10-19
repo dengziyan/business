@@ -1,5 +1,6 @@
 <template>
 <!--form表单再组件化，主要用于弹框-->
+
   <el-form
     ref="ruleForm"
     class="demo-ruleForm"
@@ -151,7 +152,6 @@
 
 <script>
 export default {
-  name: 'ElForm',
   props: {
     formData: {
       type: Object,
@@ -161,10 +161,11 @@ export default {
   data() {
     return {
       form: {}
-    }
+    };
   },
   created() {
-    this.bindValue();
+    console.log('qwwwww')
+    this.bindValue()
   },
   methods: {
     onSubmit(formName) {
