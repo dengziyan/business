@@ -1,4 +1,5 @@
 <template>
+<!--小区表格及操作组件  -->
   <div>
     <!--引入操作子组件        -->
     <Handle></Handle>
@@ -18,7 +19,7 @@
 </template>
 
 <script>
-import Handle from '@/components/Handle'
+import Handle from '@/components/Handle/index'
 import TableVue from '@/components/TableVue'
 export default {
   name: 'CommTable',
