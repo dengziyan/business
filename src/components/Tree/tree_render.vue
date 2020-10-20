@@ -71,12 +71,15 @@ export default {
   .tree-expand .tree-btn{
     display:none;
     float:right;
-    margin-right:20px;
-    padding-left: 20px;
+    margin-right: 0px;
+    padding-left: 7px;
   }
   .tree-expand .tree-btn i{
     color:#8492a6;
     font-size:0.9em;
     margin-right:3px;
+  }
+  .el-tree-node__content{
+    height: auto;
   }
 </style>

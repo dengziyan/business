@@ -248,12 +248,12 @@ export default {
     /*左边的树*/
   .tree{
     float: left;
-    width: 20%;
+    width: 17%;
   }
     /* 右边的住户信息 */
   .table{
     float: right;
-    width: 78%;
+    width: 82%;
     padding-top: 20px;
     margin-left: 10px;
   }
