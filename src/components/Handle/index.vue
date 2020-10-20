@@ -17,6 +17,15 @@
 <script>
 export default {
   name: 'Index',
+  data() {
+    return {
+      single: true, // 非单个禁用
+      multiple: true, // 非多个禁用
+      checkAll: false,
+      dialogVisible: false,
+      isEdit: false,
+    }
+  },
   methods: {
     // 按添加按钮，弹出对话框
     handleAdd() {

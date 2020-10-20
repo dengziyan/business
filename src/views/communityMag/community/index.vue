@@ -3,11 +3,13 @@
     <!--    <TreeControl :tree-data="treeData"/>-->
     <!--    <FormVue :form-data="formData" />-->
     <div class="tree">
+      <!--引入树形控件组件      -->
       <tree />
     </div>
     <div class="table">
       住户信息
       <div class="detail">
+        <!--引入搜索条件组件        -->
         <search-form
           size="mini"
           label-width="80px"
@@ -15,6 +17,9 @@
           :search-form="searchForm"
           :search-handle="searchHandle"
         />
+        <!--引入操作子组件        -->
+        <Handle></Handle>
+        <!--引入表格组件        -->
         <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="哈哈哈，我就看看没数据会怎样~">
           <!-- 下面是上面的简写，#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
           <template #handle="{scope: {row, $index}}">
@@ -33,16 +38,18 @@
 
 <script>
 // import FormVue from '@/components/FormVue'
-import SearchForm from '@/components/SearchForm'
 // import TreeControl from '@/components/TreeControl'
+import Handle from '@/components/Handle'
+import SearchForm from '@/components/SearchForm'
 import Tree from '@/components/Tree'
 import TableVue from '@/components/TableVue'
 const id = 1000
 export default {
   components: {
     // FormVue,
-    SearchForm,
     // TreeControl,
+    Handle,
+    SearchForm,
     Tree,
     TableVue
   },
@@ -207,6 +214,7 @@ export default {
           { type: 'datetimerange', label: '范围选择器', prop: 'datetimerange', value: '' }
         ]
       },
+      // 树形控件的数据
       treeData: [
         {
           id: 1,
@@ -293,12 +301,23 @@ export default {
         {
           date: '2020-10-13',
           author: '南巢',
+          name: '李易峰',
           des: '我是南方来的燕啊，为何也会迷恋北方的寒。'
         },
         {
           date: '2019-05-14',
           author: '测试超出文本显示是否正常测试超出文本显示是否正常测试超出文本显示是否正常测试超出文本显示是否正常',
           des: '我是南方来的燕啊，为何也会迷恋北方的寒。'
+        },
+        {
+          date: '2019-02-14',
+          author: '自卑感',
+          des: '低头瞥见自己的影子在前疯狂的跑着躲的离你不远沉默走的路不知几个光年我还原地打转连微笑也腼腆一事无成是最好描述要怎么往前'
+        },
+        {
+          date: '2019-02-14',
+          author: '自卑感',
+          des: '低头瞥见自己的影子在前疯狂的跑着躲的离你不远沉默走的路不知几个光年我还原地打转连微笑也腼腆一事无成是最好描述要怎么往前'
         },
         {
           date: '2019-02-14',
@@ -355,5 +374,9 @@ export default {
     justify-content: space-between;
     font-size: 14px;
     padding-right: 8px;
+  }
+  /*搜索条件*/
+  .ces-search{
+    height: 50px;
   }
 </style>
