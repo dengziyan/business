@@ -23,7 +23,7 @@ export default {
       multiple: true, // 非多个禁用
       checkAll: false,
       dialogVisible: false,
-      isEdit: false,
+      isEdit: false
     }
   },
   methods: {

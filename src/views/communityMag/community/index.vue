@@ -17,20 +17,8 @@
           :search-form="searchForm"
           :search-handle="searchHandle"
         />
-        <!--引入操作子组件        -->
-        <Handle></Handle>
-        <!--引入表格组件        -->
-        <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="哈哈哈，我就看看没数据会怎样~">
-          <!-- 下面是上面的简写，#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
-          <template #handle="{scope: {row, $index}}">
-            <el-button type="primary" size="mini" @click="handleUpdate(row, $index)">
-              修改
-            </el-button>
-            <el-button type="danger" size="mini" @click="handleDelete()">
-              清空
-            </el-button>
-          </template>
-        </TableVue>
+        <!--引入表格操作子组件        -->
+        <comm-table />
       </div>
     </div>
   </div>
@@ -39,19 +27,18 @@
 <script>
 // import FormVue from '@/components/FormVue'
 // import TreeControl from '@/components/TreeControl'
-import Handle from '@/components/Handle'
+
 import SearchForm from '@/components/SearchForm'
 import Tree from '@/components/Tree'
-import TableVue from '@/components/TableVue'
+import commTable from './commTable'
 const id = 1000
 export default {
   components: {
     // FormVue,
     // TreeControl,
-    Handle,
     SearchForm,
     Tree,
-    TableVue
+    commTable
   },
   data() {
     // const sexs = [{ label: '男', value: 'M' }, { label: '女', value: 'F' }]
@@ -251,92 +238,8 @@ export default {
             }]
           }]
         }
-      ],
-      // table表格数据
-      loading: true,
-      list: [],
-      columns: Object.freeze([
-        {
-          attrs: {
-            prop: 'date',
-            label: '日期',
-            width: '150',
-            align: 'center'
-          },
-          id: 1
-        },
-        {
-          attrs: {
-            prop: 'author',
-            label: '作者',
-            width: '110',
-            'show-overflow-tooltip': true
-          },
-          id: 2
-        },
-        {
-          attrs: {
-            prop: 'des',
-            label: '简要描述',
-            'show-overflow-tooltip': true
-          },
-          id: 3
-        },
-        {
-          slot: 'handle',
-          attrs: {
-            label: '操作',
-            width: '230',
-            'class-name': 'small-padding fixed-width',
-            align: 'center'
-          },
-          id: 4
-        }
-      ])
-    }
-  },
-  created() {
-    setTimeout(() => {
-      this.list = [
-        {
-          date: '2020-10-13',
-          author: '南巢',
-          name: '李易峰',
-          des: '我是南方来的燕啊，为何也会迷恋北方的寒。'
-        },
-        {
-          date: '2019-05-14',
-          author: '测试超出文本显示是否正常测试超出文本显示是否正常测试超出文本显示是否正常测试超出文本显示是否正常',
-          des: '我是南方来的燕啊，为何也会迷恋北方的寒。'
-        },
-        {
-          date: '2019-02-14',
-          author: '自卑感',
-          des: '低头瞥见自己的影子在前疯狂的跑着躲的离你不远沉默走的路不知几个光年我还原地打转连微笑也腼腆一事无成是最好描述要怎么往前'
-        },
-        {
-          date: '2019-02-14',
-          author: '自卑感',
-          des: '低头瞥见自己的影子在前疯狂的跑着躲的离你不远沉默走的路不知几个光年我还原地打转连微笑也腼腆一事无成是最好描述要怎么往前'
-        },
-        {
-          date: '2019-02-14',
-          author: '自卑感',
-          des: '低头瞥见自己的影子在前疯狂的跑着躲的离你不远沉默走的路不知几个光年我还原地打转连微笑也腼腆一事无成是最好描述要怎么往前'
-        }
       ]
-      this.loading = false
-    }, 1000)
-  },
-  methods: {
-    // 表格方法
-    handleUpdate(row, index) {
-      console.log(row, index)
-    },
-    handleDelete() {
-      this.list = []
     }
-
   }
 }
 </script>
