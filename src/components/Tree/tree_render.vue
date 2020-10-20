@@ -21,31 +21,31 @@
 </template>
 
 <script>
-  export default{
-    name: 'treeExpand',
-    props: ['NODE', 'DATA', 'STORE', 'maxexpandId'],
-    methods: {
-      nodeAdd(s,d,n){//新增
-        this.$emit('nodeAdd',s,d,n)
-      },
-      nodeEdit(s,d,n){//编辑
-        d.isEdit = true;
-        this.$nextTick(() => {
-          this.$refs['treeInput'+d.id].$refs.input.focus()
-        })
-        this.$emit('nodeEdit',s,d,n)
-      },
-      nodeDel(s,d,n){//删除
-        this.$emit('nodeDel',s,d,n)
-      },
-      nodeEditPass(s,d,n){//编辑完成
-        d.isEdit = false;
-      },
-      nodeEditFocus(){
-        //阻止点击节点的事件冒泡
-      },
-    }
+export default{
+  name: 'treeExpand',
+  props: ['NODE', 'DATA', 'STORE', 'maxexpandId'],
+  methods: {
+    nodeAdd(s,d,n){//新增
+      this.$emit('nodeAdd',s,d,n)
+    },
+    nodeEdit(s,d,n){//编辑
+      d.isEdit = true;
+      this.$nextTick(() => {
+        this.$refs['treeInput'+d.id].$refs.input.focus()
+      })
+      this.$emit('nodeEdit',s,d,n)
+    },
+    nodeDel(s,d,n){//删除
+      this.$emit('nodeDel',s,d,n)
+    },
+    nodeEditPass(s,d,n){//编辑完成
+      d.isEdit = false;
+    },
+    nodeEditFocus(){
+      //阻止点击节点的事件冒泡
+    },
   }
+}
 </script>
 
 <style>
@@ -70,5 +70,8 @@
     color:#8492a6;
     font-size:0.9em;
     margin-right:3px;
+  }
+  .tree-btn{
+    padding-left: 20px;
   }
 </style>
