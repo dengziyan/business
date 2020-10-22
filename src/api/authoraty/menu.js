@@ -23,7 +23,6 @@ export function treeList(userId) {
     method: 'get'
   })
 }
-
 // 添加菜单信息
 export function createMenu(data) {
   return request({

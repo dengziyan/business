@@ -11,7 +11,7 @@
       <!--         个人中心和退出-->
         <el-dropdown trigger="click" size="mini">
             <span class="el-dropdown-link">
-              <img :src="baseUrl+userImg" class="user" alt="">
+<!--              <img :src="baseUrl+userImg" class="user" alt="">-->
             </span>
           <el-dropdown-menu slot="dropdown">
             <router-link to="/personal">

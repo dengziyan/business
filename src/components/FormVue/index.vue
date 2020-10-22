@@ -22,6 +22,7 @@
         v-if="item.type === 'text'"
         v-model="form[item.prop]"
         :disabled="item.isDisabled"
+        :size="item.size"
       />
       <!-- 密码框 -->
       <el-input
@@ -76,6 +77,7 @@
         v-if="item.type==='select'"
         v-model="form[item.prop]"
         :multiple="item.multiple"
+        :value="item.value"
         collapse-tags
         clearable
         :disabled="item.isDisabled"
@@ -140,7 +142,21 @@
         start-placeholder="开始日期"
         end-placeholder="结束日期"
       />
+      <!--上传模板    -->
+      <div v-if="item.type==='upload'">
+        <el-button
+          @click="importTemplate"
+        >
+          下载模板
+        </el-button>
+        <el-button
+          @click="resetForm"
+        >
+          上传Excel
+        </el-button>
+      </div>
     </el-form-item>
+<!--    </el-form-item>-->
 <!--    <el-form-item>-->
 <!--      <el-button-->
 <!--        type="primary"-->
@@ -159,6 +175,8 @@
 </template>
 
 <script>
+import fileDownload from "js-file-download";
+
 export default {
   props: {
     formData: {
@@ -177,15 +195,14 @@ export default {
     this.bindValue()
   },
   methods: {
-    onSubmit(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          console.log(this.form);
-          alert('发送请求去');
-        } else {
-          return false;
-        }
-      });
+    /** 下载模板操作 */
+    importTemplate() {
+      importTemplates().then(res => {
+        fileDownload(res, '批量用户导入模板.xlsx')
+      })
+        .catch(err => {
+          console.log(err)
+        })
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
@@ -203,5 +220,10 @@ export default {
 </script>
 
 <style scoped>
-
+  .el-input--small{
+    width: 180px;
+  }
+  .el-button{
+    margin-right: 20px;
+  }
 </style>

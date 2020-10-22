@@ -50,9 +50,9 @@ export default {
     padding-top: 20px;
     margin-left: 10px;
   }
-  .detail{
-    border:1px solid #BFBFBF;
-  }
+  /*.detail{*/
+  /*  border:1px solid #BFBFBF;*/
+  /*}*/
 
   .myTrees {
     width: 288px;

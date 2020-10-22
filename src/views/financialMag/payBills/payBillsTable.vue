@@ -73,7 +73,6 @@ export default {
           attrs: {
             prop: 'chargeBeginTime',
             label: '收费开始日期',
-            width: '150',
             'show-overflow-tooltip': true
           },
           id: 4

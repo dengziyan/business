@@ -1,7 +1,7 @@
 <template>
 <!--  table再组件化-->
   <!-- 通过v-bind="$attrs" v-on="$listeners"，把父组件传的属性全部绑定到子组件上，保证了api和el-table一致 -->
-  <el-table style="width: 100%" v-bind="$attrs" v-on="$listeners" >
+  <el-table style="width: 100%" v-bind="$attrs" v-on="$listeners"  border>
 
     <!-- 考虑到v-for和v-if同时使用存在性能问题，这里直接使用computed把需要循环的数据过滤一遍，去除v-if -->
     <!-- <template v-for="item in columns">

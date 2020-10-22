@@ -5,7 +5,7 @@
     <FormVue :form-data="formData" />
     <span slot="footer" class="dialog-footer">
       <el-button size="small" @click="dialogVisible = false">取 消</el-button>
-      <el-button type="primary" size="small" @click="handleDialogConfirm()">确 定</el-button>
+      <el-button type="primary" size="small" @click="handleDialogConfirm()">新建</el-button>
     </span>
   </div>
 </template>
@@ -38,7 +38,7 @@ export default {
             multiple: false,
             label: '收费类型',
             prop: 'chargeCategoryName',
-            value: [],
+            value: '车位停车费',
             options: [
               { name: '物业费', value: '物业费', isDisabled: false },
               { name: '水费', value: '水费', isDisabled: false },
@@ -53,7 +53,7 @@ export default {
             multiple: false,
             label: '收费项目名称',
             prop: 'chargeProjectName',
-            value: [],
+            value: '物业费1',
             options: [
               { name: '物业费1', value: '物业费1', isDisabled: false },
               { name: '水费1', value: '水费1', isDisabled: false },
@@ -61,9 +61,10 @@ export default {
               { name: '车位停车费1', value: '车位停车费1', isDisabled: false }
             ]
           },
-          { type: 'text', label: '账单名称', isDisabled: false, placeholder: '请输入账单名称', prop: 'billName', required: true },
+          { type: 'text', label: '账单名称', size: 'small', isDisabled: false, placeholder: '请输入账单名称', prop: 'billName', required: true },
           { type: 'date', label: '收费开始时间', prop: 'starTime', value: '' },
           { type: 'radio', label: '账单模式', isDisabled: false, prop: 'sex', value: '', options: [{ name: '按月', value: '1' }, { name: '按年', value: '0' }] },
+          { type: 'upload', label: '账单上传', isDisabled: false, value: '' }
         ]
       }
     }
