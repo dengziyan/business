@@ -42,18 +42,12 @@ export default {
               name: 'community',
               title: '小区信息管理',
               icon: 'table'
-            },
-            {
-              path: '/resident',
-              name: 'resident',
-              title: '住户信息管理',
-              icon: 'tree'
             }
           ]
         },
         {
           title: '财务管理模块',
-          name: 'system',
+          name: 'financialMag',
           icon: 's-custom',
           children: [
             {
@@ -65,13 +59,7 @@ export default {
             {
               path: '/payBills',
               name: 'payBills',
-              title: '收费账单管理',
-              icon: 'table'
-            },
-            {
-              path: '/payDetail',
-              name: 'payDetail',
-              title: '收费详情管理',
+              title: '收费批次管理',
               icon: 'table'
             },
             {
@@ -87,7 +75,69 @@ export default {
               icon: 'table'
             }
           ]
-        }
+        },
+        {
+          title: '权限管理模块',
+          name: 'authoraty',
+          icon: 's-custom',
+          children: [
+            {
+              path: '/userList',
+              name: 'userList',
+              title: '用户列表',
+              icon: 'table'
+            },
+            {
+              path: '/roleList',
+              name: 'roleList',
+              title: '角色列表',
+              icon: 'table'
+            },
+            {
+              path: '/menuList',
+              name: 'menuList',
+              title: '菜单列表',
+              icon: 'table'
+            },
+            {
+              path: '/resourceCategory',
+              name: 'resourceCategory',
+              title: '资源列表',
+              icon: 'table'
+            }
+          ]
+        },
+        {
+          title: '系统管理模块',
+          name: 'system',
+          icon: 's-custom',
+          children: [
+            {
+              path: '/online',
+              name: 'online',
+              title: '在线用户',
+              icon: 'table'
+            },
+            {
+              title: '日志管理',
+              icon: 'table',
+              children: [
+                {
+                  path: '/opeDiary',
+                  name: 'opeDiary',
+                  title: '操作日志',
+                  icon: 'table'
+                },
+                {
+                  path: '/logDiary',
+                  name: 'logDiary',
+                  title: '登录日志',
+                  icon: 'table'
+                }
+              ]
+            }
+          ]
+        },
       ]
     }
   },

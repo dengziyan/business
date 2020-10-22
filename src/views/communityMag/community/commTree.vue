@@ -170,6 +170,7 @@ export default {
     this.initExpand()
   },
   methods: {
+
     initExpand() {
       this.setTree.map((a) => {
         this.defaultExpandKeys.push(a.id)
@@ -196,6 +197,7 @@ export default {
         }
       })
     },
+    // 原本用来增添父节点的方法
     handleAddTop() {
       this.setTree.push({
         id: ++this.maxexpandId,

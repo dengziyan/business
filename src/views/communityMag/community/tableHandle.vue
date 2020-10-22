@@ -2,7 +2,7 @@
   <!-- 各个操作按钮 -->
   <el-row :gutter="10" class="mb8">
     <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
-    <el-button type="success" icon="el-icon-edit" size="mini" :disabled="single" @click="handleTopUpdate">修改
+    <el-button type="success" icon="el-icon-edit" size="mini" :disabled="single" @click="handleTopUpdate">编辑
     </el-button>
     <el-button type="danger" icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除
     </el-button>
@@ -16,7 +16,7 @@
 
 <script>
 export default {
-  name: 'Index',
+  name: 'CommHandle',
   data() {
     return {
       single: true, // 非单个禁用

@@ -1,12 +1,18 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { login, logout, getInfo, setLoginStatus } from '@/api/user'
+import { getToken, getIDKey, setCookies, removeCookies } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
     token: getToken(),
     name: '',
-    avatar: ''
+    realName: '',
+    id: getIDKey(),
+    avatar: '',
+    email: '',
+    mobilePhone: '',
+    createDate: '',
+    gender: ''
   }
 }
 
@@ -22,7 +28,28 @@ const mutations = {
   SET_NAME: (state, name) => {
     state.name = name
   },
+  SET_REALNAME: (state, name) => {
+    state.realName = name
+  },
+  SET_ID: (state, id) => {
+    state.id = id
+  },
   SET_AVATAR: (state, avatar) => {
+    state.avatar = avatar
+  },
+  SET_EMAIL: (state, email) => {
+    state.email = email
+  },
+  SET_MOBILEPHNE: (state, mobilePhone) => {
+    state.mobilePhone = mobilePhone
+  },
+  SET_CREATEDATE: (state, createDate) => {
+    state.createDate = createDate
+  },
+  SET_GENDER: (state, gender) => {
+    state.gender = gender
+  },
+  setAvatar(state, avatar) {
     state.avatar = avatar
   }
 }
@@ -33,9 +60,15 @@ const actions = {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
+        const data = response.data
+        const token = data.tokenHead + data.token
+
+        commit('SET_TOKEN', token) // token
+        commit('SET_ID', data.id) // 用户编号
+        setCookies(token, data.id)
+
+        setLoginStatus(data.id)
+
         resolve()
       }).catch(error => {
         reject(error)
@@ -46,17 +79,27 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
-        const { data } = response
+      getInfo(state.id).then(response => {
+        const data = response.data
 
         if (!data) {
           return reject('Verification failed, please Login again.')
         }
 
-        const { name, avatar } = data
-
+        const name = data.userInfo.account
+        const avatar = data.userInfo.avatarUrl
+        const email = data.userInfo.email
+        const mobilePhone = data.userInfo.mobilePhone
+        const createDate = data.userInfo.createDate
+        const realName = data.userInfo.realName
+        const gender = data.userInfo.gender
+        commit('SET_REALNAME', realName)
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
+        commit('SET_EMAIL', email)
+        commit('SET_MOBILEPHNE', mobilePhone)
+        commit('SET_CREATEDATE', createDate)
+        commit('SET_GENDER', gender)
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -67,8 +110,8 @@ const actions = {
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        removeToken() // must remove  token  first
+      logout(state.name).then(response => {
+        removeCookies() // must remove  token  first
         resetRouter()
         commit('RESET_STATE')
         resolve()
@@ -81,7 +124,8 @@ const actions = {
   // remove token
   resetToken({ commit }) {
     return new Promise(resolve => {
-      removeToken() // must remove  token  first
+      removeCookies() // must remove  token  first
+      sessionStorage.clear()
       commit('RESET_STATE')
       resolve()
     })
@@ -94,4 +138,3 @@ export default {
   mutations,
   actions
 }
-

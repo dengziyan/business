@@ -2,16 +2,16 @@
 <!--小区表格及操作组件  -->
   <div>
     <!--引入操作子组件        -->
-    <Handle></Handle>
+    <table-handle />
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="哈哈哈，我就看看没数据会怎样~">
       <!-- 下面是上面的简写，#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
       <template #handle="{scope: {row, $index}}">
-        <el-button type="primary" size="mini" @click="handleUpdate(row, $index)">
-          修改
-        </el-button>
         <el-button type="danger" size="mini" @click="handleDelete()">
-          清空
+          删除
+        </el-button>
+        <el-button type="primary" size="mini" @click="handleUpdate(row, $index)">
+         编辑
         </el-button>
       </template>
     </TableVue>
@@ -19,12 +19,12 @@
 </template>
 
 <script>
-import Handle from '@/components/Handle/index'
+import tableHandle from './tableHandle'
 import TableVue from '@/components/TableVue'
 export default {
   name: 'CommTable',
   components: {
-    Handle,
+    tableHandle,
     TableVue
   },
   data() {

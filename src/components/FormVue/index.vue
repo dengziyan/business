@@ -123,6 +123,14 @@
         type="datetime"
         placeholder="选择日期时间"
       />
+      <!-- 日期范围选择器     -->
+      <el-date-picker
+        v-if="item.type==='daterange'"
+        v-model="form[item.prop]"
+        type="daterange"
+        range-separator="至"
+        start-placeholder="开始日期"
+        end-placeholder="结束日期" />
       <!-- 日期和时间范围选择器  -->
       <el-date-picker
         v-if="item.type==='datetimerange'"
@@ -133,19 +141,19 @@
         end-placeholder="结束日期"
       />
     </el-form-item>
-    <el-form-item>
-      <el-button
-        type="primary"
-        @click="onSubmit('ruleForm')"
-      >
-        保存
-      </el-button>
-      <el-button
-        @click="resetForm('ruleForm')"
-      >
-        重置
-      </el-button>
-    </el-form-item>
+<!--    <el-form-item>-->
+<!--      <el-button-->
+<!--        type="primary"-->
+<!--        @click="onSubmit('ruleForm')"-->
+<!--      >-->
+<!--        保存-->
+<!--      </el-button>-->
+<!--      <el-button-->
+<!--        @click="resetForm('ruleForm')"-->
+<!--      >-->
+<!--        重置-->
+<!--      </el-button>-->
+<!--    </el-form-item>-->
   </el-form>
 
 </template>
@@ -160,7 +168,8 @@ export default {
   },
   data() {
     return {
-      form: {}
+      form: {},
+      value1: '',
     };
   },
   created() {

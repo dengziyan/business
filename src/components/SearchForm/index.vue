@@ -27,6 +27,14 @@
         <el-time-select v-if="item.type==='Time'" v-model="searchData[item.prop]" type="" />
         <!-- 日期时间 -->
         <el-date-picker v-if="item.type==='DateTime'" v-model="searchData[item.prop]" type="datetime" :disabled="item.disable && item.disable(searchData[item.prop])" />
+        <!-- 日期和时间范围选择器  -->
+        <el-date-picker
+          v-if="item.type==='daterange'"
+          v-model="searchData[item.prop]"
+          type="daterange"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        />
         <!-- 滑块 -->
         <!-- <el-slider v-if="item.type==='Slider'" v-model="searchData[item.prop]"></el-slider> -->
         <!-- 开关 -->

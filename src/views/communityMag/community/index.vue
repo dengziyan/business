@@ -45,7 +45,7 @@ export default {
   }
     /* 右边的住户信息 */
   .table{
-    float: right;
+    float: left;
     width: 82%;
     padding-top: 20px;
     margin-left: 10px;

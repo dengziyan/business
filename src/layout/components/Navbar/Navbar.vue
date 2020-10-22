@@ -8,18 +8,18 @@
         <breadcrumb class="breadcrumb-container" />
       </div>
       <div class="r-content">
-        <!-- 个人中心和退出       -->
-<!--        <el-dropdown trigger="click" size="mini">-->
-<!--            <span class="el-dropdown-link">-->
-<!--              <img :src="baseUrl+userImg" class="user" alt="">-->
-<!--            </span>-->
-<!--          <el-dropdown-menu slot="dropdown">-->
-<!--            <router-link to="/personal">-->
-<!--              <el-dropdown-item>个人中心</el-dropdown-item>-->
-<!--            </router-link>-->
-<!--            <el-dropdown-item @click.native="logout">退出</el-dropdown-item>-->
-<!--          </el-dropdown-menu>-->
-<!--        </el-dropdown>-->
+      <!--         个人中心和退出-->
+        <el-dropdown trigger="click" size="mini">
+            <span class="el-dropdown-link">
+              <img :src="baseUrl+userImg" class="user" alt="">
+            </span>
+          <el-dropdown-menu slot="dropdown">
+            <router-link to="/personal">
+              <el-dropdown-item>个人中心</el-dropdown-item>
+            </router-link>
+            <el-dropdown-item @click.native="logout">退出</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
     </header>
   </div>
