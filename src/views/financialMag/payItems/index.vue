@@ -1,325 +1,182 @@
 <template>
   <div>
     收费项目管理
-<!--    <div class="myTrees">-->
-<!--    &lt;!&ndash;引入树形控件组件      &ndash;&gt;-->
-<!--        <tree-control />-->
-<!--    </div>-->
-<!--    &lt;!&ndash; 引入表单组件   &ndash;&gt;-->
-<!--    <form-icon :form-data="formData" />-->
-<!--    &lt;!&ndash; 添加或修改菜单配置对话框 &ndash;&gt;-->
-<!--    <el-dialog :title="isEdit?'编辑菜单':'添加菜单'" :visible.sync="dialogVisible" width="60%">-->
-<!--      <el-form ref="www" :model="community" label-width="150px"  size="small">-->
-<!--        <el-form-item label="小区名称：" prop="name">-->
-<!--          <el-input v-model="community.name" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="小区类别：">-->
-<!--          <el-radio-group v-model="community.category">-->
-<!--            <el-radio v-for="dict in communityOptions" :key="dict.dictValue" :label="dict.dictValue">-->
-<!--              {{ dict.dictLabel }}-->
-<!--            </el-radio>-->
-<!--          </el-radio-group>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="总户数：" prop="totalResident">-->
-<!--          <el-input v-model="community.totalResident" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="联系人：" prop="admin">-->
-<!--          <el-input v-model="community.admin" style="width: 80%" />-->
-<!--        </el-form-item>-->
-<!--        <span class="dialog-footer">-->
-<!--          <el-button size="small" @click="dialogVisible = false">取 消</el-button>-->
-<!--          <el-button type="primary" size="small" @click="handleDialogConfirm()">确 定</el-button>-->
-<!--        </span>-->
-<!--      </el-form>-->
-<!--    </el-dialog>-->
-<!--    <div class="table">-->
-<!--      &lt;!&ndash; 除了需要传columns，其它api与el-table完全一致 &ndash;&gt;-->
-<!--      <BaseTable v-loading="loading" :columns="columns" :data="list" empty-text="哈哈哈，我就看看没数据会怎样~">-->
-<!--        &lt;!&ndash; 下面是上面的简写，#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 &ndash;&gt;-->
-<!--        <template #handle="{scope: {row, $index}}">-->
-<!--          <el-button type="primary" size="mini" @click="handleUpdate(row, $index)">-->
-<!--            修改-->
-<!--          </el-button>-->
-<!--          <el-button type="danger" size="mini" @click="handleDelete()">-->
-<!--            清空-->
-<!--          </el-button>-->
-<!--        </template>-->
-<!--      </BaseTable>-->
-<!--    </div>-->
+    <el-tree
+      ref="tree"
+      class="treeitems"
+      :data="data"
+      node-key="id"
+      :props="defaultProps"
+      :load="loadNode"
+      lazy
+      :default-expanded-keys="[0]"
+      draggable
+      :allow-drop="allowDrop"
+      :allow-drag="allowDrag"
+      @node-click="handleNodeClick"
+      @node-drop="handleDrop"
+    >
+      <span slot-scope="{ node, data }" class="custom-tree-node">
+        <span>{{ node.label }}</span>
+        <span>
+          <i class="el-icon-plus" @click="() => append(node,data)" /><!--增加分组-->
+          <!-- 根节点不需要删除和重命名 -->
+          <i v-if="data.id !== 0" class="el-icon-delete" @click="() => deletes(node,data)" /><!--删除分组-->
+          <i v-if="data.id !== 0" class="el-icon-edit" @click="() => rename(node,data)" /><!--重命名分组-->
+        </span>
+      </span>
+    </el-tree>
   </div>
 </template>
+<script>
+export default {
+  name: 'Index',
+  data() {
+    return {
+      filterText: '',
+      data: [
+        {
+          id: 0,
+          label: '中国'
+        }
+      ],
+      children: [
+        {
+          id: 1,
+          label: '北京',
+          children: [
+            {
+              id: 11,
+              label: '通州'
+            }
+          ]
+        },
+        {
+          id: 2,
+          label: '上海',
+          leaf: true
+        },
+        {
+          id: 3,
+          label: '山西',
+          children: [
+            {
+              id: 13,
+              label: '太原'
+            },
+            {
+              id: 14,
+              label: '阳泉'
+            }
+          ]
+        },
+        {
+          id: 4,
+          label: '黑龙江',
+          children: [
+            {
+              id: 12,
+              label: '哈尔滨'
+            }
+          ]
+        }
+      ],
+      defaultProps: {
+        children: 'children',
+        label: 'label',
+        isLeaf: 'leaf' // 懒加载
+      }
+    }
+  },
+  methods: {
+    handleNodeClick(data) {
+      console.log(data);
+    },
+    // 点重命名事件
+    append(node, data) {
+      console.log(node, data, '增加')
+      this.$prompt('节点名字', '增加节点', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /^[\u4e00-\u9fa5]{0,}$/, // 匹配全中文
+        inputErrorMessage: '请输入中文'// 不符合正则匹配的提示语句
+      }).then(({ value }) => {
+        // 可以在这里发请求，http是我模拟的一个虚假的封装好的axios请求,()可写请求参数
+        http().then((data) => {
+          this.$message({
+            type: 'success',
+            message: '修改成功'
+          })
+          // 请求成功需局部刷新该节点，调用方法,把节点信息node传入
+          this.partialRefresh(node)
+        })
+          // 请求失败
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '修改失败'
+            })
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消修改'
+        })
+      })
+    },
+    // 实现局部刷新，在点击弹窗处调用的
+    partialRefreshpartialRefresh(node) {
+      // 设置loaded为false；模拟一次节点展开事件，加载重命名后的新数据；
+      node.loaded = false
+      node.expand()
+      // 新建子节点是刷新一次本节点的展开请求，而重命名和删除则需要刷新父级节点的的展开事件，
+      // 可以设置node.parent.loaded = false;node.parent.expand();
+    },
+    // 懒加载
+    loadNode(node, resolve) {
+      if (node.level === 0) {
+        // 本地的数据，一个承载中国字样的数组；
+        return resolve(this.data)
+      } else if (node.level === 1) {
+        // 现在为模拟数据；
+        // 有真实数据，在resolve中放置请求回来的数据即可。
+        // else同样也是。我这里是区分了两种请求方式。
+        return resolve(this.children)
+      } else {
+        return resolve([])
+      }
+    },
+    // 拖拽==>拖拽时判定目标节点能否被放置
+    // 后更改为只能同级拖拽
+    allowDrop(draggingNode, dropNode, type) {
+      if (draggingNode.level === dropNode.level) {
+        if (draggingNode.data.parentId === dropNode.data.parentId) {
+          return type === 'prev' || type === 'next'
+        }
+      } else {
+        // 不同级不允许拖拽
+        return false
+      }
+    },
+    // 拖拽==>判断节点能否被拖拽
+    allowDrag(draggingNode) {
+      return draggingNode.level !== 1
+    },
+    // 拖拽成功完成时触发的事件，在这里可以将节点拖拽后的顺序返给后端
+    handleDrop(node, data, type, event) {
+      const arr = []
+      // data为拖拽后节点信息，找到它的父级，在从父级找子集
+      const child = data.parent.childNodes
+      for (var key in child) {
+        arr.push({ id: child[key].data.id })
+      }
+      // 转为JSON字符串发请求带走信息
+      idSort(JSON.stringify(arr))
+    }
+  }
+}
+</script>
 
-<!--<script>-->
-<!--import formIcon from '@/components/FormVue'-->
-<!--import BaseTable from '@/components/TableVue'-->
-<!--import TreeControl from '@/components/TreeControl'-->
-<!--let id = 1000-->
-<!--const  = {-->
-<!--  name: '',-->
-<!--  category: '',-->
-<!--  totalResident: '',-->
-<!--  admin: ''-->
-<!--}-->
-<!--export default {-->
-<!--  name: 'List',-->
-<!--  components: {-->
-<!--    formIcon,-->
-<!--    BaseTable,-->
-<!--    TreeControl-->
-<!--  },-->
-<!--  data() {-->
-<!--    return {-->
-<!--      dialogVisible: false, // 对话框是否显示-->
-<!--      isEdit: false, // 是否编辑-->
-<!--      community: Object.assign({}, defaultCommunity), // community为对话框中:model-->
-<!--      communityOptions: [ // 小区类别-->
-<!--        { dictLabel: '公寓', dictValue: 2 },-->
-<!--        { dictLabel: '商铺', dictValue: 1 },-->
-<!--        { dictLabel: '住宅', dictValue: 0 }-->
-<!--      ],-->
-<!--      isShow: false,-->
-<!--      currentData: '',-->
-<!--      currentNode: '',-->
-<!--      menuVisible: false,-->
-<!--      firstLevel: false,-->
-<!--      lastLevel: false,-->
-<!--      filterText: '',-->
-<!--      maxexpandId: 4,-->
-<!--      // el-form的数据-->
-<!--      formData: {-->
-<!--        rules: {-->
-<!--          userName: [-->
-<!--            { required: true, message: '请输入用户名', trigger: 'blur' }-->
-<!--          ],-->
-<!--          password: [-->
-<!--            { required: true, message: '请输入密码', trigger: 'blur' }-->
-<!--          ]-->
-<!--        },-->
-<!--        labelWidth: '100px',-->
-<!--        inline: false,-->
-<!--        labelPosition: 'right',-->
-<!--        size: 'small',-->
-<!--        formItem: [-->
-<!--          { type: 'text', label: '用户名', isDisabled: false, placeholder: '请输入用户名', prop: 'userName', value: '6666', required: true },-->
-<!--          { type: 'password', label: '密码', isDisabled: false, placeholder: '请输入密码', prop: 'password', value: '', required: true },-->
-<!--          { type: 'radio', label: '性别', isDisabled: false, prop: 'sex', value: '', options: [{ name: '男', value: '1' }, { name: '女', value: '0' }] },-->
-<!--          { type: 'switch', label: '状态', isDisabled: false, prop: 'status', value: '0' },-->
-<!--          {-->
-<!--            type: 'radioButton',-->
-<!--            isDisabled: true,-->
-<!--            label: '选择城市',-->
-<!--            prop: 'city',-->
-<!--            value: 'huaian',-->
-<!--            options: [-->
-<!--              { name: '上海', value: 'shanghai' },-->
-<!--              { name: '北京', value: 'beijing' },-->
-<!--              { name: '淮安', value: 'huaian' }-->
-<!--            ]-->
-<!--          },-->
-<!--          {-->
-<!--            type: 'checkbox',-->
-<!--            isDisabled: false,-->
-<!--            label: '爱好',-->
-<!--            prop: 'hoppies',-->
-<!--            value: [],-->
-<!--            options: [-->
-<!--              { name: '游戏', value: 'LOL', isDisabled: true },-->
-<!--              { name: '健身', value: 'fitness', isDisabled: false },-->
-<!--              { name: '娱乐', value: 'bath', isDisabled: false },-->
-<!--              { name: 'Code', value: 'code', isDisabled: true }-->
-<!--            ]-->
-<!--          },-->
-<!--          {-->
-<!--            type: 'select',-->
-<!--            isDisabled: false,-->
-<!--            // 是否开启多选-->
-<!--            multiple: false,-->
-<!--            label: '选择语言',-->
-<!--            prop: 'languages',-->
-<!--            value: [],-->
-<!--            options: [-->
-<!--              { name: 'JavaScript', value: 'JavaScript', isDisabled: true },-->
-<!--              { name: 'Java', value: 'Java', isDisabled: false },-->
-<!--              { name: 'Python', value: 'Python', isDisabled: false },-->
-<!--              { name: 'C#', value: 'C#', isDisabled: false },-->
-<!--              { name: 'C', value: 'C', isDisabled: false },-->
-<!--              { name: 'Go', value: 'Go', isDisabled: false },-->
-<!--              { name: 'PHP', value: 'PHP', isDisabled: false }-->
-<!--            ]-->
-<!--          },-->
-<!--          {-->
-<!--            type: 'cascader',-->
-<!--            label: '地址',-->
-<!--            prop: 'dizhi',-->
-<!--            isMore: { multiple: false },-->
-<!--            isDisabled: false,-->
-<!--            value: [],-->
-<!--            options: [-->
-<!--              {-->
-<!--                value: 'js',-->
-<!--                label: '江苏省',-->
-<!--                children: [-->
-<!--                  {-->
-<!--                    value: 'nanjing',-->
-<!--                    label: '南京市'-->
-<!--                  },-->
-<!--                  {-->
-<!--                    value: 'suzhou',-->
-<!--                    label: '苏州市'-->
-<!--                  },-->
-<!--                  {-->
-<!--                    value: 'wuxi',-->
-<!--                    label: '无锡市'-->
-<!--                  },-->
-<!--                  {-->
-<!--                    value: 'huaian',-->
-<!--                    label: '淮安市',-->
-<!--                    children: [-->
-<!--                      {-->
-<!--                        value: 'pjpq',-->
-<!--                        label: '清江浦区'-->
-<!--                      },-->
-<!--                      {-->
-<!--                        value: 'hyq',-->
-<!--                        label: '淮阴区'-->
-<!--                      }-->
-<!--                    ]-->
-<!--                  }-->
-<!--                ]-->
-<!--              },-->
-<!--              {-->
-<!--                value: 'sh',-->
-<!--                label: '上海市',-->
-<!--                children: [-->
-<!--                  {-->
-<!--                    value: 'pudong',-->
-<!--                    label: '浦东新区'-->
-<!--                  },-->
-<!--                  {-->
-<!--                    value: 'xuhui',-->
-<!--                    label: '徐汇区'-->
-<!--                  },-->
-<!--                  {-->
-<!--                    value: 'minhang',-->
-<!--                    label: '闵行区'-->
-<!--                  },-->
-<!--                  {-->
-<!--                    value: 'songjiang',-->
-<!--                    label: '松江区',-->
-<!--                    children: [-->
-<!--                      {-->
-<!--                        value: 'dongjing',-->
-<!--                        label: '洞泾'-->
-<!--                      },-->
-<!--                      {-->
-<!--                        value: 'jiuting',-->
-<!--                        label: '九亭'-->
-<!--                      }-->
-<!--                    ]-->
-<!--                  }-->
-<!--                ]-->
-<!--              }-->
-<!--            ]-->
-<!--          },-->
-<!--          { type: 'date', label: '日期', prop: 'starTime', value: '' },-->
-<!--          { type: 'time', label: '时间', prop: 'time', value: '' },-->
-<!--          { type: 'dateTime', label: '日期时间', prop: 'dateTime', value: '' },-->
-<!--          { type: 'datetimerange', label: '范围选择器', prop: 'datetimerange', value: '' }-->
-<!--        ]-->
-<!--      },-->
-<!--      // el-table的-->
-<!--      loading: true,-->
-<!--      list: [],-->
-<!--      columns: Object.freeze([-->
-<!--        {-->
-<!--          attrs: {-->
-<!--            prop: 'date',-->
-<!--            label: '日期',-->
-<!--            width: '150',-->
-<!--            align: 'center'-->
-<!--          },-->
-<!--          id: 1-->
-<!--        },-->
-<!--        {-->
-<!--          attrs: {-->
-<!--            prop: 'author',-->
-<!--            label: '作者',-->
-<!--            width: '110',-->
-<!--            'show-overflow-tooltip': true-->
-<!--          },-->
-<!--          id: 2-->
-<!--        },-->
-<!--        {-->
-<!--          attrs: {-->
-<!--            prop: 'des',-->
-<!--            label: '简要描述',-->
-<!--            'show-overflow-tooltip': true-->
-<!--          },-->
-<!--          id: 3-->
-<!--        },-->
-<!--        {-->
-<!--          slot: 'handle',-->
-<!--          attrs: {-->
-<!--            label: '操作',-->
-<!--            width: '230',-->
-<!--            'class-name': 'small-padding fixed-width',-->
-<!--            align: 'center'-->
-<!--          },-->
-<!--          id: 4-->
-<!--        }-->
-<!--      ])-->
-<!--    }-->
-<!--  },-->
-<!--  created() {-->
-<!--    setTimeout(() => {-->
-<!--      this.list = [-->
-<!--        {-->
-<!--          date: '2020-10-13',-->
-<!--          author: '南巢',-->
-<!--          des: '我是南方来的燕啊，为何也会迷恋北方的寒。'-->
-<!--        },-->
-<!--        {-->
-<!--          date: '2019-05-14',-->
-<!--          author: '测试超出文本显示是否正常测试超出文本显示是否正常测试超出文本显示是否正常测试超出文本显示是否正常',-->
-<!--          des: '我是南方来的燕啊，为何也会迷恋北方的寒。'-->
-<!--        },-->
-<!--        {-->
-<!--          date: '2019-02-14',-->
-<!--          author: '自卑感',-->
-<!--          des: '低头瞥见自己的影子在前疯狂的跑着躲的离你不远沉默走的路不知几个光年我还原地打转连微笑也腼腆一事无成是最好描述要怎么往前'-->
-<!--        }-->
-<!--      ]-->
-<!--      this.loading = false-->
-<!--    }, 1000)-->
-<!--  },-->
-<!--  methods: {-->
-<!--    handleUpdate(row, index) {-->
-<!--      console.log(row, index)-->
-<!--    },-->
-<!--    handleDelete() {-->
-<!--      this.list = []-->
-<!--    }-->
+<style scoped>
 
-<!--  }-->
-<!--}-->
-<!--</script>-->
-
-<!--<style scoped>-->
-<!--  .myTrees {-->
-<!--    width: 288px;-->
-<!--    background: rebeccapurple;-->
-<!--  }-->
-
-<!--  .el-tree {-->
-<!--    background: aquamarine;-->
-<!--  }-->
-
-<!--  .custom-tree-node {-->
-<!--    flex: 1;-->
-<!--    display: flex;-->
-<!--    align-items: center;-->
-<!--    justify-content: space-between;-->
-<!--    font-size: 14px;-->
-<!--    padding-right: 8px;-->
-<!--  }-->
-<!--</style>-->
+</style>

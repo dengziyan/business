@@ -46,13 +46,13 @@ export default {
         pageNum: 1,
         pageSize: 10,
         userId: this.$store.getters.id || 1,
-        buildingId: undefined,
+        buildingId: undefined, //
         communityId: undefined,
         data: {
           mobilePhone: '1',
           residentName: undefined
         },
-        merchantId: 1,
+        merchantId: undefined,
         roomNo: undefined,
         unitId: undefined
       },

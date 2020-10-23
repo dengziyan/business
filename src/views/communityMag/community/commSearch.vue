@@ -42,7 +42,7 @@ export default {
     }
   },
   created() {
-    this.getList()
+    // this.getList()
   },
   methods: {
     handleQuery() {
@@ -52,7 +52,7 @@ export default {
     getList() {
       console.log('查询成功')
       this.loading = true
-      listResident(this.queryParams).then(
+      listResident(this.searchData).then(
         (response) => {
           // this.list = response.data
           this.total = response.data.total
