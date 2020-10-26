@@ -54,6 +54,14 @@ export const constantRoutes = [
         }
       },
       {
+        path: '/payDetail',
+        name: 'payDetail',
+        component: () => import('@/views/financialMag/payDetail/index'),
+        meta: {
+          keepAlive: true // 需要缓存的页面
+        }
+      },
+      {
         path: '/incomeStatic',
         name: 'incomeStatic',
         component: () => import('@/views/financialMag/incomeStatic/index'),

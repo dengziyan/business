@@ -1,11 +1,11 @@
 <template>
   <!-- 各个操作按钮 -->
   <div>
-    <el-button-group>
-      <el-button>全部</el-button>
-      <el-button>待审核</el-button>
-      <el-button>已审核</el-button>
-    </el-button-group>
+<!--    <el-button-group>-->
+<!--      <el-button>全部</el-button>-->
+<!--      <el-button>待审核</el-button>-->
+<!--      <el-button>已审核</el-button>-->
+<!--    </el-button-group>-->
     <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
     <!--点击新增后出现的弹框    -->
     <el-dialog :title="isEdit?'编辑用户':'添加用户'" :visible.sync="dialogVisible" width="30%">
@@ -40,7 +40,7 @@ export default {
       this.dialogVisible = true
       this.isEdit = false
       this.payBills = Object.assign({}, defaultPayBills) // 默认值为空
-    }
+    },
   }
 }
 </script>

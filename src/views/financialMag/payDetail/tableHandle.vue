@@ -2,11 +2,17 @@
   <!-- 各个操作按钮 -->
   <div>
     <el-button-group>
-      <el-button>全部</el-button>
-      <el-button>待审核</el-button>
-      <el-button>已审核</el-button>
+      <el-row :gutter="10" class="mb8">
+        <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新建</el-button>
+        <el-button type="success" icon="el-icon-edit" size="mini" :disabled="single" @click="handleAnyCheck">批量审核
+        </el-button>
+        <el-button type="info" icon="el-icon-upload2" size="mini" :disabled="!multiple" @click="handleImport">导入
+        </el-button>
+        <el-button type="warning" icon="el-icon-download" size="mini" :disabled="!multiple" @click="handleExport">导出
+        </el-button>
+        <el-checkbox v-model="checkAll">导出所有数据</el-checkbox>
+      </el-row>
     </el-button-group>
-    <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
     <!--点击新增后出现的弹框    -->
     <el-dialog :title="isEdit?'编辑用户':'添加用户'" :visible.sync="dialogVisible" width="30%">
       <!--弹框子组件      -->
@@ -40,6 +46,15 @@ export default {
       this.dialogVisible = true
       this.isEdit = false
       this.payBills = Object.assign({}, defaultPayBills) // 默认值为空
+    },
+    handleAnyCheck() {
+
+    },
+    handleImport() {
+
+    },
+    handleExport(){
+
     }
   }
 }

@@ -18,7 +18,7 @@
 
 <script>
 import commSearch from './commSearch'
-import commTree from './commTree'
+import commTree from './commTree2'
 import commTable from './commTable'
 const id = 1000
 export default {

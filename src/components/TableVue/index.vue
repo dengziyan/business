@@ -12,7 +12,10 @@
         </el-table-column>
         <el-table-column v-else :key="item.id" v-bind="item.attrs"></el-table-column>
     </template> -->
-
+    <el-table-column
+      type="selection"
+      width="55">
+    </el-table-column>
     <el-table-column v-for="item in normalColumns" :key="item.id" v-bind="item.attrs"></el-table-column>
     <el-table-column v-for="item in slotColumns" :key="item.id" v-bind="item.attrs">
 

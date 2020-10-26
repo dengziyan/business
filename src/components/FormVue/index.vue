@@ -149,11 +149,15 @@
         >
           下载模板
         </el-button>
-        <el-button
-          @click="resetForm"
-        >
-          上传Excel
-        </el-button>
+        <el-upload
+          class="upload-demo"
+          :headers="upload.headers"
+          :action="upload.url"
+          :on-change="handleChange"
+          :file-list="fileList">
+          <el-button size="small">上传Excel</el-button>
+<!--          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+        </el-upload>
       </div>
     </el-form-item>
 <!--    </el-form-item>-->
@@ -175,8 +179,9 @@
 </template>
 
 <script>
-import fileDownload from "js-file-download";
-
+import fileDownload from 'js-file-download'
+import { getToken } from '@/utils/auth'
+import { importTemplates } from '@/api/CommunityMag/community'
 export default {
   props: {
     formData: {
@@ -188,35 +193,45 @@ export default {
     return {
       form: {},
       value1: '',
-    };
+      fileList:[],
+      // 用户导入参数
+      upload: {
+        open: false, // 是否显示弹出层（用户导入）
+        title: '', // 弹出层标题（用户导入）
+        isUploading: false, // 是否禁用上传
+        updateSupport: 0, // 是否更新已经存在的用户数据
+        headers: { Authorization: getToken() }, // 设置上传的请求头部
+        url: process.env.VUE_APP_BASE_API + '/sys/user/import' // 上传的地址
+      }
+    }
   },
   created() {
-    console.log('qwwwww')
+    // console.log('qwwwww')
     this.bindValue()
   },
   methods: {
     /** 下载模板操作 */
     importTemplate() {
       importTemplates().then(res => {
-        fileDownload(res, '批量用户导入模板.xlsx')
+        fileDownload(res, '批量导入模板.xlsx')
       })
         .catch(err => {
           console.log(err)
         })
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
+    handleChange(file, fileList) {
+      this.fileList = fileList.slice(-1)
     },
     bindValue() {
-      const obj = {};
+      const obj = {}
       this.formData.formItem.forEach((item, index) => {
         // 这里不能写成this.form = obj  因为传递的不是值，而是引用，他们指向了同一个空间！
-        obj[item.prop] = item.value;
-      });
-      this.form = {...obj};
+        obj[item.prop] = item.value
+      })
+      this.form = { ...obj }
     }
   }
-};
+}
 </script>
 
 <style scoped>
@@ -225,5 +240,11 @@ export default {
   }
   .el-button{
     margin-right: 20px;
+  }
+  .el-form-item__content .upload-demo{
+    float: left;
+  }
+  .el-form-item__content .button{
+    float: left;
   }
 </style>
