@@ -55,11 +55,11 @@ export default {
     },
     /** 查询批次列表 */
     getList() {
-      console.log('查询批次列表成功')
       this.loading = true
+      console.log(this.searchData)
       listPayBills(this.searchData).then(
         (response) => {
-          // this.list = response.data
+          this.list = response.data.rows
           this.total = response.data.total
           this.loading = false
         }

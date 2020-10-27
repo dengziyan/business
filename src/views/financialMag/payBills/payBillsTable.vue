@@ -32,7 +32,7 @@
 <script>
 import tableHandle from './tableHandle'
 import TableVue from '@/components/TableVue'
-import { listPayBills } from '@/api/financialMag/payBills';
+import { listPayBills } from '@/api/financialMag/payBills'
 
 export default {
   name: 'PayBillsTable',
@@ -59,11 +59,11 @@ export default {
         { attrs: { prop: 'communityId', label: '小区', width: '100', 'show-overflow-tooltip': true }, id: 1 },
         { attrs: { prop: 'billName', label: '账单名称', width: '100', 'show-overflow-tooltip': true }, id: 2 },
         { attrs: { prop: 'chargeProjectId', label: '收费项目', width: '100', 'show-overflow-tooltip': true }, id: 3 },
-        { attrs: { prop: 'chargeBeginTime', label: '收费开始日期', width: '120', 'show-overflow-tooltip': true }, id: 4 },
+        { attrs: { prop: 'chargeBeginTime', label: '收费开始日期', width: '154', 'show-overflow-tooltip': true }, id: 4 },
         { attrs: { prop: 'amountPayable', label: '应缴金额', width: '100', 'show-overflow-tooltip': true }, id: 5 },
         { attrs: { prop: 'amountActuallyPaid', label: '实缴金额', width: '100', 'show-overflow-tooltip': true }, id: 6 },
         { attrs: { prop: 'reviewer', label: '审核人', width: '100', 'show-overflow-tooltip': true }, id: 7 },
-        { attrs: { prop: 'reviewTime', label: '审核时间', width: '120', 'show-overflow-tooltip': true }, id: 8 },
+        { attrs: { prop: 'reviewTime', label: '审核时间', width: '154', 'show-overflow-tooltip': true }, id: 8 },
         { slot: 'handle', attrs: { label: '操作', width: '', 'class-name': 'small-padding fixed-width', align: 'center' }, id: 9 }
       ])
     }
@@ -92,7 +92,7 @@ export default {
       // this.loading = true
       listPayBills(this.queryParams).then(
         (response) => {
-          this.list = response.data
+          this.list = response.data.rows
           this.total = response.data.total
           // this.loading = false
         }
