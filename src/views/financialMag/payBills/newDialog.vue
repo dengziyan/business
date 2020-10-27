@@ -12,7 +12,7 @@
 
 <script>
 import FormVue from '@/components/FormVue'
-
+import { updatePayBills, addPayBills } from '@/api/financialMag/payBills'
 export default {
   name: 'NewDialog',
   components: {
