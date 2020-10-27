@@ -12,7 +12,7 @@
 
 <script>
 import FormVue from '@/components/FormVue'
-import { updatePayBills, addPayBills } from '@/api/financialMag/payBills'
+import { updatePayBills, addPayBills, listChargeCategoryOptions, listChargeProjectOptions } from '@/api/financialMag/payBills'
 export default {
   name: 'NewDialog',
   components: {
@@ -20,6 +20,8 @@ export default {
   },
   data() {
     return {
+      chargeCategoryOptions: [], // 收费类型选项
+      chargeProjectOptions: [], // 收费项目名称
       formData: {
         rules: {
           // userName: [
@@ -39,12 +41,13 @@ export default {
             label: '收费类型',
             prop: 'chargeCategoryName',
             value: '车位停车费',
-            options: [
-              { name: '物业费', value: '物业费', isDisabled: false },
-              { name: '水费', value: '水费', isDisabled: false },
-              { name: '电费', value: '电费', isDisabled: false },
-              { name: '车位停车费', value: '车位停车费', isDisabled: false }
-            ]
+            options: this.chargeCategoryOptions
+            //   [
+            //   { name: '物业费', value: '物业费', isDisabled: false },
+            //   { name: '水费', value: '水费', isDisabled: false },
+            //   { name: '电费', value: '电费', isDisabled: false },
+            //   { name: '车位停车费', value: '车位停车费', isDisabled: false }
+            // ]
           },
           {
             type: 'select',
@@ -54,12 +57,13 @@ export default {
             label: '收费项目名称',
             prop: 'chargeProjectName',
             value: '物业费1',
-            options: [
-              { name: '物业费1', value: '物业费1', isDisabled: false },
-              { name: '水费1', value: '水费1', isDisabled: false },
-              { name: '电费1', value: '电费1', isDisabled: false },
-              { name: '车位停车费1', value: '车位停车费1', isDisabled: false }
-            ]
+            options: this.chargeProjectOptions
+            //   [
+            //   { name: '物业费1', value: '物业费1', isDisabled: false },
+            //   { name: '水费1', value: '水费1', isDisabled: false },
+            //   { name: '电费1', value: '电费1', isDisabled: false },
+            //   { name: '车位停车费1', value: '车位停车费1', isDisabled: false }
+            // ]
           },
           { type: 'text', label: '账单名称', size: 'small', isDisabled: false, placeholder: '请输入账单名称', prop: 'billName', required: true },
           { type: 'date', label: '收费开始时间', prop: 'starTime', value: '' },
@@ -68,6 +72,10 @@ export default {
         ]
       }
     }
+  },
+  create() {
+    this.getChargeCategory()
+    this.getChargeProject()
   },
   methods: {
     // 对话框按确定键之后的方法
@@ -95,6 +103,28 @@ export default {
           }
         })
       }
+    },
+    // 获取收费类型
+    getChargeCategory() {
+      listChargeCategoryOptions().then(response => {
+        const chargeCategoryList = response.data
+        for (let i = 0; i < chargeCategoryList.length; i++) {
+          const cate = chargeCategoryList[i]
+          this.chargeCategoryOptions.push({ label: cate.categoryName, value: cate.id })
+        }
+        // this.defaultCategoryId = chargeCategoryList[0].id
+      })
+    },
+    // 获取收费项目名称
+    getChargeProject() {
+      listChargeProjectOptions().then(response => {
+        const cateList = response.data
+        for (let i = 0; i < cateList.length; i++) {
+          const cate = cateList[i]
+          this.chargeProjectOptions.push({ label: cate.categoryName, value: cate.id })
+        }
+        // this.defaultCategoryId = cateList[0].id
+      })
     }
   }
 }
