@@ -32,7 +32,7 @@
 <script>
 import tableHandle from './tableHandle'
 import TableVue from '@/components/TableVue'
-import { listPayBills } from '@/api/financialMag/payBills';
+import { listPayBills } from '@/api/financialMag/payBills'
 
 export default {
   name: 'PayBillsTable',
