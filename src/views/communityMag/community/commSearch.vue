@@ -41,13 +41,24 @@ export default {
       ]
     }
   },
+
   created() {
     // this.getList()
+  },
+  mounted() {
+    // const timer = setInterval(() => {
+    //   console.log(this.searchData)
+    // }, 2000)
+    // // 在beforeDestroy钩子触发时清除定时器
+    // this.$once('hook:beforeDestroy', () => {
+    //   clearInterval(timer);
+    // })
   },
   methods: {
     handleQuery() {
       // console.log('查询成功')
     },
+
     /** 查询用户列表 */
     getList() {
       console.log('查询成功')

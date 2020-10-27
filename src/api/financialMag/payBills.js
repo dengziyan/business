@@ -1,5 +1,13 @@
 import request from '@/utils/request'
 
+// 查询批次列表
+export function listPayBills(query) {
+  return request({
+    url: '/sys/resident',
+    method: 'get',
+    params: query
+  })
+}
 // 修改
 export function updatePayBills(data) {
   return request({

@@ -4,7 +4,7 @@
     <el-form class="input" :size="size" inline :label-width="labelWidth">
       <el-form-item v-for="item in searchForm" :key="item.prop" :label="item.label">
         <!-- 输入框 -->
-        <el-input v-if="item.type==='Input'" v-model="searchData[item.prop]" size="mini" />
+        <el-input v-if="item.type==='Input'" v-model="searchData[item.prop]" size="mini" clearable @clear="clearParams('searchData[item.prop]')"/>
         <!-- 下拉框 -->
         <el-select v-if="item.type==='Select'" v-model="searchData[item.prop]" size="mini" @change="item.change(searchData[item.prop])">
           <el-option v-for="op in item.options" :key="op.value" :label="op.label" :value="op.value" />
@@ -35,6 +35,15 @@
           start-placeholder="开始日期"
           end-placeholder="结束日期"
         />
+        <!-- 日期和时间范围(最新)       -->
+        <el-date-picker
+          v-if="item.type==='datetimerange'"
+          v-model="searchData[item.prop]"
+          type="datetimerange"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期">
+        </el-date-picker>
         <!-- 滑块 -->
         <!-- <el-slider v-if="item.type==='Slider'" v-model="searchData[item.prop]"></el-slider> -->
         <!-- 开关 -->
@@ -81,6 +90,13 @@ export default {
   },
   data() {
     return {
+    }
+  },
+  methods: {
+    // 置空参数
+    clearParams(val) {
+      // eslint-disable-next-line no-return-assign
+      // Object.keys(this.searchData).forEach(key => this.searchData[key] = '')
     }
   }
 

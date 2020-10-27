@@ -12,6 +12,7 @@
 
 <script>
 import SearchForm from '@/components/SearchForm'
+import { listPayBills } from '@/api/financialMag/payBills'
 export default {
   name: 'PayBillsSearch',
   components: {
@@ -21,20 +22,48 @@ export default {
     return {
       // 查询表单
       searchData: {
-        name: null,
-        age: null,
-        sex: null,
-        interst: null
+        chargeBeginTime: null,
+        communityId: null,
+        billName: null
       },
       searchForm: [
-        { type: 'daterange', label: '账单开始日期', prop: 'chargeBeginTime', width: '1000px' },
+        { type: 'datetimerange', label: '账单开始日期', prop: 'chargeBeginTime', width: '1000px' },
         { type: 'Input', label: '小区', prop: 'communityId', width: '100px', placeholder: '请输入小区...' },
         { type: 'Input', label: '账单名称', prop: 'billName', width: '100px', placeholder: '请输入账单名称...' }
       ],
       searchHandle: [
-        { label: '查询', type: 'primary', handle: () => '' },
-        { label: '重置', type: 'primary', handle: () => '' }
+        { label: '查询', type: 'primary',
+          handle: () => {
+            this.getList()
+          }
+        },
+        { label: '重置', type: 'primary',
+          handle: () => {
+            this.resetForm('queryForm')
+            this.handleQuery()
+          }
+        }
       ]
+    }
+  },
+  created() {
+    // this.getList()
+  },
+  methods: {
+    handleQuery() {
+      this.getList()
+    },
+    /** 查询批次列表 */
+    getList() {
+      console.log('查询批次列表成功')
+      this.loading = true
+      listPayBills(this.searchData).then(
+        (response) => {
+          // this.list = response.data
+          this.total = response.data.total
+          this.loading = false
+        }
+      )
     }
   }
 }

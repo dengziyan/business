@@ -128,7 +128,7 @@ export default {
     // }, 1000)
   },
   methods: {
-    /** 查询用户列表 */
+    /** 查询住户列表 */
     getList() {
       // console.log('用户id是'+this.$store.getters.id)
       this.loading = true

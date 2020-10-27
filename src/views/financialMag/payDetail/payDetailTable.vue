@@ -48,7 +48,7 @@ export default {
         { attrs: { prop: 'communityName', label: '小区', width: '60', 'show-overflow-tooltip': true }, id: 1 },
         { attrs: { prop: 'billName', label: '账单名称', width: '100', 'show-overflow-tooltip': true }, id: 2 },
         { attrs: { prop: 'buildingName', label: '房屋（栋-单元-室/车位号/车牌号）', width: '100', 'show-overflow-tooltip': true }, id: 3 },
-        { attrs: { prop: 'chargeProjectName', label: '收费项目', 'show-overflow-tooltip': true }, id: 4 },
+        { attrs: { prop: 'chargeProjectName', label: '收费项目', width: '100', 'show-overflow-tooltip': true }, id: 4 },
         { attrs: { prop: 'residentName', label: '姓名', width: '70', 'show-overflow-tooltip': true }, id: 5 },
         { attrs: { prop: 'mobliePhone', label: '手机号', width: '100', 'show-overflow-tooltip': true }, id: 6 },
         { attrs: { prop: 'amountPayable', label: '应缴金额', width: '80', 'show-overflow-tooltip': true }, id: 7 },
@@ -57,7 +57,7 @@ export default {
         { attrs: { label: '周期详情', width: '80', 'class-name': 'small-padding fixed-width', align: 'center' }, id: 10 },
         { attrs: { prop: 'note', label: '备注', width: '80', 'show-overflow-tooltip': true }, id: 11 },
         { attrs: { prop: 'createTime', label: '创建时间', width: '100', 'show-overflow-tooltip': true }, id: 12 },
-        { slot: 'handle', attrs: { label: '操作', width: '150', 'class-name': 'small-padding fixed-width', align: 'center' }, id: 13 }
+        { slot: 'handle', attrs: { label: '操作', 'class-name': 'small-padding fixed-width', align: 'center' }, id: 13 }
       ])
     }
   },
