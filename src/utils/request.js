@@ -50,7 +50,7 @@ service.interceptors.response.use(
     // console.log(response.headers.authorization)
     // // 判断是否携带token
     const token = response.headers.authorization
-    console.log(token)
+    // console.log(token)
     if (token) {
       // 判断与原有token是否相等
       // 不等就换成返回来的token

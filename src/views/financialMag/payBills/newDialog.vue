@@ -40,14 +40,8 @@ export default {
             multiple: false,
             label: '收费类型',
             prop: 'chargeCategoryName',
-            value: '车位停车费',
-            options: this.chargeCategoryOptions
-            //   [
-            //   { name: '物业费', value: '物业费', isDisabled: false },
-            //   { name: '水费', value: '水费', isDisabled: false },
-            //   { name: '电费', value: '电费', isDisabled: false },
-            //   { name: '车位停车费', value: '车位停车费', isDisabled: false }
-            // ]
+            value: '请选择收费类型',
+            options: []
           },
           {
             type: 'select',
@@ -56,7 +50,7 @@ export default {
             multiple: false,
             label: '收费项目名称',
             prop: 'chargeProjectName',
-            value: '物业费1',
+            value: '请选择收费项目',
             options: this.chargeProjectOptions
             //   [
             //   { name: '物业费1', value: '物业费1', isDisabled: false },
@@ -67,15 +61,20 @@ export default {
           },
           { type: 'text', label: '账单名称', size: 'small', isDisabled: false, placeholder: '请输入账单名称', prop: 'billName', required: true },
           { type: 'date', label: '收费开始时间', prop: 'starTime', value: '' },
-          { type: 'radio', label: '账单模式', isDisabled: false, prop: 'sex', value: '', options: [{ name: '按月', value: '1' }, { name: '按年', value: '0' }] },
+          { type: 'radio', label: '账单模式', isDisabled: false, prop: 'modle ', value: '', options: [{ name: '按月', value: '1' }, { name: '按年', value: '0' }] },
           { type: 'upload', label: '账单上传', isDisabled: false, value: '' }
         ]
       }
     }
   },
-  create() {
+  created() {
     this.getChargeCategory()
     this.getChargeProject()
+  },
+  computed: {
+    listCategories() {
+      return []
+    }
   },
   methods: {
     // 对话框按确定键之后的方法
@@ -106,24 +105,27 @@ export default {
     },
     // 获取收费类型
     getChargeCategory() {
+      console.log('212222')
       listChargeCategoryOptions().then(response => {
         const chargeCategoryList = response.data
+        console.log(chargeCategoryList)
         for (let i = 0; i < chargeCategoryList.length; i++) {
           const cate = chargeCategoryList[i]
-          this.chargeCategoryOptions.push({ label: cate.categoryName, value: cate.id })
+          this.chargeCategoryOptions.push({ lable: cate.chargeCategoryName, value: cate.chargeCategoryName, isDisabled: false })
         }
-        // this.defaultCategoryId = chargeCategoryList[0].id
+        console.log(this.chargeCategoryOptions)
+        this.formData.formItem[0].options = this.chargeCategoryOptions
       })
     },
     // 获取收费项目名称
     getChargeProject() {
       listChargeProjectOptions().then(response => {
-        const cateList = response.data
+        const cateList = response.data.rows
         for (let i = 0; i < cateList.length; i++) {
           const cate = cateList[i]
-          this.chargeProjectOptions.push({ label: cate.categoryName, value: cate.id })
+          this.chargeProjectOptions.push({ lable: cate.chargeProjectName, value: cate.chargeProjectName, isDisabled: false })
         }
-        // this.defaultCategoryId = cateList[0].id
+        this.formData.formItem[1].options = this.chargeProjectOptions
       })
     }
   }

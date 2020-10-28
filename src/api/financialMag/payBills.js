@@ -25,17 +25,16 @@ export function addPayBills(data) {
   })
 }
 // 获取收费类型列表
-export function listChargeCategoryOptions(data) {
+export function listChargeCategoryOptions() {
   return request({
-    url: '/sys/user',
-    method: 'post',
-    data: data
+    url: '/chargeCategory/listChargeCategoryName',
+    method: 'get'
   })
 }
 // 获取收费项目名称列表
 export function listChargeProjectOptions(data) {
   return request({
-    url: '/sys/user',
+    url: '/project/listProject',
     method: 'post',
     data: data
   })

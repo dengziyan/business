@@ -209,6 +209,15 @@ export default {
     // console.log('qwwwww')
     this.bindValue()
   },
+  // mounted() {
+  //   const timer = setInterval(() => {
+  //     console.log(this.formData)
+  //   }, 2000)
+  //   // 在beforeDestroy钩子触发时清除定时器
+  //   this.$once('hook:beforeDestroy', () => {
+  //     clearInterval(timer)
+  //   })
+  // },
   methods: {
     /** 下载模板操作 */
     importTemplate() {

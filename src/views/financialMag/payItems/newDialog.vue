@@ -63,7 +63,7 @@ export default {
           },
           { type: 'text', label: '账单名称', size: 'small', isDisabled: false, placeholder: '请输入账单名称', prop: 'billName', required: true },
           { type: 'date', label: '收费开始时间', prop: 'starTime', value: '' },
-          { type: 'radio', label: '账单模式', isDisabled: false, prop: 'sex', value: '', options: [{ name: '按月', value: '1' }, { name: '按年', value: '0' }] },
+          { type: 'radio', label: '账单模式', isDisabled: false, prop: 'modle', value: '', options: [{ name: '按月', value: '1' }, { name: '按年', value: '0' }] },
           { type: 'upload', label: '账单上传', isDisabled: false, value: '' }
         ]
       }
