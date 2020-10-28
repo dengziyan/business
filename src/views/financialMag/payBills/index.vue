@@ -2,7 +2,7 @@
     <div>
       收费批次管理
       <!--引入搜索条件子组件        -->
-      <pay-bills-search />
+<!--      <pay-bills-search />-->
       <!--引入表格操作子组件        -->
       <pay-bills-table />
     </div>

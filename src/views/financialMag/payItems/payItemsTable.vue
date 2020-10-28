@@ -20,6 +20,7 @@
 
 <script>
 import tableHandle from './tableHandle'
+import { listChargeProject } from '@/api/financialMag/chargeProject'
 import TableVue from '@/components/TableVue'
 export default {
   name: 'PayItemsTable',
@@ -35,7 +36,7 @@ export default {
       columns: Object.freeze([
         {
           attrs: {
-            prop: 'billStatus',
+            prop: 'chargeCategoryName',
             label: '收费类型',
             width: '100',
             align: 'center'
@@ -44,7 +45,7 @@ export default {
         },
         {
           attrs: {
-            prop: 'communityId',
+            prop: 'chargeProjectName',
             label: '收费项目名称',
             width: '100',
             'show-overflow-tooltip': true
@@ -53,7 +54,7 @@ export default {
         },
         {
           attrs: {
-            prop: 'billName',
+            prop: 'chargeStandard',
             label: '收费标准',
             width: '100',
             'show-overflow-tooltip': true
@@ -62,7 +63,7 @@ export default {
         },
         {
           attrs: {
-            prop: 'chargeProjectId',
+            prop: 'createBy',
             label: '标准金额',
             width: '100',
             'show-overflow-tooltip': true
@@ -71,7 +72,7 @@ export default {
         },
         {
           attrs: {
-            prop: 'chargeBeginTime',
+            prop: 'createBy',
             label: '创建人',
             'show-overflow-tooltip': true
           },
@@ -79,7 +80,7 @@ export default {
         },
         {
           attrs: {
-            prop: 'amountPayable',
+            prop: 'createTime',
             label: '创建时间',
             width: '100',
             'show-overflow-tooltip': true
@@ -88,7 +89,7 @@ export default {
         },
         {
           attrs: {
-            prop: 'amountActuallyPaid',
+            prop: 'note',
             label: '备注',
             width: '100',
             'show-overflow-tooltip': true
@@ -109,20 +110,22 @@ export default {
     }
   },
   created() {
-    this.list = [
-      {
-        billStatus: '已审核',
-        communityId: '1',
-        billName: '2020物业费',
-        chargeProjectId: '物业费',
-        chargeBeginTime: '20200203',
-        amountPayable: '3000',
-        amountActuallyPaid: '3000'
-      }
-    ]
+    this.getList()
     this.loading = false
   },
   methods: {
+    // 查询收费项目列表
+    getList() {
+      console.log('查询批次列表成功')
+      // this.loading = true
+      listChargeProject(this.queryParams).then(
+        (response) => {
+          this.list = response.data.rows
+          this.total = response.data.total
+          // this.loading = false
+        }
+      )
+    },
     // 表格方法
     handleUpdate(row, index) {
 

@@ -39,6 +39,7 @@
         <el-date-picker
           v-if="item.type==='datetimerange'"
           v-model="searchData[item.prop]"
+          value-format="yyyy-MM-dd HH:mm:ss"
           type="datetimerange"
           range-separator="至"
           start-placeholder="开始日期"

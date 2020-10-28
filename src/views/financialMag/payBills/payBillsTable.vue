@@ -1,6 +1,13 @@
 <template>
   <!--收费批次管理表格及操作组件  -->
   <div>
+    <search-form
+      size="mini"
+      label-width="80px"
+      :search-data="searchData"
+      :search-form="searchForm"
+      :search-handle="searchHandle"
+    />
     <!--引入操作子组件        -->
     <table-handle />
     <!--引入表格组件        -->
@@ -21,8 +28,8 @@
     <pagination
       v-show="total>0"
       :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
+      :page.sync="searchData.pageNum"
+      :limit.sync="searchData.pageSize"
       :page-sizes="[10,25,50]"
       @pagination="getList"
     />
@@ -30,6 +37,8 @@
 </template>
 
 <script>
+import { addDateRange } from '@/utils/userright'
+import SearchForm from '@/components/SearchForm'
 import tableHandle from './tableHandle'
 import TableVue from '@/components/TableVue'
 import { listPayBills } from '@/api/financialMag/payBills'
@@ -38,21 +47,43 @@ export default {
   name: 'PayBillsTable',
   components: {
     tableHandle,
-    TableVue
+    TableVue,
+    SearchForm
   },
   data() {
     return {
-      // table表格数据
-      loading: true,
-      list: [],
-      total: 0, // 总条数
-      queryParams: { // 查询参数
+      // 查询表单
+      searchData: { // 查询参数
         pageNum: 1,
         pageSize: 10,
-        chargeBeginTime: undefined,
-        communityId: undefined,
-        billName: undefined
+        startTime: null,
+        endTime: null,
+        chargeBeginTime: null,
+        communityId: null,
+        billName: null
       },
+      searchForm: [
+        { type: 'datetimerange', label: '账单开始日期', prop: 'chargeBeginTime', width: '1000px' },
+        { type: 'Input', label: '小区', prop: 'communityId', width: '100px', placeholder: '请输入小区...' },
+        { type: 'Input', label: '账单名称', prop: 'billName', width: '100px', placeholder: '请输入账单名称...' }
+      ],
+      searchHandle: [
+        { label: '查询', type: 'primary',
+          handle: () => {
+            this.getList()
+          }
+        },
+        { label: '重置', type: 'primary',
+          handle: () => {
+            this.resetForm('queryForm')
+            this.handleQuery()
+          }
+        }
+      ],
+      // table表格数据
+      // loading: true,
+      list: [],
+      total: 0, // 总条数
       dialogVisible: false,
       columns: Object.freeze([
         { attrs: { prop: 'billStatus', label: '账单状态', width: '100', align: 'center' }, id: 0 },
@@ -70,31 +101,22 @@ export default {
   },
   created() {
     this.getList()
-    // this.list = [
-    //   {
-    //     billStatus: '已审核',
-    //     communityId: '1',
-    //     billName: '2020物业费',
-    //     chargeProjectId: '物业费',
-    //     chargeBeginTime: '20200203',
-    //     amountPayable: '3000',
-    //     amountActuallyPaid: '3000',
-    //     reviewer: '李易峰',
-    //     reviewTime: '20200901'
-    //   }
-    // ]
-    this.loading = false
+    // this.loading = false
   },
   methods: {
+    handleQuery() {
+      this.getList()
+    },
     // 查询批次列表
     getList() {
-      this.loading = true
-      listPayBills(this.queryParams).then(
+      console.log('查询批次列表成功')
+      // this.loading = true
+      console.log(this.searchData.chargeBeginTime)
+      listPayBills(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
         (response) => {
-          // console.log(response.data)
           this.list = response.data.rows
           this.total = response.data.total
-          this.loading = false
+          // this.loading = false
         }
       )
     },
@@ -103,7 +125,7 @@ export default {
       this.$router.push({ path: '/payDetail' })
     },
     handleEdit(row, index) {
-
+      console.log(row, index)
     },
     handleDelete() {
       this.list = []
