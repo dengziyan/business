@@ -9,10 +9,10 @@ export function listResident(query) {
   })
 }
 // 下载导入模板
-export function importTemplates() {
-  return request({
-    url: '',
-    method: 'get',
-    responseType: 'arraybuffer'
-  })
-}
+// export function importTemplates() {
+//   return request({
+//     url: '',
+//     method: 'get',
+//     responseType: 'arraybuffer'
+//   })
+// }

@@ -39,3 +39,11 @@ export function listChargeProjectOptions(data) {
     data: data
   })
 }
+// 下载模板
+export function importTemplates(data) {
+  return request({
+    url: '/project/listProject',
+    method: 'post',
+    data: data
+  })
+}

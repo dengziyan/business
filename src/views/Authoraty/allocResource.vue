@@ -48,7 +48,7 @@ export default {
     getAllResourceList() {
       fetchAllResourceList().then(response => {
         this.allResource = response.data
-        console.log(this.allResource)
+        // console.log(this.allResource)
         for (let i = 0; i < this.allResource.length; i++) {
           this.allResource[i].checked = false
         }
@@ -58,7 +58,7 @@ export default {
     getAllResourceCateList() {
       listAllCate().then(response => {
         this.allResourceCate = response.data
-        console.log(this.allResourceCate)
+        // console.log(this.allResourceCate)
         for (let i = 0; i < this.allResourceCate.length; i++) {
           this.allResourceCate[i].enabled = false
         }

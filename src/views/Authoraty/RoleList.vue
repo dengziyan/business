@@ -251,7 +251,7 @@ export default {
           }
         }
       }
-      console.log()
+      // console.log()
       listMenuByRole(Array.from(checkedMenuIds),this.roleId).then(response => {
         if (response.code === 2000) {
           this.$message({
@@ -351,15 +351,15 @@ export default {
       })
       listMenuRole(row.id).then(res => {
         this.menuRoleIds = res.data
-        console.log('this.$store.getters.account:' + this.$store.getters.name)
+        // console.log('this.$store.getters.account:' + this.$store.getters.name)
       }).catch(response => {
-        console.log(response)
+        // console.log(response)
       })
     },
 
     // 按修改键弹出对话框（传入当前行的数据）
     handleTopUpdate() {
-      console.log(this.updataData)
+      // console.log(this.updataData)
       this.handleUpdate(this.updataData[0])
     },
     // 按修改键弹出对话框（传入当前行的数据）
@@ -479,9 +479,9 @@ export default {
         type: 'warning'
       }).then(function() {
         return exportRole(queryParams).then(res => {
-          console.log(res)
+          // console.log(res)
           const sysDate = moment(new Date()).format('YYYY-MM-DDHHmm')
-          console.log(sysDate)
+          // console.log(sysDate)
           fileDownload(res, sysDate + '用户信息表.xlsx')
         })
       }).then(response => {

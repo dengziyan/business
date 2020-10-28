@@ -145,7 +145,7 @@ export default {
     routePathNow() {
       const activePath = this.treeMenu.filter(item => item.path === this.$route.path)
       activePath.length !== 0 ? activePath[0].effect = 'dark' : ''
-      console.log(activePath[0])
+      // console.log(activePath[0])
       return activePath[0]
     },
     isCollapse() {

@@ -262,7 +262,7 @@ export default {
       })
     },
     handleUpdate(index, row) {
-      console.log('资源的row' + row)
+      // console.log('资源的row' + row)
       this.dialogVisible = true
       this.isEdit = true
       this.resource = Object.assign({}, row)
@@ -302,7 +302,7 @@ export default {
     },
     // 角色状态修改
     handleStatusChange(row) {
-      console.log(row.enabled)
+      // console.log(row.enabled)
       const type = row.enabled === 1 ? 'enable' : 'disable'
       changeResourceStatus(row.id, type).then(res => {
         this.$message({
@@ -312,7 +312,7 @@ export default {
         })
         this.getList()
       }).catch(function(res) {
-        console.log(res)
+        // console.log(res)
         row.enabled = row.enabled === 0 ? 1 : 0
       })
     },

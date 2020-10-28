@@ -102,7 +102,7 @@ export default {
       // this.payBills = Object.assign({}, defaultPayBills) // 默认值为空
     },
     handleEdit(row, index) {
-      console.log(row, index)
+
     },
     handleDelete() {
       this.list = []

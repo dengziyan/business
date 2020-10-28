@@ -43,7 +43,7 @@ export default {
   data() {
     return {
       // table表格数据
-      // loading: true,
+      loading: true,
       list: [],
       total: 0, // 总条数
       queryParams: { // 查询参数
@@ -83,18 +83,18 @@ export default {
     //     reviewTime: '20200901'
     //   }
     // ]
-    // this.loading = false
+    this.loading = false
   },
   methods: {
     // 查询批次列表
     getList() {
-      console.log('查询批次列表成功')
-      // this.loading = true
+      this.loading = true
       listPayBills(this.queryParams).then(
         (response) => {
+          // console.log(response.data)
           this.list = response.data.rows
           this.total = response.data.total
-          // this.loading = false
+          this.loading = false
         }
       )
     },
@@ -103,7 +103,7 @@ export default {
       this.$router.push({ path: '/payDetail' })
     },
     handleEdit(row, index) {
-      console.log(row, index)
+
     },
     handleDelete() {
       this.list = []

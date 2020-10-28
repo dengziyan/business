@@ -144,19 +144,9 @@
       />
       <!--上传模板    -->
       <div v-if="item.type==='upload'">
-        <el-button
-          @click="importTemplate"
-        >
-          下载模板
-        </el-button>
-        <el-upload
-          class="upload-demo"
-          :headers="upload.headers"
-          :action="upload.url"
-          :on-change="handleChange"
-          :file-list="fileList">
+        <el-button @click="item.importTemplate()">下载模板</el-button>
+        <el-upload class="upload-demo" :headers="item.upload.headers" :action="item.upload.url" :on-change="item.uploadExcel()" :file-list="item.fileList">
           <el-button size="small">上传Excel</el-button>
-<!--          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
         </el-upload>
       </div>
     </el-form-item>
@@ -193,7 +183,7 @@ export default {
     return {
       form: {},
       value1: '',
-      fileList:[],
+      fileList: [],
       // 用户导入参数
       upload: {
         open: false, // 是否显示弹出层（用户导入）
@@ -219,18 +209,18 @@ export default {
   //   })
   // },
   methods: {
-    /** 下载模板操作 */
-    importTemplate() {
-      importTemplates().then(res => {
-        fileDownload(res, '批量导入模板.xlsx')
-      })
-        .catch(err => {
-          console.log(err)
-        })
-    },
-    handleChange(file, fileList) {
-      this.fileList = fileList.slice(-1)
-    },
+    // /** 下载模板操作 */
+    // importTemplate() {
+    //   importTemplates().then(res => {
+    //     fileDownload(res, '批量导入模板.xlsx')
+    //   })
+    //     .catch(err => {
+    //       console.log(err)
+    //     })
+    // },
+    // handleChange(file, fileList) {
+    //   this.fileList = fileList.slice(-1)
+    // },
     bindValue() {
       const obj = {}
       this.formData.formItem.forEach((item, index) => {

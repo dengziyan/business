@@ -125,7 +125,7 @@ export default {
   methods: {
     // 表格方法
     handleUpdate(row, index) {
-      console.log(row, index)
+
     },
     handleDelete() {
       this.list = []

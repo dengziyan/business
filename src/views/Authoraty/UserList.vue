@@ -467,7 +467,7 @@ export default {
     },
     // 按修改键弹出对话框（传入当前行的数据）
     handleTopUpdate() {
-      console.log(this.updataData)
+      // console.log(this.updataData)
       this.handleUpdate(this.updataData[0])
     },
     // 按修改键弹出对话框（传入当前行的数据）
@@ -582,13 +582,13 @@ export default {
       })
         .then(function() {
           exportUser(queryParams).then(res => {
-            console.log(res)
+            // console.log(res)
             const sysDate = moment(new Date()).format('YYYY-MM-DDHHmm')
-            console.log(sysDate)
+            // console.log(sysDate)
             fileDownload(res, sysDate + '用户信息表.xlsx')
           })
             .catch(err => {
-              console.log(err)
+              // console.log(err)
             })
         })
         .catch(function() {
@@ -605,13 +605,13 @@ export default {
         fileDownload(res, '批量用户导入模板.xlsx')
       })
         .catch(err => {
-          console.log(err)
+          // console.log(err)
         })
     },
     handleFileUpload(val) {
       const formData = new FormData()
       formData.append('file', val.file)
-      console.log(val)
+      // console.log(val)
       batchAddUser(formData).then(res => {
         val.onSuccess()
       }).catch(res => {

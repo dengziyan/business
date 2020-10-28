@@ -55,7 +55,6 @@ export default {
       this.payBills = Object.assign({}, defaultPayBills) // 默认值为空
     },
     getList() {
-      console.log('查询批次列表成功')
       listPayBills(this.search).then(
         (response) => {
           this.list = response.data

@@ -12,7 +12,9 @@
 
 <script>
 import FormVue from '@/components/FormVue'
-import { updatePayBills, addPayBills, listChargeCategoryOptions, listChargeProjectOptions } from '@/api/financialMag/payBills'
+import { updatePayBills, addPayBills, listChargeCategoryOptions, listChargeProjectOptions, importTemplates } from '@/api/financialMag/payBills'
+import fileDownload from 'js-file-download'
+import { getToken } from '@/utils/auth'
 export default {
   name: 'NewDialog',
   components: {
@@ -33,36 +35,23 @@ export default {
         labelPosition: 'right',
         size: 'small',
         formItem: [
-          {
-            type: 'select',
-            isDisabled: false,
-            // 是否开启多选
-            multiple: false,
-            label: '收费类型',
-            prop: 'chargeCategoryName',
-            value: '请选择收费类型',
-            options: []
-          },
-          {
-            type: 'select',
-            isDisabled: false,
-            // 是否开启多选
-            multiple: false,
-            label: '收费项目名称',
-            prop: 'chargeProjectName',
-            value: '请选择收费项目',
-            options: this.chargeProjectOptions
-            //   [
-            //   { name: '物业费1', value: '物业费1', isDisabled: false },
-            //   { name: '水费1', value: '水费1', isDisabled: false },
-            //   { name: '电费1', value: '电费1', isDisabled: false },
-            //   { name: '车位停车费1', value: '车位停车费1', isDisabled: false }
-            // ]
-          },
+          { type: 'select', isDisabled: false, multiple: false, label: '收费类型', prop: 'chargeCategoryName', value: '请选择收费类型', options: [] },
+          { type: 'select', isDisabled: false, multiple: false, label: '收费项目名称', prop: 'chargeProjectName', value: '请选择收费项目', options: [] },
           { type: 'text', label: '账单名称', size: 'small', isDisabled: false, placeholder: '请输入账单名称', prop: 'billName', required: true },
           { type: 'date', label: '收费开始时间', prop: 'starTime', value: '' },
-          { type: 'radio', label: '账单模式', isDisabled: false, prop: 'modle ', value: '', options: [{ name: '按月', value: '1' }, { name: '按年', value: '0' }] },
-          { type: 'upload', label: '账单上传', isDisabled: false, value: '' }
+          { type: 'radio', label: '账单模式', isDisabled: false, prop: 'modle', value: '', options: [{ name: '按月', value: '1' }, { name: '按年', value: '0' }] },
+          { type: 'upload', label: '账单上传', isDisabled: false, value: '', fileList: [],
+            upload: {
+              open: false, // 是否显示弹出层（用户导入）
+              title: '', // 弹出层标题（用户导入）
+              isUploading: false, // 是否禁用上传
+              updateSupport: 0, // 是否更新已经存在的用户数据
+              headers: { Authorization: getToken() }, // 设置上传的请求头部
+              url: process.env.VUE_APP_BASE_API + '/sys/user/import' // 上传的地址
+            },
+            importTemplate: () => { this.importTemplate() },
+            uploadExcel: () => { this.uploadExcel() }
+          }
         ]
       }
     }
@@ -105,15 +94,15 @@ export default {
     },
     // 获取收费类型
     getChargeCategory() {
-      console.log('212222')
+      // console.log('212222')
       listChargeCategoryOptions().then(response => {
         const chargeCategoryList = response.data
-        console.log(chargeCategoryList)
+        // console.log(chargeCategoryList)
         for (let i = 0; i < chargeCategoryList.length; i++) {
           const cate = chargeCategoryList[i]
           this.chargeCategoryOptions.push({ lable: cate.chargeCategoryName, value: cate.chargeCategoryName, isDisabled: false })
         }
-        console.log(this.chargeCategoryOptions)
+        // console.log(this.chargeCategoryOptions)
         this.formData.formItem[0].options = this.chargeCategoryOptions
       })
     },
@@ -127,6 +116,19 @@ export default {
         }
         this.formData.formItem[1].options = this.chargeProjectOptions
       })
+    },
+    // 下载模板
+    importTemplate() {
+      importTemplates().then(res => {
+        fileDownload(res, '批量导入模板.xlsx')
+      })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    // 上传
+    uploadExcel(file, fileList) {
+      this.formData.formItem.fileList = fileList.slice(-1)
     }
   }
 }

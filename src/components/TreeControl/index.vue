@@ -102,8 +102,8 @@ export default {
     // 增加子级节点事件
 
     addChildNode() {
-      console.log(this.currentData)
-      console.log(this.currentNode)
+      // console.log(this.currentData)
+      // console.log(this.currentNode)
       if (this.currentNode.level >= 3) {
         this.$message.error('最多只支持三级！')
 

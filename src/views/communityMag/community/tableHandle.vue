@@ -35,7 +35,6 @@ export default {
     },
     // 按修改键弹出对话框（传入当前行的数据）
     handleTopUpdate() {
-      console.log(this.updataData)
       this.handleUpdate(this.updataData[0])
     },
     handleDelete(row) {

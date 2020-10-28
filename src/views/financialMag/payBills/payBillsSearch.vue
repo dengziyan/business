@@ -11,6 +11,7 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex'
 import SearchForm from '@/components/SearchForm'
 import { listPayBills } from '@/api/financialMag/payBills'
 export default {
@@ -46,17 +47,27 @@ export default {
       ]
     }
   },
+  computed: {
+    // 使用对象展开运算符将此对象混入到对象中
+    ...mapState({
+      queryParamsTest: state => state.watch.queryParamsTest
+    })
+  },
   created() {
     // this.getList()
+    this.watchQueryParams()
   },
   methods: {
+    ...mapMutations({
+      watchQueryParams: 'watchQueryParams'
+    }),
     handleQuery() {
+      console.log(this.searchData)
       this.getList()
     },
     /** 查询批次列表 */
     getList() {
       this.loading = true
-      console.log(this.searchData)
       listPayBills(this.searchData).then(
         (response) => {
           this.list = response.data.rows
