@@ -9,7 +9,22 @@
       :search-handle="searchHandle"
     />
     <!--引入操作子组件        -->
-    <table-handle />
+    <!-- 各个操作按钮 -->
+      <el-radio-group v-model="searchData.billStatus" @change="getList">
+        <el-radio-button
+          v-for="dict in statusOptions"
+          :key="dict.dictValue"
+          :value="dict.dictValue"
+          :label="dict.dictLabel"
+          >
+        </el-radio-button>
+      </el-radio-group>
+      <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
+      <!--点击新增后出现的弹框    -->
+      <el-dialog :title="isEdit?'编辑用户':'添加用户'" :visible.sync="dialogVisible" width="30%">
+        <!--弹框子组件      -->
+        <new-dialog />
+      </el-dialog>
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="哈哈哈，我就看看没数据会怎样~" >
       <!-- 下面是上面的简写，#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
@@ -37,21 +52,32 @@
 </template>
 
 <script>
+import newDialog from './newDialog'
 import { addDateRange } from '@/utils/userright'
 import SearchForm from '@/components/SearchForm'
-import tableHandle from './tableHandle'
 import TableVue from '@/components/TableVue'
 import { listPayBills } from '@/api/financialMag/payBills'
 
+const defaultPayBills = {}
 export default {
   name: 'PayBillsTable',
   components: {
-    tableHandle,
+    newDialog,
     TableVue,
     SearchForm
   },
   data() {
     return {
+      // 操作按钮
+      single: true, // 非单个禁用
+      multiple: true, // 非多个禁用
+      checkAll: false,
+      dialogVisible: false,
+      isEdit: false,
+      statusOptions: [{ dictLabel: '全部', dictValue: null }, { dictLabel: '待审核', dictValue: 0 }, { dictLabel: '已审核', dictValue: 1 }], // 状态数据字典
+      search: {
+        billStatus: undefined
+      },
       // 查询表单
       searchData: { // 查询参数
         pageNum: 1,
@@ -60,7 +86,8 @@ export default {
         endTime: null,
         chargeBeginTime: null,
         communityId: null,
-        billName: null
+        billName: null,
+        billStatus: null
       },
       searchForm: [
         { type: 'datetimerange', label: '账单开始日期', prop: 'chargeBeginTime', width: '1000px' },
@@ -84,7 +111,6 @@ export default {
       // loading: true,
       list: [],
       total: 0, // 总条数
-      dialogVisible: false,
       columns: Object.freeze([
         { attrs: { prop: 'billStatus', label: '账单状态', width: '100', align: 'center' }, id: 0 },
         { attrs: { prop: 'communityId', label: '小区', width: '100', 'show-overflow-tooltip': true }, id: 1 },
@@ -104,19 +130,31 @@ export default {
     // this.loading = false
   },
   methods: {
+    // 按添加按钮，弹出对话框
+    handleAdd() {
+      this.dialogVisible = true
+      this.isEdit = false
+      // eslint-disable-next-line no-undef
+      this.payBills = Object.assign({}, defaultPayBills) // 默认值为空
+    },
     handleQuery() {
       this.getList()
     },
     // 查询批次列表
     getList() {
-      console.log('查询批次列表成功')
-      // this.loading = true
-      console.log(this.searchData.chargeBeginTime)
-      listPayBills(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
+      this.loading = true
+      console.log(this.searchData)
+      // 根据审核状态查询
+      if (this.searchData.billStatus === '待审核') {
+        this.searchData.billStatus = 0
+      } else if (this.searchData.billStatus === '已审核') {
+        this.searchData.billStatus = 1
+      } else this.searchData.billStatus = null
+      listPayBills(addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
         (response) => {
           this.list = response.data.rows
           this.total = response.data.total
-          // this.loading = false
+          this.loading = false
         }
       )
     },
