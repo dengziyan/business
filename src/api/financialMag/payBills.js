@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import da from 'element-ui/src/locale/lang/da'
 
 // 查询批次列表
 export function listPayBills(query) {
@@ -11,12 +12,19 @@ export function listPayBills(query) {
 // 修改
 export function updatePayBills(data) {
   return request({
-    url: '/sys/user',
+    url: '/chargeBatch/',
     method: 'put',
     data: data
   })
 }
-// 新增
+// 删除
+export function delBatch(id) {
+  return request({
+    url: '/chargeBatch/' + id,
+    method: 'delete'
+  })
+}
+// 批量新增-導入賬單
 export function addPayBills(data) {
   return request({
     url: '/sys/user',
@@ -42,8 +50,9 @@ export function listChargeProjectOptions(data) {
 // 下载模板
 export function importTemplates(data) {
   return request({
-    url: '/project/listProject',
-    method: 'post',
-    data: data
+    url: '/chargeBill/template/parkingFee',
+    method: 'get',
+    responseType: 'arraybuffer',
+    params: { projectId: data }
   })
 }

@@ -2,9 +2,9 @@
   <!--新增按钮的弹框  -->
   <div>
     <!--表格组件      -->
-    <FormVue :form-data="formData" />
+    <FormVue ref="form" :form-data="formData" />
     <span slot="footer" class="dialog-footer">
-      <el-button size="small" @click="dialogVisible = false">取 消</el-button>
+      <el-button size="small" @click="cancel(false)">取 消</el-button>
       <el-button type="primary" size="small" @click="handleDialogConfirm()">新建</el-button>
     </span>
   </div>
@@ -20,8 +20,11 @@ export default {
   components: {
     FormVue
   },
+  props: ['visible'],
   data() {
     return {
+      dialogVisibled: this.visible,
+      // dialogVisible: false,
       chargeCategoryOptions: [], // 收费类型选项
       chargeProjectOptions: [], // 收费项目名称
       formData: {
@@ -47,7 +50,7 @@ export default {
               isUploading: false, // 是否禁用上传
               updateSupport: 0, // 是否更新已经存在的用户数据
               headers: { Authorization: getToken() }, // 设置上传的请求头部
-              url: process.env.VUE_APP_BASE_API + '/sys/user/import' // 上传的地址
+              url: process.env.VUE_APP_BASE_API + '/chatgeBill/import/parkingFee' // 上传的地址
             },
             importTemplate: () => { this.importTemplate() },
             uploadExcel: () => { this.uploadExcel() }
@@ -56,6 +59,13 @@ export default {
       }
     }
   },
+  // watch: {
+  //   dialogVisibled(val) {
+  //     console.log(this.visible)
+  //     // 设置监听，如果改变就更新
+  //     this.$emit('update:visible', val)
+  //   }
+  // },
   created() {
     this.getChargeCategory()
     this.getChargeProject()
@@ -94,15 +104,12 @@ export default {
     },
     // 获取收费类型
     getChargeCategory() {
-      // console.log('212222')
       listChargeCategoryOptions().then(response => {
         const chargeCategoryList = response.data
-        // console.log(chargeCategoryList)
         for (let i = 0; i < chargeCategoryList.length; i++) {
           const cate = chargeCategoryList[i]
           this.chargeCategoryOptions.push({ lable: cate.chargeCategoryName, value: cate.chargeCategoryName, isDisabled: false })
         }
-        // console.log(this.chargeCategoryOptions)
         this.formData.formItem[0].options = this.chargeCategoryOptions
       })
     },
@@ -119,7 +126,7 @@ export default {
     },
     // 下载模板
     importTemplate() {
-      importTemplates().then(res => {
+      importTemplates(2).then(res => {
         fileDownload(res, '批量导入模板.xlsx')
       })
         .catch(err => {
@@ -128,7 +135,11 @@ export default {
     },
     // 上传
     uploadExcel(file, fileList) {
-      this.formData.formItem.fileList = fileList.slice(-1)
+      // this.formData.formItem.fileList = fileList.slice(-1)
+    },
+    cancel(val) {
+      this.dialogVisibled = val
+      this.$emit('update:visible', this.dialogVisibled)
     }
   }
 }

@@ -74,6 +74,7 @@
       </el-checkbox-group>
       <!-- 下拉框 -->
       <el-select
+        ref="selectForm"
         v-if="item.type==='select'"
         v-model="form[item.prop]"
         :multiple="item.multiple"

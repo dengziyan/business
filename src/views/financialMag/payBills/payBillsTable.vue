@@ -10,36 +10,35 @@
     />
     <!--引入操作子组件        -->
     <!-- 各个操作按钮 -->
-      <el-radio-group v-model="searchData.billStatus" @change="getList">
-        <el-radio-button
-          v-for="dict in statusOptions"
-          :key="dict.dictValue"
-          :value="dict.dictValue"
-          :label="dict.dictLabel"
-          >
-        </el-radio-button>
-      </el-radio-group>
-      <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
-      <!--点击新增后出现的弹框    -->
-      <el-dialog :title="isEdit?'编辑用户':'添加用户'" :visible.sync="dialogVisible" width="30%">
-        <!--弹框子组件      -->
-        <new-dialog />
-      </el-dialog>
+    <el-radio-group v-model="searchData.billStatus" @change="getList">
+      <el-radio-button
+        v-for="dict in statusOptions"
+        :key="dict.dictValue"
+        :value="dict.dictValue"
+        :label="dict.dictLabel"
+      />
+    </el-radio-group>
+    <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
+    <!--点击新增后出现的弹框    -->
+    <el-dialog :title="isEdit?'编辑账单批次':'新建账单批次'" :visible.sync="dialogVisible" width="30%">
+      <!--弹框子组件      -->
+      <new-dialog :visible.sync="dialogVisible" />
+    </el-dialog>
     <!--引入表格组件        -->
-    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="哈哈哈，我就看看没数据会怎样~" >
+    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="哈哈哈，我就看看没数据会怎样~">
       <!-- 下面是上面的简写，#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
       <template #handle="{scope: {row, $index}}">
         <el-button type="primary" size="mini" @click="handleCheck(row, $index)">
           审核
         </el-button>
-        <el-button type="danger" size="mini" @click="handleDelete()">
+        <el-button type="danger" size="mini" @click="handleDelete(row)">
           删除
         </el-button>
-        <el-button type="primary" size="mini" @click="handleEdit(row, $index)">
+        <el-button type="primary" size="mini" :visible.sync="dialogVisible" :title="isEdit?'编辑账单批次':'新建账单批次'" @click="handleEdit(row, $index)">
           编辑
         </el-button>
       </template>
-    </TableVue >
+    </TableVue>
     <pagination
       v-show="total>0"
       :total="total"
@@ -56,7 +55,7 @@ import newDialog from './newDialog'
 import { addDateRange } from '@/utils/userright'
 import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
-import { listPayBills } from '@/api/financialMag/payBills'
+import { listPayBills, delBatch, updatePayBills } from '@/api/financialMag/payBills'
 
 const defaultPayBills = {}
 export default {
@@ -102,8 +101,12 @@ export default {
         },
         { label: '重置', type: 'primary',
           handle: () => {
-            this.resetForm('queryForm')
-            this.handleQuery()
+            this.resetForm(
+              this.searchData.communityId = '',
+              this.searchData.billName = '',
+              this.searchData.startTime = '',
+              this.searchData.endTime = ''
+            )
           }
         }
       ],
@@ -127,6 +130,10 @@ export default {
   },
   created() {
     this.getList()
+    // this.intervalId = setInterval(() => {
+    //   console.log(this.formData.formItem[0].value)
+    //   console.log(this.formData.formItem[1].value)
+    // }, 5000)
     // this.loading = false
   },
   methods: {
@@ -143,7 +150,6 @@ export default {
     // 查询批次列表
     getList() {
       this.loading = true
-      console.log(this.searchData)
       // 根据审核状态查询
       if (this.searchData.billStatus === '待审核') {
         this.searchData.billStatus = 0
@@ -163,10 +169,32 @@ export default {
       this.$router.push({ path: '/payDetail' })
     },
     handleEdit(row, index) {
+      this.dialogVisible = true
+      this.isEdit = true
       console.log(row, index)
+      updatePayBills(row)
     },
-    handleDelete() {
-      this.list = []
+    handleDelete(row) {
+      console.log(row.id)
+      const batchIds = row.id || this.ids
+      this.$confirm(
+        '是否确认删除账单批次名称为 "' + row.billName + '" 的数据项?',
+        '警告',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      )
+        .then(function() {
+          return delBatch(batchIds)
+        })
+        .then(() => {
+          this.getList()
+          this.msgSuccess('删除成功')
+        })
+        .catch(function() {
+        })
     }
   }
 }
