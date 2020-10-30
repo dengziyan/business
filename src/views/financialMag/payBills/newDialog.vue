@@ -5,16 +5,16 @@
     <FormVue ref="form" :form-data="formData" />
     <span slot="footer" class="dialog-footer">
       <el-button size="small" @click="cancel(false)">取 消</el-button>
-      <el-button type="primary" size="small" @click="handleDialogConfirm()">新建</el-button>
+      <el-button type="primary" size="small" @click="submitFileForm()">新建</el-button>
     </span>
   </div>
 </template>
 
 <script>
 import FormVue from '@/components/FormVue'
-import { updatePayBills, addPayBills, listChargeCategoryOptions, listChargeProjectOptions, importTemplates } from '@/api/financialMag/payBills'
+import { updatePayBills, addPayBills, listChargeCategoryOptions, listChargeProjectOptions, importTemplates, batchAddChargeBatch } from '@/api/financialMag/payBills'
 import fileDownload from 'js-file-download'
-import { getToken } from '@/utils/auth'
+// import { getToken } from '@/utils/auth'
 export default {
   name: 'NewDialog',
   components: {
@@ -23,6 +23,14 @@ export default {
   props: ['visible'],
   data() {
     return {
+      upload: {
+        open: false, // 是否显示弹出层（用户导入）
+        title: '', // 弹出层标题（用户导入）
+        isUploading: false, // 是否禁用上传
+        updateSupport: 0, // 是否更新已经存在的用户数据
+        // headers: { Authorization: getToken() }, // 设置上传的请求头部
+        url: process.env.VUE_APP_BASE_API + '/chatgeBill/import/parkingFee' // 上传的地址
+      },
       dialogVisibled: this.visible,
       // dialogVisible: false,
       chargeCategoryOptions: [], // 收费类型选项
@@ -49,14 +57,19 @@ export default {
               title: '', // 弹出层标题（用户导入）
               isUploading: false, // 是否禁用上传
               updateSupport: 0, // 是否更新已经存在的用户数据
-              headers: { Authorization: getToken() }, // 设置上传的请求头部
+              // headers: { Authorization: getToken() }, // 设置上传的请求头部
               url: process.env.VUE_APP_BASE_API + '/chatgeBill/import/parkingFee' // 上传的地址
             },
             importTemplate: () => { this.importTemplate() },
-            uploadExcel: () => { this.uploadExcel() }
+            handleFileUpload: ($event) => { this.handleFileUpload($event) }
           }
         ]
       }
+    }
+  },
+  computed: {
+    listCategories() {
+      return []
     }
   },
   // watch: {
@@ -69,11 +82,9 @@ export default {
   created() {
     this.getChargeCategory()
     this.getChargeProject()
-  },
-  computed: {
-    listCategories() {
-      return []
-    }
+    this.intervalId = setInterval(() => {
+      // console.log(this.formData.formItem[0].value)
+    }, 5000)
   },
   methods: {
     // 对话框按确定键之后的方法
@@ -134,12 +145,31 @@ export default {
         })
     },
     // 上传
-    uploadExcel(file, fileList) {
-      // this.formData.formItem.fileList = fileList.slice(-1)
+    handleFileUpload(val) {
+      const formData = new FormData()
+      formData.append('file', val.file)
+      console.log(val)
+      batchAddChargeBatch(0, formData).then(res => {
+        val.onSuccess()
+      }).catch(res => {
+        val.onError()
+      })
     },
     cancel(val) {
       this.dialogVisibled = val
       this.$emit('update:visible', this.dialogVisibled)
+    },
+    // 提交上传文件
+    submitFileForm() {
+      this.$refs.form.$refs.upload[0].submit()
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList)
+    },
+    handlePreview(file) {
+      console.log(file)
+    },
+    handleChange() {
     }
   }
 }

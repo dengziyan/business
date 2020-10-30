@@ -146,7 +146,15 @@
       <!--上传模板    -->
       <div v-if="item.type==='upload'">
         <el-button @click="item.importTemplate()">下载模板</el-button>
-        <el-upload class="upload-demo" :headers="item.upload.headers" :action="item.upload.url" :on-change="item.uploadExcel()" :file-list="item.fileList">
+        <el-upload
+          ref="upload"
+          :limit="1"
+          accept=".xlsx, .xls"
+          :headers="item.upload.headers"
+          :action="item.upload.url"
+          :http-request="item.handleFileUpload"
+          :auto-upload="false"
+        >
           <el-button size="small">上传Excel</el-button>
         </el-upload>
       </div>
@@ -222,6 +230,9 @@ export default {
     // handleChange(file, fileList) {
     //   this.fileList = fileList.slice(-1)
     // },
+    hh() {
+      console.log(1111)
+    },
     bindValue() {
       const obj = {}
       this.formData.formItem.forEach((item, index) => {

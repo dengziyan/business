@@ -137,7 +137,7 @@ export default {
     // this.loading = false
   },
   methods: {
-    // 按添加按钮，弹出对话框
+    // 按新增按钮，弹出对话框
     handleAdd() {
       this.dialogVisible = true
       this.isEdit = false
@@ -168,12 +168,14 @@ export default {
     handleCheck(row, index) {
       this.$router.push({ path: '/payDetail' })
     },
+    // 编辑
     handleEdit(row, index) {
       this.dialogVisible = true
       this.isEdit = true
       console.log(row, index)
       updatePayBills(row)
     },
+    // 删除
     handleDelete(row) {
       console.log(row.id)
       const batchIds = row.id || this.ids

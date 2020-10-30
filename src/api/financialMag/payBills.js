@@ -9,6 +9,17 @@ export function listPayBills(query) {
     params: query
   })
 }
+// 批量导入
+export function batchAddChargeBatch(id, data) {
+  return request({
+    url: '/chargeBill/import/parkingFee',
+    method: 'post',
+    params: {
+      cycleId: id
+    },
+    data: data
+  })
+}
 // 修改
 export function updatePayBills(data) {
   return request({
@@ -50,7 +61,7 @@ export function listChargeProjectOptions(data) {
 // 下载模板
 export function importTemplates(data) {
   return request({
-    url: '/chargeBill/template/parkingFee',
+    url: '/chargeBill/template',
     method: 'get',
     responseType: 'arraybuffer',
     params: { projectId: data }
