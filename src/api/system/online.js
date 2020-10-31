@@ -11,16 +11,19 @@ export function getOnline() {
 // 查询在线用户列表
 export function Onlinelist(query) {
   return request({
-    url: '/sys/online',
+    url: '/sys/online/user',
     method: 'get',
     params: query
   })
 }
 
 // 强退用户
-export function forceLogout(tokenId) {
+export function forceLogout(account) {
   return request({
-    url: '/sys/online/force-logout?account=' + tokenId,
-    method: 'delete'
+    url: '/sys/online/force-logout',
+    method: 'delete',
+    params: {
+      account: account
+    }
   })
 }

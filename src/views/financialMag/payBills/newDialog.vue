@@ -33,7 +33,7 @@ export default {
       },
       dialogVisibled: this.visible,
       // dialogVisible: false,
-      chargeCategoryOptions: [], // 收费类型选项
+      chargeCategoryOptions: zz, // 收费类型选项
       chargeProjectOptions: [], // 收费项目名称
       formData: {
         rules: {

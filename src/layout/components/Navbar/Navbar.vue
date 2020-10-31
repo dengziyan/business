@@ -8,16 +8,16 @@
         <breadcrumb class="breadcrumb-container" />
       </div>
       <div class="r-content">
-      <!--         个人中心和退出-->
+        <!--         个人中心和退出-->
         <el-dropdown trigger="click" size="mini">
-            <span class="el-dropdown-link">
-<!--              <img :src="baseUrl+userImg" class="user" alt="">-->
-            </span>
+          <span class="el-dropdown-link">
+            <img :src="baseUrl+avatar" class="user" alt="">
+          </span>
           <el-dropdown-menu slot="dropdown">
             <router-link to="/personal">
               <el-dropdown-item>个人中心</el-dropdown-item>
             </router-link>
-            <el-dropdown-item @click.native="logout">退出</el-dropdown-item>
+            <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -38,7 +38,8 @@ export default {
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      'avatar',
+      'baseUrl'
     ])
   },
   methods: {
@@ -54,15 +55,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/*.navbar {
-  height: 50px;
+.navbar {
   overflow: hidden;
   position: relative;
   background: #fff;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
 
   .hamburger-container {
-    line-height: 46px;
     height: 100%;
     float: left;
     cursor: pointer;
@@ -105,31 +104,8 @@ export default {
       }
     }
 
-    .avatar-container {
-      margin-right: 30px;
-
-      .avatar-wrapper {
-        margin-top: 5px;
-        position: relative;
-
-        .user-avatar {
-          cursor: pointer;
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-        }
-
-        .el-icon-caret-bottom {
-          cursor: pointer;
-          position: absolute;
-          right: -20px;
-          top: 25px;
-          font-size: 12px;
-        }
-      }
-    }
   }
-}*/
+}
 .navbar{
   background-color: #99a9bf;
 }
@@ -167,14 +143,14 @@ header {
   }
 }
 
-el-button {
+.el-button {
   display: block;
 }
 
 //右边
 .r-content {
   display: flex;
-
+  margin-right: 10px;
 }
 
 .r-content {
@@ -195,7 +171,12 @@ el-button {
   font-size: 12px;
 }
 
+.el-dropdown-menu--mini{
+  padding: 10px 0;
+  top: 48px !important;
+}
 .el-dropdown-menu--mini .el-dropdown-menu__item {
   font-size: 16px;
 }
+
 </style>
