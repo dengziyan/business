@@ -14,7 +14,7 @@
 import FormVue from '@/components/FormVue'
 import { updatePayBills, addPayBills, listChargeCategoryOptions, listChargeProjectOptions, importTemplates, batchAddChargeBatch } from '@/api/financialMag/payBills'
 import fileDownload from 'js-file-download'
-// import { getToken } from '@/utils/auth'
+import { getToken } from '@/utils/auth'
 export default {
   name: 'NewDialog',
   components: {
@@ -23,14 +23,6 @@ export default {
   props: ['visible'],
   data() {
     return {
-      upload: {
-        open: false, // 是否显示弹出层（用户导入）
-        title: '', // 弹出层标题（用户导入）
-        isUploading: false, // 是否禁用上传
-        updateSupport: 0, // 是否更新已经存在的用户数据
-        // headers: { Authorization: getToken() }, // 设置上传的请求头部
-        url: process.env.VUE_APP_BASE_API + '/chatgeBill/import/parkingFee' // 上传的地址
-      },
       dialogVisibled: this.visible,
       // dialogVisible: false,
       chargeCategoryOptions: [], // 收费类型选项
@@ -46,8 +38,8 @@ export default {
         labelPosition: 'right',
         size: 'small',
         formItem: [
-          { type: 'select', isDisabled: false, multiple: false, label: '收费类型', prop: 'chargeCategoryName', value: '请选择收费类型', options: [] },
-          { type: 'select', isDisabled: false, multiple: false, label: '收费项目名称', prop: 'chargeProjectName', value: '请选择收费项目', options: [] },
+          { type: 'select', isDisabled: false, multiple: false, label: '收费类型', tip: '', value: '', options: [] },
+          { type: 'select', isDisabled: false, multiple: false, label: '收费项目名称', tip: '', value: '', options: [] },
           { type: 'text', label: '账单名称', size: 'small', isDisabled: false, placeholder: '请输入账单名称', prop: 'billName', required: true },
           { type: 'date', label: '收费开始时间', prop: 'starTime', value: '' },
           { type: 'radio', label: '账单模式', isDisabled: false, prop: 'modle', value: '', options: [{ name: '按月', value: '1' }, { name: '按年', value: '0' }] },
@@ -67,11 +59,6 @@ export default {
       }
     }
   },
-  computed: {
-    listCategories() {
-      return []
-    }
-  },
   // watch: {
   //   dialogVisibled(val) {
   //     console.log(this.visible)
@@ -82,9 +69,11 @@ export default {
   created() {
     this.getChargeCategory()
     this.getChargeProject()
-    this.intervalId = setInterval(() => {
-      // console.log(this.formData.formItem[0].value)
-    }, 5000)
+  },
+  computed: {
+    listCategories() {
+      return []
+    }
   },
   methods: {
     // 对话框按确定键之后的方法

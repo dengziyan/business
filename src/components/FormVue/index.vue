@@ -76,9 +76,9 @@
       <el-select
         ref="selectForm"
         v-if="item.type==='select'"
-        v-model="form[item.prop]"
+        v-model="item.value"
         :multiple="item.multiple"
-        :value="item.value"
+        :value="item.tip"
         collapse-tags
         clearable
         :disabled="item.isDisabled"
@@ -230,9 +230,6 @@ export default {
     // handleChange(file, fileList) {
     //   this.fileList = fileList.slice(-1)
     // },
-    hh() {
-      console.log(1111)
-    },
     bindValue() {
       const obj = {}
       this.formData.formItem.forEach((item, index) => {

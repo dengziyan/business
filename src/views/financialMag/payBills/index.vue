@@ -4,7 +4,7 @@
       <!--引入搜索条件子组件        -->
 <!--      <pay-bills-search />-->
       <!--引入表格操作子组件        -->
-      <pay-bills-table />
+      <pay-bills-table ref="payBillsTable"/>
     </div>
 </template>
 
@@ -16,7 +16,15 @@ export default {
   components: {
     payBillsSearch,
     payBillsTable
-  }
+  },
+  // created() {
+  //   this.$refs.payBillsTable.getList()
+  // },
+  // methods: {
+  //   hah() {
+  //     this.$refs.borther.getList()
+  //   }
+  // }
 }
 </script>
 

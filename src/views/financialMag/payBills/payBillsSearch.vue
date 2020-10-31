@@ -35,7 +35,7 @@ export default {
       searchHandle: [
         { label: '查询', type: 'primary',
           handle: () => {
-            this.getList()
+            this.handleQuery()
           }
         },
         { label: '重置', type: 'primary',
@@ -47,34 +47,17 @@ export default {
       ]
     }
   },
-  computed: {
-    // 使用对象展开运算符将此对象混入到对象中
-    ...mapState({
-      queryParamsTest: state => state.watch.queryParamsTest
-    })
-  },
   created() {
-    // this.getList()
-    this.watchQueryParams()
   },
   methods: {
-    ...mapMutations({
-      watchQueryParams: 'watchQueryParams'
-    }),
     handleQuery() {
-      console.log(this.searchData)
-      this.getList()
-    },
-    /** 查询批次列表 */
-    getList() {
-      this.loading = true
-      listPayBills(this.searchData).then(
-        (response) => {
-          this.list = response.data.rows
-          this.total = response.data.total
-          this.loading = false
-        }
-      )
+      // console.log(this.searchData)
+      this.$store.commit('watchQueryParams', {
+        chargeBeginTime: this.searchData.chargeBeginTime,
+        communityId: this.searchData.communityId,
+        billName: this.searchData.billName
+      })
+      this.$parent.$refs.payBillsTable.getList()
     }
   }
 }

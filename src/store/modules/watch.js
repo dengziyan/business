@@ -1,11 +1,19 @@
 
 const state = {
-  queryParamsTest: {}
+  queryParamsTest: {
+    chargeBeginTime: '',
+    communityId: '',
+    billName: '',
+    pageNum: 1,
+    pageSize: 10
+  },
+  hah: 'hah'
 }
 
 const mutations = {
-  watchQueryParams() {
-
+  watchQueryParams(state, all) {
+    state.queryParamsTest = all
+    console.log(state.queryParamsTest)
   }
 }
 

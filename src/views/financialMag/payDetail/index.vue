@@ -10,11 +10,16 @@
 <script>
 import payDetailSearch from './payDetailSearch'
 import payDetailTable from './payDetailTable'
+import {listPayDetail} from "@/api/financialMag/payDetail";
 export default {
   name: 'Index',
   components: {
     payDetailSearch,
     payDetailTable
+  },
+  created() {
+    // console.log('哈哈哈哈')
+    // console.log(this.$route.params.id)
   }
 }
 </script>

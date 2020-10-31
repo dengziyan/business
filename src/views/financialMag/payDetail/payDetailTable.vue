@@ -1,5 +1,5 @@
 <template>
-  <!--收费批次管理表格及操作组件  -->
+  <!--收费详情管理表格及操作组件  -->
   <div>
     <!--引入操作子组件        -->
     <table-handle />
@@ -7,8 +7,8 @@
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="哈哈哈，我就看看没数据会怎样~">
       <!-- 下面是上面的简写，#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
       <template #handle="{scope: {row, $index}}">
-        <el-button type="primary" size="mini" @click="handleCheck(row, $index)">
-          审核
+        <el-button type="primary" size="mini" @click="handleReject(row, $index)">
+          拒绝
         </el-button>
         <el-button type="danger" size="mini" @click="handleDelete()">
           删除
@@ -30,6 +30,7 @@
 import tableHandle from './tableHandle'
 import TableVue from '@/components/TableVue'
 import PayDetail from '../payDetail'
+import { listPayDetail } from '@/api/financialMag/payDetail'
 export default {
   name: 'PayBillsTable',
   components: {
@@ -62,41 +63,24 @@ export default {
     }
   },
   created() {
-    this.list = [
-      {
-        approvalStatus: '已审核',
-        communityName: '小区1',
-        billName: '2020物业费',
-        buildingName: '',
-        chargeProjectName: '物业费',
-        residentName: '李易峰',
-        mobliePhone: '',
-        amountPayable: '3000',
-        amountActuallyPaid: '0',
-        paymentStatus: '未缴',
-        note: '',
-        createTime: ''
-      },
-      {
-        approvalStatus: '已审核',
-        communityName: '小区1',
-        billName: '2020物业费',
-        buildingName: '',
-        chargeProjectName: '物业费',
-        residentName: '李易峰',
-        mobliePhone: '',
-        amountPayable: '3000',
-        amountActuallyPaid: '0',
-        paymentStatus: '未缴',
-        note: '',
-        createTime: ''
-      }
-    ]
+    this.getList()
     this.loading = false
   },
   methods: {
+    // 查询详情列表
+    getList() {
+      this.loading = true
+      // console.log(this.searchData)
+      listPayDetail(this.searchData, this.$route.params.id).then(
+        (response) => {
+          this.list = response.data.rows
+          this.total = response.data.total
+          this.loading = false
+        }
+      )
+    },
     // 表格方法
-    handleCheck(row, index) {
+    handleReject(row, index) {
       // this.dialogVisible = true
       // this.isEdit = false
       // this.payBills = Object.assign({}, defaultPayBills) // 默认值为空
