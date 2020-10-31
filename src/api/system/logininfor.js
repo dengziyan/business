@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 // 查询用户登录日志
-export function list(query) {
+export function loginLoglist(query) {
   return request({
     url: '/sys/log/login-log',
     method: 'get',
@@ -9,9 +9,9 @@ export function list(query) {
   })
 }
 // 导出登录日志
-export function exportLogininfor(query) {
+export function exportLogininfo(query) {
   return request({
-    url: '/sys/log/login-log/export',
+    url: '/sys/log/login-export',
     method: 'get',
     responseType: 'arraybuffer',
     params: query
@@ -19,7 +19,7 @@ export function exportLogininfor(query) {
 }
 
 // 删除登录日志
-export function delLogininfor(infoIds) {
+export function delLogininfo(infoIds) {
   return request({
     url: '/sys/log/login-log',
     method: 'delete',
@@ -30,11 +30,22 @@ export function delLogininfor(infoIds) {
 }
 
 // 清空登录日志
-export function cleanLogininfor() {
+export function cleanLogininfo() {
   return request({
-    url: '/sys/log/login-log/clean',
+    url: '/sys/log/login-clean',
     method: 'delete'
   })
 }
 
+// 清空登录日志
+export function getDictVal(table, field) {
+  return request({
+    url: '/sys/sql/table-field',
+    method: 'get',
+    params:{
+      table,
+      field
+    }
+  })
+}
 

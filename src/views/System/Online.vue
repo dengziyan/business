@@ -4,7 +4,7 @@
     <el-form v-show="showSearch" ref="queryForm" :model="queryParams" :inline="true" label-width="68px">
       <el-form-item label="账号" prop="account">
         <el-input
-          v-model="queryParams.account"
+          v-model="queryParams.userAccount"
           placeholder="请输入用户账号"
           clearable
           size="small"
@@ -35,7 +35,7 @@
     <!-- 表格   -->
     <el-table v-loading="loading" style="width: 100%;" :data="list">
       <el-table-column label="会话编号" align="center" prop="id" :show-overflow-tooltip="true"/>
-      <el-table-column label="登录名称" align="center" prop="userName" :show-overflow-tooltip="true"/>
+      <el-table-column label="登录名称" align="center" prop="userAccount" :show-overflow-tooltip="true"/>
       <el-table-column label="主机" align="center" prop="loginIp" :show-overflow-tooltip="true"/>
       <el-table-column label="登录地点" align="center" prop="loginLocation" :show-overflow-tooltip="true"/>
       <el-table-column label="浏览器" align="center" prop="browser" :show-overflow-tooltip="true"/>
@@ -121,12 +121,12 @@ export default {
 
     /** 强退按钮操作 */
     handleForceLogout(row) {
-      this.$confirm('是否强退账号为"' + row.userName + '"的用户?', '警告', {
+      this.$confirm('是否强退账号为"' + row.userAccount + '"的用户?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(function() {
-        return forceLogout(row.userName)
+        return forceLogout(row.userAccount)
       }).then(() => {
         this.getList()
       }).catch(function() {

@@ -1,18 +1,28 @@
-import { login, logout, getInfo, setLoginStatus } from '@/api/user'
-import { getToken, getIDKey, setCookies, removeCookies } from '@/utils/auth'
+import { login, logout } from '@/api/user'
+import {
+  getToken,
+  getIDKey,
+  setCookies,
+  removeCookies,
+  getBaseUrl,
+  getAvatar,
+  getAccount,
+  setBaseUrl, setAvatar, setAccount
+} from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
     token: getToken(),
-    name: '',
-    realName: '',
+    name: getAccount(),
+    userName: '',
     id: getIDKey(),
-    avatar: '',
+    avatar: getAvatar(),
     email: '',
     mobilePhone: '',
     createDate: '',
-    gender: ''
+    gender: '',
+    baseUrl: getBaseUrl()
   }
 }
 
@@ -28,8 +38,8 @@ const mutations = {
   SET_NAME: (state, name) => {
     state.name = name
   },
-  SET_REALNAME: (state, name) => {
-    state.realName = name
+  SET_REAL_NAME: (state, name) => {
+    state.userName = name
   },
   SET_ID: (state, id) => {
     state.id = id
@@ -40,17 +50,17 @@ const mutations = {
   SET_EMAIL: (state, email) => {
     state.email = email
   },
-  SET_MOBILEPHNE: (state, mobilePhone) => {
+  SET_MOBILE_PHONE: (state, mobilePhone) => {
     state.mobilePhone = mobilePhone
   },
-  SET_CREATEDATE: (state, createDate) => {
+  SET_CREATE_DATE: (state, createDate) => {
     state.createDate = createDate
   },
   SET_GENDER: (state, gender) => {
     state.gender = gender
   },
-  setAvatar(state, avatar) {
-    state.avatar = avatar
+  SET_BASE_URL(state, url) {
+    state.baseUrl = url
   }
 }
 
@@ -59,48 +69,35 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      login({ userName: username.trim(), password: password }).then(response => {
         const data = response.data
-        const token = data.tokenHead + data.token
-
+        const token = data.token
         commit('SET_TOKEN', token) // token
-        commit('SET_ID', data.id) // 用户编号
-        setCookies(token, data.id)
+        commit('SET_ID', data.user.id) // 用户编号
 
-        setLoginStatus(data.id)
+        const name = data.user.userAccount
+        const avatar = data.user.avatarUrl
+        const email = data.user.email
+        const mobilePhone = data.user.mobilePhone
+        const createDate = data.user.createTime
+        const userName = data.user.userName
+        const gender = data.user.sex
+        const url = data.baseUrl
 
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-
-  // get user info
-  getInfo({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      getInfo(state.id).then(response => {
-        const data = response.data
-
-        if (!data) {
-          return reject('Verification failed, please Login again.')
-        }
-
-        const name = data.userInfo.account
-        const avatar = data.userInfo.avatarUrl
-        const email = data.userInfo.email
-        const mobilePhone = data.userInfo.mobilePhone
-        const createDate = data.userInfo.createDate
-        const realName = data.userInfo.realName
-        const gender = data.userInfo.gender
-        commit('SET_REALNAME', realName)
+        commit('SET_REAL_NAME', userName)
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         commit('SET_EMAIL', email)
-        commit('SET_MOBILEPHNE', mobilePhone)
-        commit('SET_CREATEDATE', createDate)
+        commit('SET_MOBILE_PHONE', mobilePhone)
+        commit('SET_CREATE_DATE', createDate)
         commit('SET_GENDER', gender)
-        resolve(data)
+        commit('SET_BASE_URL', url)
+
+        setCookies(token, data.user.id)
+        setBaseUrl(url)
+        setAvatar(avatar)
+        setAccount(name)
+        resolve()
       }).catch(error => {
         reject(error)
       })
@@ -110,10 +107,12 @@ const actions = {
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.name).then(response => {
-        removeCookies() // must remove  token  first
-        resetRouter()
-        commit('RESET_STATE')
+      logout(state.name).then(res => {
+        if (res.code === 2000) {
+          removeCookies() // must remove  token  first
+          resetRouter()
+          commit('RESET_STATE')
+        }
         resolve()
       }).catch(error => {
         reject(error)

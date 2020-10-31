@@ -59,7 +59,7 @@ export function resetForm(refName) {
 export function addDateRange(params, dateRange) {
   const search = params
 
-  if (dateRange != null && dateRange !== '') {
+  if (dateRange!=null&&dateRange.length !== 0) {
     search.beginTime = dateRange[0]
     search.endTime = dateRange[1]
     search.chargeBeginTime = ''
@@ -71,30 +71,32 @@ export function addDateRange(params, dateRange) {
 }
 
 // 回显数据字典
-export function selectDictLabel(datas, value) {
-  var actions = []
-  Object.keys(datas).some((key) => {
-    if (datas[key].dictValue === ('' + value)) {
-      actions.push(datas[key].dictLabel)
-      return true
-    }
+export function selectDictLabel(data) {
+  const options = []
+  data.forEach(function(val) {
+    options.push({ label: val.webVal, value: val.sqlVal })
   })
-  return actions.join('')
+  return options
 }
 
-// 回显数据字典（字符串数组）
-export function selectDictLabels(datas, value, separator) {
-  var actions = []
-  var currentSeparator = undefined === separator ? ',' : separator
-  var temp = value.split(currentSeparator)
-  Object.keys(value.split(currentSeparator)).some((val) => {
-    Object.keys(datas).some((key) => {
-      if (datas[key].dictValue === ('' + temp[val])) {
-        actions.push(datas[key].dictLabel + currentSeparator)
-      }
-    })
+// 回显字典值
+export function getStatusVal(option) {
+  return this.statusOptions.map(function(item) {
+    if (item.value === '' + option) {
+      return item.label
+    }
+  }).filter(function(item) {
+    return item !== undefined
+  })[0]
+}
+
+// 回显数据字典
+export function selectDictLabels(data) {
+  const options = []
+  data.forEach(function(val) {
+    options.push({ label: val.webVal, value: val.sqlVal })
   })
-  return actions.join('').substring(0, actions.join('').length - 1)
+  return options
 }
 
 // 通用下载方法
@@ -155,3 +157,4 @@ export function handleTree(data, id, parentId, children, rootId) {
   })
   return treeData !== '' ? treeData : data
 }
+
