@@ -24,7 +24,8 @@ export default {
         name: null,
         age: null,
         sex: null,
-        interst: null
+        interst: null,
+        batchId: null
       },
       searchForm: [
         {

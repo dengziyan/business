@@ -1,6 +1,13 @@
 <template>
   <!--收费详情管理表格及操作组件  -->
   <div>
+    <search-form
+      size="mini"
+      label-width="80px"
+      :search-data="searchData"
+      :search-form="searchForm"
+      :search-handle="searchHandle"
+    />
     <!--引入操作子组件        -->
     <table-handle />
     <!--引入表格组件        -->
@@ -29,6 +36,7 @@
 <script>
 import tableHandle from './tableHandle'
 import TableVue from '@/components/TableVue'
+import SearchForm from '@/components/SearchForm'
 import PayDetail from '../payDetail'
 import { listPayDetail } from '@/api/financialMag/payDetail'
 export default {
@@ -36,10 +44,53 @@ export default {
   components: {
     tableHandle,
     TableVue,
-    PayDetail
+    PayDetail,
+    SearchForm
   },
   data() {
     return {
+      // 查询表单
+      searchData: {
+        communityId: null,
+        billName: null,
+        billStatus: null,
+        beginTime: null,
+        endTime: null,
+        batchId: null
+      },
+      searchForm: [
+        {
+          type: 'Select',
+          isDisabled: false,
+          // 是否开启多选
+          multiple: false,
+          label: '小区',
+          prop: 'communityId',
+          value: '车位停车费',
+          options: [
+            { name: 'xx小区', value: 'xx小区', isDisabled: true },
+            { name: '小区', value: '小区', isDisabled: false }
+          ]
+        },
+        {
+          type: 'Select',
+          isDisabled: false,
+          // 是否开启多选
+          multiple: false,
+          label: '账单名称',
+          prop: 'billName',
+          value: '车位停车费',
+          options: [
+            { name: '2020物业费', value: '2020物业费', isDisabled: false }
+          ]
+        },
+        { type: 'Input', label: '房屋（栋-单元-室/车位号/车牌号）', prop: 'buildingName', width: '100px', placeholder: '请输入账单名称...' },
+        { type: 'Input', label: '审核状态', prop: 'approvalStatus', width: '100px', placeholder: '请输入账单名称...' }
+      ],
+      searchHandle: [
+        { label: '查询', type: 'primary', handle: () => '' },
+        { label: '重置', type: 'primary', handle: () => '' }
+      ],
       // table表格数据
       loading: true,
       list: [],
@@ -70,8 +121,9 @@ export default {
     // 查询详情列表
     getList() {
       this.loading = true
-      // console.log(this.searchData)
-      listPayDetail(this.searchData, this.$route.params.id).then(
+      this.searchData.batchId = this.$route.params.id
+      console.log(this.searchData)
+      listPayDetail(this.searchData).then(
         (response) => {
           this.list = response.data.rows
           this.total = response.data.total

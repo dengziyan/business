@@ -24,7 +24,7 @@ export default {
       searchData: {
         roomNo: null,
         residentName: null,
-        mobilePhone: null
+        mobilePhone: null,
       },
       searchForm: [
         { type: 'Input', label: '室', prop: 'roomNo', width: '100px', placeholder: '请输入室...' },
