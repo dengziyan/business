@@ -25,7 +25,7 @@ export default {
     return {
       dialogVisibled: this.visible,
       // dialogVisible: false,
-      chargeCategoryOptions: zz, // 收费类型选项
+      chargeCategoryOptions: [], // 收费类型选项
       chargeProjectOptions: [], // 收费项目名称
       formData: {
         rules: {
@@ -52,7 +52,7 @@ export default {
               // headers: { Authorization: getToken() }, // 设置上传的请求头部
               url: process.env.VUE_APP_BASE_API + '/chatgeBill/import/parkingFee' // 上传的地址
             },
-            importTemplate: () => { this.importTemplate() },
+            importTemplate: this.importTemplate,
             handleFileUpload: ($event) => { this.handleFileUpload($event) }
           }
         ]

@@ -71,8 +71,8 @@ export default {
     }
     return {
       loginForm: { // 登录表单的数据绑定对象
-        username: 'wuyuan',
-        password: 'wuyuan'
+        username: 'g1950',
+        password: '123456'
       },
       loginRules: { // 表单的验证规则对象
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],

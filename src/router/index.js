@@ -78,6 +78,30 @@ export const constantRoutes = [
         }
       },
       {
+        path: '/refundDetail',
+        name: 'refundDetail',
+        component: () => import('@/views/financialMag/refundDetail/index'),
+        meta: {
+          keepAlive: true // 需要缓存的页面
+        }
+      },
+      {
+        path: '/countResult',
+        name: 'countResult',
+        component: () => import('@/views/financialMag/countResult/index'),
+        meta: {
+          keepAlive: true // 需要缓存的页面
+        }
+      },
+      {
+        path: '/countDetail',
+        name: 'countDetail',
+        component: () => import('@/views/financialMag/countDetail/index'),
+        meta: {
+          keepAlive: true // 需要缓存的页面
+        }
+      },
+      {
         path: '/userList',
         name: 'userList',
         component: () => import('@/views/Authoraty/UserList'),

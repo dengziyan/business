@@ -73,6 +73,24 @@ export default {
               name: 'incomeDetail',
               title: '收入明细',
               icon: 'table'
+            },
+            {
+              path: '/refundDetail',
+              name: 'refundDetail',
+              title: '退款明细',
+              icon: 'table'
+            },
+            {
+              path: '/countResult',
+              name: 'countResult',
+              title: '结算结果',
+              icon: 'table'
+            },
+            {
+              path: '/countDetail',
+              name: 'countDetail',
+              title: '结算明细',
+              icon: 'table'
             }
           ]
         },

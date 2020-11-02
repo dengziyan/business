@@ -1,24 +1,24 @@
 <template>
-  <!--收费批次管理表格及操作组件  -->
+  <!--退款明细表格及操作组件  -->
   <div>
     <!--引入搜索条件子组件        -->
     <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="No data~">
-            <!-- 普通数据-->
-<!--        <template #h1="{scope: { row }}">{{ row.billStatus }}</template>-->
-<!--        <template #h2="{scope: { row }}">{{ row.communityId }}</template>-->
-<!--        <template #h3="{scope: { row }}">{{ row.chargeProjectId }}</template>-->
-<!--        <template #h4="{scope: { row }}">{{ row.chargeBeginTime }}</template>-->
-<!--        <template #h5="{scope: { row }}">{{ row.amountPayable }}</template>-->
-<!--        <template #h6="{scope: { row }}">{{ row.amountActuallyPaid }}</template>-->
-<!--        <template #h7="{scope: { row }}">{{ row.reviewer }}</template>-->
-<!--        <template #h8="{scope: { row }}">{{ row.reviewTime }}</template>-->
+      <!-- 普通数据-->
+      <!--        <template #h1="{scope: { row }}">{{ row.billStatus }}</template>-->
+      <!--        <template #h2="{scope: { row }}">{{ row.communityId }}</template>-->
+      <!--        <template #h3="{scope: { row }}">{{ row.chargeProjectId }}</template>-->
+      <!--        <template #h4="{scope: { row }}">{{ row.chargeBeginTime }}</template>-->
+      <!--        <template #h5="{scope: { row }}">{{ row.amountPayable }}</template>-->
+      <!--        <template #h6="{scope: { row }}">{{ row.amountActuallyPaid }}</template>-->
+      <!--        <template #h7="{scope: { row }}">{{ row.reviewer }}</template>-->
+      <!--        <template #h8="{scope: { row }}">{{ row.reviewTime }}</template>-->
 
-          <!-- 操作按钮 。#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
-        <template #handle="{scope: {row, $index}}">
-          <el-button type="primary" size="mini" @click="handleBack(row, $index)">退款</el-button>
-        </template>
+      <!-- 操作按钮 。#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
+      <template #handle="{scope: {row, $index}}">
+        <el-button type="primary" size="mini" @click="handleCheck(row, $index)">审核</el-button>
+      </template>
     </TableVue>
     <!--  分页  -->
     <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
@@ -29,7 +29,7 @@
 import { addDateRange } from '@/utils/userright'
 import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
-import { listIncomeStatic } from '@/api/financialMag/incomeStatic'
+import { listRefundDetail } from '@/api/financialMag/refundDetail'
 import { exportLogininfo } from '@/api/system/logininfor'
 import moment from 'moment'
 import fileDownload from 'js-file-download'
@@ -46,9 +46,9 @@ export default {
       searchData: { pageNum: 1, pageSize: 10, startTime: null, endTime: null, amountActuallyPaid: null, name: null, createTime: null, billName: null }, // 查询参数
       searchForm: [
         { type: 'Select', isDisabled: false, multiple: false, label: '小区', prop: 'name', value: '请选择', options: [] },
-        { type: 'Select', isDisabled: false, multiple: false, label: '账单创建年份', prop: 'createTime', value: '请选择', options: [] },
-        { type: 'Select', isDisabled: false, multiple: false, label: '账单名称', prop: 'billName', value: '请选择', options: [] },
-        { type: 'datetimerange', label: '缴费日期', prop: 'amountActuallyPaid', width: '1000px' }
+        { type: 'Input', label: '手机号', prop: 'mobliePhone', width: '100px', placeholder: '请输入手机号' },
+        { type: 'Select', isDisabled: false, multiple: false, label: '退款状态', prop: 'billName', value: '请选择', options: [] },
+        { type: 'datetimerange', label: '退款日期', prop: 'amountActuallyPaid', width: '1000px' }
       ],
       searchHandle: [
         { label: '查询', type: 'primary', handle: this.getList },
@@ -61,15 +61,13 @@ export default {
       total: 0, // 总条数
       columns: Object.freeze([
         { slot: 'h1', attrs: { prop: 'name', label: '小区', width: '100', align: 'center' }, id: 0 },
-        { slot: 'h2', attrs: { prop: 'buildingName', label: '房屋（栋-单元-室/车位号/车牌号）', width: '100', 'show-overflow-tooltip': true }, id: 1 },
-        { slot: 'h3', attrs: { prop: 'billName', label: '账单名称', width: '100', 'show-overflow-tooltip': true }, id: 2 },
-        { slot: 'h4', attrs: { prop: 'chargeCategoryName', label: '收费类型', width: '154', 'show-overflow-tooltip': true }, id: 3 },
-        { slot: 'h5', attrs: { prop: 'id', label: '订单号', 'show-overflow-tooltip': true }, id: 4 },
-        { slot: 'h6', attrs: { prop: 'mobliePhone', label: '手机号', 'show-overflow-tooltip': true }, id: 5 },
+        { slot: 'h2', attrs: { prop: 'mobliePhone', label: '手机号', width: '100', 'show-overflow-tooltip': true }, id: 1 },
+        { slot: 'h3', attrs: { prop: 'billName', label: '退款方式', width: '100', 'show-overflow-tooltip': true }, id: 2 },
+        { slot: 'h4', attrs: { prop: 'chargeCategoryName', label: '退款日期', width: '154', 'show-overflow-tooltip': true }, id: 3 },
+        { slot: 'h5', attrs: { prop: 'id', label: '退款金额', 'show-overflow-tooltip': true }, id: 4 },
+        { slot: 'h6', attrs: { prop: 'mobliePhone', label: '退款状态', 'show-overflow-tooltip': true }, id: 5 },
         { slot: 'h6', attrs: { prop: 'residentIdentity', label: '住户', 'show-overflow-tooltip': true }, id: 6 },
-        { slot: 'h6', attrs: { prop: 'amount', label: '缴费时间', 'show-overflow-tooltip': true }, id: 7 },
-        { slot: 'h6', attrs: { prop: 'amountPayable', label: '缴费金额', 'show-overflow-tooltip': true }, id: 8 },
-        { slot: 'h6', attrs: { prop: 'amountPayable', label: '缴费方式', 'show-overflow-tooltip': true }, id: 9 },
+        { slot: 'handle2', attrs: { prop: 'amount', label: '退款详情', 'show-overflow-tooltip': true }, id: 7 },
         { slot: 'handle', attrs: { label: '操作', width: '', 'class-name': 'small-padding fixed-width', align: 'center' }, id: 10 }
       ])
     }
@@ -88,7 +86,7 @@ export default {
     // 查询列表
     getList() {
       this.loading = true
-      listIncomeStatic(addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
+      listRefundDetail(addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
         (response) => {
           this.list = response.data.rows
           this.total = response.data.total
@@ -104,7 +102,7 @@ export default {
         searchData.pageSize = undefined
         searchData.export = 'all'
       }
-      this.$confirm('是否确认导出收入统计?', '警告', {
+      this.$confirm('是否确认导出退款明细表?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -113,7 +111,7 @@ export default {
           console.log(res)
           const sysDate = moment(new Date()).format('YYYY-MM-DDHHmm')
           console.log(sysDate)
-          fileDownload(res, sysDate + '收入统计.xlsx')
+          fileDownload(res, sysDate + '退款明细.xlsx')
         })
       }).catch(function() {
       })
