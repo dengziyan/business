@@ -67,10 +67,7 @@ export default {
           label: '小区',
           prop: 'communityId',
           value: '车位停车费',
-          options: [
-            { name: 'xx小区', value: 'xx小区', isDisabled: true },
-            { name: '小区', value: '小区', isDisabled: false }
-          ]
+          options: []
         },
         {
           type: 'Select',
