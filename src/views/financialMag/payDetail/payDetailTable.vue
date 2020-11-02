@@ -78,7 +78,6 @@ export default {
           prop: 'billName',
           value: '车位停车费',
           options: [
-            { name: '2020物业费', value: '2020物业费', isDisabled: false }
           ]
         },
         { type: 'Input', label: '房屋（栋-单元-室/车位号/车牌号）', prop: 'buildingName', width: '100px', placeholder: '请输入账单名称...' },
