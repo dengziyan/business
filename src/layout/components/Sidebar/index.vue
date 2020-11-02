@@ -16,7 +16,7 @@
 </template>
 
 <script>
-// import { treeList } from '@/api/authoraty/menu'
+import { treeList } from '@/api/authoraty/menu'
 import menutree from '@/layout/components/Sidebar/menutree'
 export default {
   components: {
@@ -25,138 +25,7 @@ export default {
   data() {
     return {
       treeMenu: [],
-      menu_data: [
-        {
-          path: '/',
-          name: 'dashboard',
-          title: '首页',
-          icon: 's-home'
-        },
-        {
-          title: '小区管理模块',
-          name: 'communityMag',
-          icon: 's-ticket',
-          children: [
-            {
-              path: '/community',
-              name: 'community',
-              title: '小区信息管理',
-              icon: 'table'
-            }
-          ]
-        },
-        {
-          title: '财务管理模块',
-          name: 'financialMag',
-          icon: 's-custom',
-          children: [
-            {
-              path: '/payItems',
-              name: 'payItems',
-              title: '收费项目管理',
-              icon: 'table'
-            },
-            {
-              path: '/payBills',
-              name: 'payBills',
-              title: '收费批次管理',
-              icon: 'table'
-            },
-            {
-              path: '/incomeStatic',
-              name: 'incomeStatic',
-              title: '收入统计',
-              icon: 'table'
-            },
-            {
-              path: '/incomeDetail',
-              name: 'incomeDetail',
-              title: '收入明细',
-              icon: 'table'
-            },
-            {
-              path: '/refundDetail',
-              name: 'refundDetail',
-              title: '退款明细',
-              icon: 'table'
-            },
-            {
-              path: '/countResult',
-              name: 'countResult',
-              title: '结算结果',
-              icon: 'table'
-            },
-            {
-              path: '/countDetail',
-              name: 'countDetail',
-              title: '结算明细',
-              icon: 'table'
-            }
-          ]
-        },
-        {
-          title: '权限管理模块',
-          name: 'authoraty',
-          icon: 's-custom',
-          children: [
-            {
-              path: '/userList',
-              name: 'userList',
-              title: '用户列表',
-              icon: 'table'
-            },
-            {
-              path: '/roleList',
-              name: 'roleList',
-              title: '角色列表',
-              icon: 'table'
-            },
-            {
-              path: '/menuList',
-              name: 'menuList',
-              title: '菜单列表',
-              icon: 'table'
-            },
-            {
-              path: '/resourceCategory',
-              name: 'resourceCategory',
-              title: '资源列表',
-              icon: 'table'
-            }
-          ]
-        },
-        {
-          title: '系统管理模块',
-          name: 'system',
-          icon: 's-custom',
-          children: [
-            {
-              path: '/online',
-              name: 'online',
-              title: '在线用户',
-              icon: 'table'
-            },
-            {
-              title: '日志管理',
-              icon: 'table',
-              children: [
-                {
-                  path: '/opeDiary',
-                  name: 'opeDiary',
-                  title: '操作日志',
-                  icon: 'table'
-                },
-                {
-                  path: '/logDiary',
-                  name: 'logDiary',
-                  title: '登录日志',
-                  icon: 'table'
-                }
-              ]
-            }
-          ]
-        },
-      ]
+      menu_data: []
     }
   },
   computed: {
@@ -177,14 +46,14 @@ export default {
     // 获取列表数据
     getList() {
       // 这里留给接口用：
-      // this.listLoading = true
-      // treeList(this.$store.getters.id).then(response => {
-      //   this.dynamicRouter(response.data)
-      //   this.$store.commit('setTabList', this.routePathNow)
-      //   // this.listLoading = false
-      //   this.total = response.data.total
-      //   this.menu_data = response.data
-      // })
+      this.listLoading = true
+      treeList(this.$store.getters.id).then(response => {
+        this.dynamicRouter(response.data)
+        this.$store.commit('setTabList', this.routePathNow)
+        // this.listLoading = false
+        this.total = response.data.total
+        this.menu_data = response.data
+      })
     },
     clickMenu(item) {
       this.$router.push({ name: item.name })

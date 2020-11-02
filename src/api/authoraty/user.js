@@ -116,7 +116,7 @@ export function updateUserProfile(data) {
   })
 }
 // 查询用户个人信息
-export function getUserProfile(id){
+export function getUserProfile(id) {
   return request({
     url: '/sys/user-info/' + id,
     method: 'put',

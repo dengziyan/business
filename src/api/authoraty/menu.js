@@ -4,7 +4,7 @@ import request from '@/utils/request'
 export function fetchList(query) {
   console.log(query)
   return request({
-    url: '/sysMenu/getMenuList',
+    url: '/sys/menu/',
     method: 'get',
     params: query
   })
@@ -19,7 +19,7 @@ export function deleteMenu(id) {
 // 查询所有菜单
 export function treeList(userId) {
   return request({
-    url: '/sysMenu/userTreeList/' + userId,
+    url: '/sys/menu/tree-list/' + userId,
     method: 'get'
   })
 }

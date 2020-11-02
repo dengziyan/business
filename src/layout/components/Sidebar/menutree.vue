@@ -1,18 +1,18 @@
 <template>
   <div class="menutree">
     <label v-for="menu in data">
-      <el-submenu v-if="menu.children" :index="'/' + menu.name">
+      <el-submenu v-if="menu.children" :index="'/' + menu.webName">
         <template slot="title">
-          <i :class="'el-icon-'+menu.icon"/>
-          <span>{{ menu.title }}</span>
+          <i :class="'el-icon-'+menu.webIcon"/>
+          <span>{{ menu.menuName }}</span>
         </template>
         <el-menu-item-group>
           <menutree :data="menu.children"/>
         </el-menu-item-group>
       </el-submenu>
-      <el-menu-item v-else :index="'/'+menu.name" @click="clickMenu(menu)">
-        <i :class="'el-icon-'+menu.icon"/>
-        <span slot="title">{{ menu.title }}</span>
+      <el-menu-item v-else :index="'/'+menu.webName" @click="clickMenu(menu)">
+        <i :class="'el-icon-'+menu.webIcon"/>
+        <span slot="title">{{ menu.menuName }}</span>
       </el-menu-item>
     </label>
   </div>
