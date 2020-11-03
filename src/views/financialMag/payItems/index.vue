@@ -11,7 +11,7 @@
       <new-dialog />
     </el-dialog>
     <!--引入表格组件        -->
-    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="哈哈哈，我就看看没数据会怎样~">
+    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
       <!-- #是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
       <template #handle="{scope: {row, $index}}">
         <el-button type="danger" size="mini" @click="handleDelete()">删除</el-button>
@@ -28,11 +28,7 @@ import newDialog from './newDialog'
 import { listChargeCategoryOptions } from '@/api/financialMag/payBills'
 export default {
   name: 'Index',
-  components: {
-    SearchForm,
-    TableVue,
-    newDialog
-  },
+  components: { SearchForm, TableVue, newDialog },
   data() {
     return {
       chargeCategoryOptions: [],
@@ -43,8 +39,8 @@ export default {
         { type: 'Input', label: '收费标准名称', prop: 'communityId', width: '1000px', placeholder: '请输入收费名称...' }
       ],
       searchHandle: [
-        { label: '查询', type: 'primary', handle: () => '' },
-        { label: '重置', type: 'primary', handle: () => '' }
+        { label: '查询', type: 'primary', handle: this.getList },
+        { label: '重置', type: 'primary', handle: this.resetForm }
       ],
       // 操作按钮
       single: true, // 非单个禁用
@@ -56,14 +52,14 @@ export default {
       loading: true,
       list: [],
       columns: Object.freeze([
-        { attrs: { prop: 'chargeCategoryName', label: '收费类型', width: '100', align: 'center' }, id: 0 },
-        { attrs: { prop: 'chargeProjectName', label: '收费项目名称', width: '100', 'show-overflow-tooltip': true }, id: 1 },
-        { attrs: { prop: 'chargeStandard', label: '收费标准', width: '100', 'show-overflow-tooltip': true }, id: 2 },
-        { attrs: { prop: 'createBy', label: '标准金额', width: '100', 'show-overflow-tooltip': true }, id: 3 },
-        { attrs: { prop: 'createBy', label: '创建人', 'show-overflow-tooltip': true }, id: 4 },
-        { attrs: { prop: 'createTime', label: '创建时间', width: '100', 'show-overflow-tooltip': true }, id: 5 },
-        { attrs: { prop: 'note', label: '备注', width: '100', 'show-overflow-tooltip': true }, id: 6 },
-        { slot: 'handle', attrs: { label: '操作', width: '150', 'class-name': 'small-padding fixed-width', align: 'center' }, id: 9 }
+        { attrs: { prop: 'chargeCategoryName', label: '收费类型', width: '100', align: 'center' }},
+        { attrs: { prop: 'chargeProjectName', label: '收费项目名称', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'chargeStandard', label: '收费标准', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'createBy', label: '标准金额', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'createBy', label: '创建人', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'createTime', label: '创建时间', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'note', label: '备注', width: '100', 'show-overflow-tooltip': true }},
+        { slot: 'handle', attrs: { label: '操作', width: '150', 'class-name': 'small-padding fixed-width', align: 'center' }}
       ])
     }
   },
@@ -73,19 +69,22 @@ export default {
     this.getChargeCategory()
   },
   methods: {
+    // 表格重置
+    resetForm() {
+      Object.assign(this.$data.searchData, this.$options.data().searchData)
+    },
     // 获取收费类型
     getChargeCategory() {
-      console.log('212222')
       listChargeCategoryOptions().then(response => {
         const chargeCategoryList = response.data
-        console.log(chargeCategoryList)
+        // console.log(chargeCategoryList)
         for (let i = 0; i < chargeCategoryList.length; i++) {
           const cate = chargeCategoryList[i]
           this.chargeCategoryOptions.push({ lable: cate.chargeCategoryName, value: cate.chargeCategoryName, isDisabled: false })
         }
-        console.log(this.chargeCategoryOptions)
+        // console.log(this.chargeCategoryOptions)
         this.searchForm[0].options = this.chargeCategoryOptions
-        console.log(this.searchForm[0].options)
+        // console.log(this.searchForm[0].options)
       })
     },
     // 查询收费项目列表
@@ -112,7 +111,7 @@ export default {
       this.dialogVisible = true
       this.isEdit = false
       this.payBills = Object.assign({}, defaultPayBills) // 默认值为空
-    },
+    }
   }
 }
 </script>

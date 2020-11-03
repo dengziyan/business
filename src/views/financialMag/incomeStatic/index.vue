@@ -6,16 +6,7 @@
     <!--引入操作子组件        -->
 
     <!--引入表格组件        -->
-    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="哈哈哈，我就看看没数据会怎样~">
-      <!--      &lt;!&ndash; 普通数据&ndash;&gt;-->
-      <!--      <template #h1="{scope: { row }}">{{ row.billStatus }}</template>-->
-      <!--      <template #h2="{scope: { row }}">{{ row.communityId }}</template>-->
-      <!--      <template #h3="{scope: { row }}">{{ row.chargeProjectId }}</template>-->
-      <!--      <template #h4="{scope: { row }}">{{ row.chargeBeginTime }}</template>-->
-      <!--      <template #h5="{scope: { row }}">{{ row.amountPayable }}</template>-->
-      <!--      <template #h6="{scope: { row }}">{{ row.amountActuallyPaid }}</template>-->
-      <!--      <template #h7="{scope: { row }}">{{ row.reviewer }}</template>-->
-      <!--      <template #h8="{scope: { row }}">{{ row.reviewTime }}</template>-->
+    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
     </TableVue>
     <!--  分页  -->
     <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
@@ -33,10 +24,7 @@ import fileDownload from 'js-file-download'
 
 export default {
   name: 'Index',
-  components: {
-    TableVue,
-    SearchForm
-  },
+  components: { TableVue, SearchForm },
   data() {
     return {
       // 查询表单
@@ -57,12 +45,12 @@ export default {
       list: [],
       total: 0, // 总条数
       columns: Object.freeze([
-        { slot: 'h1', attrs: { prop: 'name', label: '小区', width: '100', align: 'center' }, id: 0 },
-        { slot: 'h2', attrs: { prop: 'communityId', label: '渠道', width: '100', 'show-overflow-tooltip': true }, id: 1 },
-        { slot: 'h3', attrs: { prop: 'chargeProjectId', label: '收入金额', width: '100', 'show-overflow-tooltip': true }, id: 2 },
-        { slot: 'h4', attrs: { prop: 'chargeBeginTime', label: '收入笔数', width: '154', 'show-overflow-tooltip': true }, id: 3 },
-        { slot: 'h5', attrs: { prop: 'amountPayable', label: '手续费金额统计', 'show-overflow-tooltip': true }, id: 4 },
-        { slot: 'h6', attrs: { prop: 'amountPayable', label: '优惠金额总计', 'show-overflow-tooltip': true }, id: 5 }
+        { attrs: { prop: 'name', label: '小区', width: '100', align: 'center' }},
+        { attrs: { prop: 'communityId', label: '渠道', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'chargeProjectId', label: '收入金额', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'chargeBeginTime', label: '收入笔数', width: '154', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'amountPayable', label: '手续费金额统计', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'amountPayable', label: '优惠金额总计', 'show-overflow-tooltip': true }}
       ])
     }
   },

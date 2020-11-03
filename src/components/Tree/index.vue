@@ -1,6 +1,6 @@
 <template>
   <span class="tree-expand">
-    <span v-show="DATA.isEdit" class="tree-label">
+    <span v-show="DATA.treeIsEdit" class="tree-label">
       <el-input
         :ref="'treeInput'+DATA.id"
         v-model="DATA.name"
@@ -12,10 +12,10 @@
         @keyup.enter.stop.native="nodeEditPass(STORE,DATA,NODE)"
       />
     </span>
-    <span v-show="!DATA.isEdit" :class="[DATA.id > maxexpandId ? 'tree-new tree-label' : 'tree-label']">
+    <span v-show="!DATA.treeIsEdit" :class="[DATA.id > maxexpandId ? 'tree-new tree-label' : 'tree-label']">
       <span>{{ DATA.name }}</span>
     </span>
-    <span v-show="!DATA.isEdit" class="tree-btn">
+    <span v-show="!DATA.treeIsEdit" class="tree-btn">
       <i class="el-icon-plus" @click.stop="nodeAdd(STORE,DATA,NODE)" />
       <i class="el-icon-edit" @click.stop="nodeEdit(STORE,DATA,NODE)" />
       <i class="el-icon-delete" @click.stop="nodeDel(STORE,DATA,NODE)" />
@@ -32,7 +32,7 @@ export default {
       this.$emit('nodeAdd', s, d, n)
     },
     nodeEdit(s, d, n) { // 编辑
-      d.isEdit = true
+      d.treeIsEdit = true
       this.$nextTick(() => {
         this.$refs['treeInput' + d.id].$refs.input.focus()
       })
@@ -42,7 +42,7 @@ export default {
       this.$emit('nodeDel', s, d, n)
     },
     nodeEditPass(s, d, n) { // 编辑完成
-      d.isEdit = false
+      d.treeIsEdit = false
     },
     nodeEditFocus() {
       // 阻止点击节点的事件冒泡

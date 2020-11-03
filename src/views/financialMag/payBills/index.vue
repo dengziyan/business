@@ -72,12 +72,12 @@ export default {
         { attrs: { prop: 'communityId', label: '小区', width: '100', 'show-overflow-tooltip': true }},
         { slot: 'handle2', attrs: { type: 'button', prop: 'billName', label: '账单名称', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'chargeProjectId', label: '收费项目', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'chargeBeginTime', label: '收费开始日期', width: '154', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'chargeBeginTime', label: '收费开始日期', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'amountPayable', label: '应缴金额', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'amountActuallyPaid', label: '实缴金额', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'reviewer', label: '审核人', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'reviewTime', label: '审核时间', width: '154', 'show-overflow-tooltip': true }},
-        { slot: 'handle', attrs: { label: '操作', width: '', 'class-name': 'small-padding fixed-width', align: 'center' }}
+        { attrs: { prop: 'reviewTime', label: '审核时间', 'show-overflow-tooltip': true }},
+        { slot: 'handle', attrs: { label: '操作', width: '250', 'class-name': 'small-padding fixed-width', align: 'center' }}
       ])
     }
   },
@@ -107,7 +107,7 @@ export default {
     // 查询批次列表
     getList() {
       this.loading = true
-      console.log(this.searchData)
+      // console.log(this.searchData)
       // 根据审核状态查询
       if (this.searchData.billStatus === '待审核') {
         this.searchData.billStatus = 0
@@ -124,7 +124,7 @@ export default {
     },
     // 表格方法
     handleCheck(row, index) {
-      console.log(row.id)
+      // console.log(row.id)
       this.$router.push({
         name: 'payDetail',
         params: {
@@ -136,31 +136,22 @@ export default {
     handleEdit(row, index) {
       this.dialogVisible = true
       this.isEdit = true
-      console.log(row, index)
+      // console.log(row, index)
       updatePayBills(row)
     },
     // 删除
     handleDelete(row) {
-      console.log(row.id)
+      // console.log(row.id)
       const batchIds = row.id || this.ids
-      this.$confirm(
-        '是否确认删除账单批次名称为 "' + row.billName + '" 的数据项?',
-        '警告',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }
-      )
-        .then(function() {
-          return delBatch(batchIds)
-        })
-        .then(() => {
-          this.getList()
-          this.msgSuccess('删除成功')
-        })
-        .catch(function() {
-        })
+      this.$confirm('是否确认删除账单批次名称为 "' + row.billName + '" 的数据项?', '警告',
+        { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
+      ).then(function() {
+        return delBatch(batchIds)
+      }).then(() => {
+        this.getList()
+        this.msgSuccess('删除成功')
+      }).catch(function() {
+      })
     }
   }
 }

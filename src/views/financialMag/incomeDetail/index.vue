@@ -4,18 +4,9 @@
     <!--引入搜索条件子组件        -->
     <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
     <!--引入表格组件        -->
-    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="No data~">
-            <!-- 普通数据-->
-<!--        <template #h1="{scope: { row }}">{{ row.billStatus }}</template>-->
-<!--        <template #h2="{scope: { row }}">{{ row.communityId }}</template>-->
-<!--        <template #h3="{scope: { row }}">{{ row.chargeProjectId }}</template>-->
-<!--        <template #h4="{scope: { row }}">{{ row.chargeBeginTime }}</template>-->
-<!--        <template #h5="{scope: { row }}">{{ row.amountPayable }}</template>-->
-<!--        <template #h6="{scope: { row }}">{{ row.amountActuallyPaid }}</template>-->
-<!--        <template #h7="{scope: { row }}">{{ row.reviewer }}</template>-->
-<!--        <template #h8="{scope: { row }}">{{ row.reviewTime }}</template>-->
+    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
 
-          <!-- 操作按钮 。#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
+        <!-- 操作按钮 。#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
         <template #handle="{scope: {row, $index}}">
           <el-button type="primary" size="mini" @click="handleBack(row, $index)">退款</el-button>
         </template>
@@ -36,10 +27,7 @@ import fileDownload from 'js-file-download'
 
 export default {
   name: 'Index',
-  components: {
-    TableVue,
-    SearchForm
-  },
+  components: { TableVue, SearchForm },
   data() {
     return {
       // 查询表单
@@ -60,17 +48,17 @@ export default {
       list: [],
       total: 0, // 总条数
       columns: Object.freeze([
-        { slot: 'h1', attrs: { prop: 'name', label: '小区', width: '100', align: 'center' }, id: 0 },
-        { slot: 'h2', attrs: { prop: 'buildingName', label: '房屋（栋-单元-室/车位号/车牌号）', width: '100', 'show-overflow-tooltip': true }, id: 1 },
-        { slot: 'h3', attrs: { prop: 'billName', label: '账单名称', width: '100', 'show-overflow-tooltip': true }, id: 2 },
-        { slot: 'h4', attrs: { prop: 'chargeCategoryName', label: '收费类型', width: '154', 'show-overflow-tooltip': true }, id: 3 },
-        { slot: 'h5', attrs: { prop: 'id', label: '订单号', 'show-overflow-tooltip': true }, id: 4 },
-        { slot: 'h6', attrs: { prop: 'mobliePhone', label: '手机号', 'show-overflow-tooltip': true }, id: 5 },
-        { slot: 'h6', attrs: { prop: 'residentIdentity', label: '住户', 'show-overflow-tooltip': true }, id: 6 },
-        { slot: 'h6', attrs: { prop: 'amount', label: '缴费时间', 'show-overflow-tooltip': true }, id: 7 },
-        { slot: 'h6', attrs: { prop: 'amountPayable', label: '缴费金额', 'show-overflow-tooltip': true }, id: 8 },
-        { slot: 'h6', attrs: { prop: 'amountPayable', label: '缴费方式', 'show-overflow-tooltip': true }, id: 9 },
-        { slot: 'handle', attrs: { label: '操作', width: '', 'class-name': 'small-padding fixed-width', align: 'center' }, id: 10 }
+        { attrs: { prop: 'name', label: '小区', width: '100', align: 'center' }},
+        { attrs: { prop: 'buildingName', label: '房屋（栋-单元-室/车位号/车牌号）', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'billName', label: '账单名称', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'chargeCategoryName', label: '收费类型', width: '154', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'id', label: '订单号', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'mobliePhone', label: '手机号', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'residentIdentity', label: '住户', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'amount', label: '缴费时间', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'amountPayable', label: '缴费金额', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'amountPayable', label: '缴费方式', 'show-overflow-tooltip': true }},
+        { slot: 'handle', attrs: { label: '操作', width: '', 'class-name': 'small-padding fixed-width', align: 'center' }}
       ])
     }
   },

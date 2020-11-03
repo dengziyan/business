@@ -100,18 +100,15 @@ export default {
       // Object.keys(this.searchData).forEach(key => this.searchData[key] = '')
     }
   }
-
 }
 
 </script>
 <style scoped>
-  /*.ces-search{*/
-  /*  display: flex;*/
-  /*}*/
   .input{
     float: left;
   }
   .button{
-    float: right;
+    float: left;
   }
+
 </style>
