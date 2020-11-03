@@ -158,6 +158,14 @@ export const constantRoutes = [
         }
       },
       {
+        path: '/sqlDict',
+        name: 'sqlDict',
+        component: () => import('@/views/System/sqlDict'),
+        meta: {
+          keepAlive: true // 需要缓存的页面
+        }
+      },
+      {
         path: '/opeDiary',
         name: 'opeDiary',
         component: () => import('@/views/System/Diary/OpeDiary'),

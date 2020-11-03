@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'CommTree'
+  name: 'SqlDict'
 }
 </script>
 

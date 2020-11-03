@@ -8,6 +8,14 @@ export function listResident(query) {
     params: query
   })
 }
+// 查询物业菜单
+export function listProperty(query) {
+  return request({
+    url: '/sys/property/menu',
+    method: 'get',
+    params: query
+  })
+}
 // 下载导入模板
 // export function importTemplates() {
 //   return request({

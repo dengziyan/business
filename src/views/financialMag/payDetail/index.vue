@@ -15,8 +15,7 @@ export default {
     payDetailTable
   },
   created() {
-    // console.log('哈哈哈哈')
-    // console.log(this.$route.params.id)
+
   }
 }
 </script>
