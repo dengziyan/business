@@ -40,7 +40,7 @@ export default {
         formItem: [
           { type: 'select', isDisabled: false, multiple: false, label: '收费类型', tip: '', value: '', options: [] },
           { type: 'select', isDisabled: false, multiple: false, label: '收费项目名称', tip: '', value: '', options: [] },
-          { type: 'text', label: '账单名称', size: 'small', isDisabled: false, placeholder: '请输入账单名称', prop: 'billName', required: true },
+          { type: 'text', label: '账单名称', size: 'small', isDisabled: false, placeholder: '请输入账单名称', value: '', prop: 'billName', required: true },
           { type: 'date', label: '收费开始时间', prop: 'starTime', value: '' },
           { type: 'radio', label: '账单模式', isDisabled: false, prop: 'modle', value: '', options: [{ name: '按月', value: '1' }, { name: '按年', value: '0' }] },
           { type: 'upload', label: '账单上传', isDisabled: false, value: '', fileList: [],
@@ -137,18 +137,23 @@ export default {
     handleFileUpload(val) {
       const formData = new FormData()
       const chargeBatch = {
-        billName: '2019物业费',
-        chargeProjectId: 1,
-        chargeBeginTime: '2019-01-01 00:00:00'
+        billName: this.formData.formItem[2].value,
+        chargeProjectId: this.formData.formItem[1].value,
+        chargeBeginTime: this.formData.formItem[3].value
       }
-      console.log(JSON.parse(JSON.stringify(chargeBatch)))
-      formData.append('chargeBatch', JSON.stringify(chargeBatch))
-      formData.append('file', val.file)
-      console.log(val)
-      batchAddBatchBills(0, 0, formData).then(res => {
-        val.onSuccess()
-      }).catch(res => {
-        val.onError()
+      listChargeProjectOptions(chargeBatch).then(response => {
+        chargeBatch.chargeProjectId = response.data.rows[0].id
+        console.log(response.data.rows[0].id)
+        console.log(this.formData.formItem)
+        console.log(JSON.parse(JSON.stringify(chargeBatch)))
+        formData.append('chargeBatch', JSON.stringify(chargeBatch))
+        formData.append('file', val.file)
+        console.log(val)
+        batchAddBatchBills(0, this.formData.formItem[4].value, formData).then(res => {
+          val.onSuccess()
+        }).catch(res => {
+          val.onError()
+        })
       })
     },
     cancel(val) {

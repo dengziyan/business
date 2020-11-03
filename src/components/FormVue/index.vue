@@ -20,7 +20,7 @@
       <!-- 文本框 -->
       <el-input
         v-if="item.type === 'text'"
-        v-model="form[item.prop]"
+        v-model="item.value"
         :disabled="item.isDisabled"
         :size="item.size"
       />
@@ -41,7 +41,7 @@
       <!-- 单选框 -->
       <el-radio-group
         v-if="item.type==='radio'"
-        v-model="form[item.prop]"
+        v-model="item.value"
       >
         <el-radio
           v-for="item in item.options"
@@ -115,7 +115,7 @@
       <!-- 日期选择器 -->
       <el-date-picker
         v-if="item.type==='date'"
-        v-model="form[item.prop]"
+        v-model="item.value"
         type="date"
         value-format="yyyy-MM-dd"
         placeholder="选择日期"
@@ -123,13 +123,13 @@
       <!-- 时间选择器 -->
       <el-time-picker
         v-if="item.type==='time'"
-        v-model="form[item.prop]"
+        v-model="item.value"
         placeholder="请选择时间"
       />
       <!-- 日期时间选择器 -->
       <el-date-picker
         v-if="item.type==='dateTime'"
-        v-model="form[item.prop]"
+        v-model="item.value"
         type="datetime"
         placeholder="选择日期时间"
       />
