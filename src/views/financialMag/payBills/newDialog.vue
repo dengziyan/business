@@ -12,7 +12,7 @@
 
 <script>
 import FormVue from '@/components/FormVue'
-import { updatePayBills, addPayBills, listChargeCategoryOptions, listChargeProjectOptions, importTemplates, batchAddChargeBatch } from '@/api/financialMag/payBills'
+import { updatePayBills, addPayBills, listChargeCategoryOptions, listChargeProjectOptions, importTemplates, batchAddChargeBatch, batchAddBatchBills } from '@/api/financialMag/payBills'
 import fileDownload from 'js-file-download'
 import { getToken } from '@/utils/auth'
 export default {
@@ -59,6 +59,11 @@ export default {
       }
     }
   },
+  computed: {
+    listCategories() {
+      return []
+    }
+  },
   // watch: {
   //   dialogVisibled(val) {
   //     console.log(this.visible)
@@ -69,11 +74,6 @@ export default {
   created() {
     this.getChargeCategory()
     this.getChargeProject()
-  },
-  computed: {
-    listCategories() {
-      return []
-    }
   },
   methods: {
     // 对话框按确定键之后的方法
@@ -136,9 +136,16 @@ export default {
     // 上传
     handleFileUpload(val) {
       const formData = new FormData()
+      const chargeBatch = {
+        billName: '2019物业费',
+        chargeProjectId: 1,
+        chargeBeginTime: '2019-01-01 00:00:00'
+      }
+      console.log(JSON.parse(JSON.stringify(chargeBatch)))
+      formData.append('chargeBatch', JSON.stringify(chargeBatch))
       formData.append('file', val.file)
       console.log(val)
-      batchAddChargeBatch(0, formData).then(res => {
+      batchAddBatchBills(0, 0, formData).then(res => {
         val.onSuccess()
       }).catch(res => {
         val.onError()

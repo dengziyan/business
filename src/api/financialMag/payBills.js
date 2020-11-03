@@ -19,10 +19,23 @@ export function batchAddChargeBatch(id, data) {
     data: data
   })
 }
+
+// 批量导入
+export function batchAddBatchBills(userId, modelId, data) {
+  return request({
+    url: '/chargeBatch/import/bills',
+    method: 'post',
+    params: {
+      userId: userId,
+      modelId: modelId
+    },
+    data: data
+  })
+}
 // 修改
 export function updatePayBills(data) {
   return request({
-    url: '/chargeBatch/',
+    url: '/chargeBatch/import/bills',
     method: 'put',
     data: data
   })
