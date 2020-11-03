@@ -10,21 +10,12 @@
     </el-radio-group>
     <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
     <!--点击新增后出现的弹框    -->
-    <el-dialog :title="isEdit?'编辑账单批次':'新建账单批次'" :visible.sync="dialogVisible" width="30%">
+    <el-dialog :title="isEdit?'编辑账单批次':'新建账单批次'" :visible.sync="dialogVisible" width="650px">
       <!--弹框子组件      -->
       <new-dialog :visible.sync="dialogVisible" />
     </el-dialog>
     <!--引入表格组件        -->
-    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="哈哈哈，我就看看没数据会怎样~">
-      <!-- 普通数据-->
-      <template #h1="{scope: { row }}">{{ row.billStatus }}</template>
-      <template #h2="{scope: { row }}">{{ row.communityId }}</template>
-      <template #h3="{scope: { row }}">{{ row.chargeProjectId }}</template>
-      <template #h4="{scope: { row }}">{{ row.chargeBeginTime }}</template>
-      <template #h5="{scope: { row }}">{{ row.amountPayable }}</template>
-      <template #h6="{scope: { row }}">{{ row.amountActuallyPaid }}</template>
-      <template #h7="{scope: { row }}">{{ row.reviewer }}</template>
-      <template #h8="{scope: { row }}">{{ row.reviewTime }}</template>
+    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="No data~">
       <!--  文字按钮    -->
       <template #handle2="{scope: { row }}">
         <el-button type="text" @click="handleCheck(row)">{{row.billName}}</el-button>
@@ -77,16 +68,16 @@ export default {
       list: [],
       total: 0, // 总条数
       columns: Object.freeze([
-        { slot: 'h1', attrs: { prop: 'billStatus', label: '账单状态', width: '100', align: 'center' }, id: 0 },
-        { slot: 'h2', attrs: { prop: 'communityId', label: '小区', width: '100', 'show-overflow-tooltip': true }, id: 1 },
-        { slot: 'handle2', attrs: { type: 'button', prop: 'billName', label: '账单名称', width: '100', 'show-overflow-tooltip': true }, id: 2 },
-        { slot: 'h3', attrs: { prop: 'chargeProjectId', label: '收费项目', width: '100', 'show-overflow-tooltip': true }, id: 3 },
-        { slot: 'h4', attrs: { prop: 'chargeBeginTime', label: '收费开始日期', width: '154', 'show-overflow-tooltip': true }, id: 4 },
-        { slot: 'h5', attrs: { prop: 'amountPayable', label: '应缴金额', width: '100', 'show-overflow-tooltip': true }, id: 5 },
-        { slot: 'h6', attrs: { prop: 'amountActuallyPaid', label: '实缴金额', width: '100', 'show-overflow-tooltip': true }, id: 6 },
-        { slot: 'h7', attrs: { prop: 'reviewer', label: '审核人', width: '100', 'show-overflow-tooltip': true }, id: 7 },
-        { slot: 'h8', attrs: { prop: 'reviewTime', label: '审核时间', width: '154', 'show-overflow-tooltip': true }, id: 8 },
-        { slot: 'handle', attrs: { label: '操作', width: '', 'class-name': 'small-padding fixed-width', align: 'center' }, id: 9 }
+        { attrs: { prop: 'billStatus', label: '账单状态', width: '100', align: 'center' }},
+        { attrs: { prop: 'communityId', label: '小区', width: '100', 'show-overflow-tooltip': true }},
+        { slot: 'handle2', attrs: { type: 'button', prop: 'billName', label: '账单名称', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'chargeProjectId', label: '收费项目', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'chargeBeginTime', label: '收费开始日期', width: '154', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'amountPayable', label: '应缴金额', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'amountActuallyPaid', label: '实缴金额', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'reviewer', label: '审核人', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'reviewTime', label: '审核时间', width: '154', 'show-overflow-tooltip': true }},
+        { slot: 'handle', attrs: { label: '操作', width: '', 'class-name': 'small-padding fixed-width', align: 'center' }}
       ])
     }
   },

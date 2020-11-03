@@ -12,10 +12,7 @@
         @keyup.enter.stop.native="nodeEditPass(STORE,DATA,NODE)"
       />
     </span>
-    <span
-      v-show="!DATA.isEdit"
-      :class="[DATA.id > maxexpandId ? 'tree-new tree-label' : 'tree-label']"
-    >
+    <span v-show="!DATA.isEdit" :class="[DATA.id > maxexpandId ? 'tree-new tree-label' : 'tree-label']">
       <span>{{ DATA.name }}</span>
     </span>
     <span v-show="!DATA.isEdit" class="tree-btn">
@@ -28,7 +25,7 @@
 
 <script>
 export default {
-  name: 'TreeExpand',
+  name: 'Index',
   props: ['NODE', 'DATA', 'STORE', 'maxexpandId'],
   methods: {
     nodeAdd(s, d, n) { // 新增

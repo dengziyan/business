@@ -1,6 +1,7 @@
 <template>
     <div>
       <search-form
+        class="searchMain"
         size="mini"
         label-width="80px"
         :search-data="searchData"
@@ -80,5 +81,8 @@ export default {
   .ces-search{
     height: 50px;
     margin-top: 10px;
+  }
+  .searchMain{
+    height: 200px;
   }
 </style>

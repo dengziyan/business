@@ -24,6 +24,13 @@
         :disabled="item.isDisabled"
         :size="item.size"
       />
+      <!--      -->
+      <h4
+        v-if="item.type === 'text2'"
+        v-model="form[item.prop]"
+      >
+        <p >{{form[item.prop]}}</p>
+      </h4>
       <!-- 密码框 -->
       <el-input
         v-if="item.type === 'password'"
@@ -254,5 +261,14 @@ export default {
   }
   .el-form-item__content .button{
     float: left;
+  }
+  .el-form-item--small{
+    float:left;
+  }
+  .dialog-footer button{
+    float: left;
+  }
+  .demo-ruleForm{
+    height: 300px;
   }
 </style>

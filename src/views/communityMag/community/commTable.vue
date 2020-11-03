@@ -1,43 +1,43 @@
 <template>
   <!--小区表格及操作组件  -->
   <div>
-    <!--引入操作子组件        -->
-    <table-handle />
+    <!-- 各个操作按钮 -->
+    <el-row :gutter="10" class="mb8">
+      <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
+      <el-button type="info" icon="el-icon-upload2" size="mini" :disabled="!multiple" @click="handleImport">导入</el-button>
+      <el-button type="warning" icon="el-icon-download" size="mini" :disabled="!multiple" @click="handleExport">导出</el-button>
+      <el-checkbox v-model="checkAll">导出所有数据</el-checkbox>
+    </el-row>
     <!--引入表格组件        -->
-    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="哈哈哈，我就看看没数据会怎样~">
+    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
       <!-- 下面是上面的简写，#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
       <template #handle="{scope: {row, $index}}">
-        <el-button type="danger" size="mini" @click="handleDelete()">
-          删除
-        </el-button>
-        <el-button type="primary" size="mini" @click="handleUpdate(row, $index)">
-          编辑
-        </el-button>
+        <el-button type="danger" size="mini" @click="handleDelete()">删除</el-button>
+        <el-button type="primary" size="mini" @click="handleUpdate(row, $index)">编辑</el-button>
       </template>
     </TableVue>
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      :page-sizes="[10,25,50]"
-      @pagination="getList"
-    />
+    <!--分页    -->
+    <pagination v-show="total>0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" :page-sizes="[10,25,50]" @pagination="getList"/>
   </div>
 </template>
 
 <script>
-import tableHandle from './tableHandle'
 import TableVue from '@/components/TableVue'
 import { listResident } from '@/api/CommunityMag/community'
 export default {
   name: 'CommTable',
   components: {
-    tableHandle,
     TableVue
   },
   data() {
     return {
+      // 操作按钮
+      single: true, // 非单个禁用
+      multiple: true, // 非多个禁用
+      checkAll: false,
+      dialogVisible: false,
+      isEdit: false,
+      // 表格
       total: 0, // 总条数
       // table表格数据
       loading: true,
@@ -73,59 +73,6 @@ export default {
   },
   created() {
     this.getList()
-    // setTimeout(() => {
-    //   this.list = [
-    //     {
-    //       communityId: '1',
-    //       buildingId: '1',
-    //       unitId: '1',
-    //       roomNum: '1',
-    //       houseArea: '600',
-    //       name: '李易峰',
-    //       mobilePhone: '13423518561',
-    //       certificateNum: '440923199807022427',
-    //       residentIdentity: '住户',
-    //       createTime: '2019'
-    //     },
-    //     {
-    //       communityId: '1',
-    //       buildingId: '1',
-    //       unitId: '1',
-    //       roomNum: '1',
-    //       houseArea: '600',
-    //       name: '李易峰',
-    //       mobilePhone: '13423518561',
-    //       residentIdentity: '住户',
-    //       certificateNum: '440923199807022427',
-    //       createTime: '2019'
-    //     },
-    //     {
-    //       communityId: '1',
-    //       buildingId: '1',
-    //       unitId: '1',
-    //       roomNum: '1',
-    //       houseArea: '600',
-    //       name: '李易峰',
-    //       mobilePhone: '13423518561',
-    //       residentIdentity: '住户',
-    //       certificateNum: '440923199807022427',
-    //       createTime: '2019'
-    //     },
-    //     {
-    //       communityId: '1',
-    //       buildingId: '1',
-    //       unitId: '1',
-    //       roomNum: '1',
-    //       houseArea: '600',
-    //       name: '李易峰',
-    //       mobilePhone: '13423518561',
-    //       residentIdentity: '住户',
-    //       certificateNum: '440923199807022427',
-    //       createTime: '2019'
-    //     }
-    //   ]
-    //   this.loading = false
-    // }, 1000)
   },
   methods: {
     /** 查询住户列表 */
@@ -146,6 +93,65 @@ export default {
     },
     handleDelete() {
       this.list = []
+    },
+    // 按添加按钮，弹出对话框
+    handleAdd() {
+      this.dialogVisible = true
+      this.isEdit = false
+      this.user = Object.assign({}, defaultUser) // 默认值为空
+    },
+    handleDelete(row) {
+      const userIds = row.id || this.ids
+      this.$confirm(
+        '是否确认删除用户编号为"' + userIds + '"的数据项?',
+        '警告',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      )
+        .then(function() {
+          return delUser(userIds)
+        })
+        .then(() => {
+          this.getList()
+          this.msgSuccess('删除成功')
+        })
+        .catch(function() {
+        })
+    },
+    /** 导入按钮操作 */
+    handleImport() {
+      this.upload.title = '用户导入'
+      this.upload.open = true
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      const queryParams = this.queryParams
+      if (this.checkAll) {
+        queryParams.pageNum = undefined
+        queryParams.pageSize = undefined
+        queryParams.type = 'all'
+      }
+      this.$confirm('是否确认导出用户数据项?', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(function() {
+          exportUser(queryParams).then(res => {
+            console.log(res)
+            const sysDate = moment(new Date()).format('YYYY-MM-DDHHmm')
+            console.log(sysDate)
+            fileDownload(res, sysDate + '用户信息表.xlsx')
+          })
+            .catch(err => {
+              console.log(err)
+            })
+        })
+        .catch(function() {
+        })
     }
   }
 }
