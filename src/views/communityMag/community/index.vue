@@ -22,10 +22,10 @@
         <!--点击+新增后出现的弹框    -->
         <el-dialog :title="treeIsEdit?'编辑':'添加'" :visible.sync="treeDialogVisible" width="650px">
           <!--弹框子组件      -->
-          <new-dialog1 v-if="newdialog === 1"/>
-          <new-dialog2 v-if="newdialog === 2"/>
-          <new-dialog3 v-if="newdialog === 3"/>
-          <new-dialog4 v-if="newdialog === 4"/>
+          <new-dialog1 v-if="newdialog === 1" :visible.sync="treeDialogVisible"/>
+          <new-dialog2 v-if="newdialog === 2" :visible.sync="treeDialogVisible"/>
+          <new-dialog3 v-if="newdialog === 3" :visible.sync="treeDialogVisible"/>
+          <new-dialog4 v-if="newdialog === 4" :visible.sync="treeDialogVisible"/>
         </el-dialog>
       </div>
     </div>
@@ -77,7 +77,7 @@ export default {
     return {
       // 左边的树（maxexpandId:新增节点开始id，isLoadingTree: 是否加载节点树，defaultExpandKeys默认展开节点列表
       treeList: [], maxexpandId: 95, non_maxexpandId: 95, isLoadingTree: false,
-      defaultExpandKeys: [], treeDialogVisible: false, treeIsEdit: false,newdialog: 0,
+      defaultExpandKeys: [], treeDialogVisible: false, treeIsEdit: false, newdialog: 0,
       defaultProps: { children: 'children', label: 'name', id: 'name' },
       queryParams: { userId: undefined },
       // 查询表单

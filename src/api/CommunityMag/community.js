@@ -16,6 +16,70 @@ export function listProperty(query) {
     params: query
   })
 }
+// 新增商户
+export function addMerchart(data) {
+  return request({
+    url: '/sys/merchant',
+    method: 'post',
+    data: data
+  })
+}
+// 修改商户
+export function updateMerchart(id, data) {
+  return request({
+    url: '/sys/merchant' + id,
+    method: 'post',
+    data: data
+  })
+}
+// 新增小区
+export function addCommunity(data) {
+  return request({
+    url: '/sys/community',
+    method: 'post',
+    data: data
+  })
+}
+// 修改小区
+export function updateCommunity(id, data) {
+  return request({
+    url: '/sys/community' + id,
+    method: 'post',
+    data: data
+  })
+}
+// 新增楼栋
+export function addBuilding(data) {
+  return request({
+    url: '/sys/community/building',
+    method: 'post',
+    data: data
+  })
+}
+// 修改楼栋
+export function updateBuilding(id, data) {
+  return request({
+    url: '/sys/community/building' + id,
+    method: 'post',
+    data: data
+  })
+}
+// 新增单元
+export function addUnit(data) {
+  return request({
+    url: '/sys/community/unit',
+    method: 'post',
+    data: data
+  })
+}
+// 修改单元
+export function updateUnit(id, data) {
+  return request({
+    url: '/sys/community/unit' + id,
+    method: 'post',
+    data: data
+  })
+}
 // 下载导入模板
 // export function importTemplates() {
 //   return request({
