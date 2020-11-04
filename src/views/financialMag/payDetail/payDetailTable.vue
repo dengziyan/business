@@ -21,7 +21,7 @@
     <!--  分页  -->
     <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
     <!--点击详情后出现的弹框    -->
-    <el-dialog title="周期详情" :visible.sync="dialogVisible" width="30%">
+    <el-dialog title="周期详情" :visible.sync="dialogVisible" width="800px">
       <!--弹框子组件      -->
       <detail-dialog :visible.sync="dialogVisible" :detailId="detailId"/>
     </el-dialog>
@@ -49,6 +49,7 @@ export default {
         endTime: null,
         batchId: null
       },
+      dialogVisible: '',
       searchForm: [// multiple:是否开启多选
         { type: 'Select', isDisabled: false, multiple: false, label: '小区', prop: 'communityId', value: '车位停车费', options: [] },
         { type: 'Select', isDisabled: false, multiple: false, label: '账单名称', prop: 'billName', value: '车位停车费', options: [] },

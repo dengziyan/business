@@ -38,6 +38,7 @@ import { addDateRange } from '@/utils/userright'
 import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
 import { listPayBills, delBatch, updatePayBills } from '@/api/financialMag/payBills'
+import { listChargeProject } from '@/api/financialMag/chargeProject'
 
 const defaultPayBills = {}
 export default {
@@ -110,16 +111,26 @@ export default {
       } else if (this.searchData.billStatus === '已审核') {
         this.searchData.billStatus = 1
       } else this.searchData.billStatus = null
+      // 调用查询方法
       listPayBills(addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
         (response) => {
           this.list = response.data.rows
           this.total = response.data.total
           this.loading = false
           for (let i = 0; i < this.list.length; i++) {
+            listChargeProject(query).then(
+              response => {
+                console.log(response.data)
+                this.list[i].chargeProjectId = response.data.rows[0].chargeProjectName
+              }
+            )
             if (this.list[i].billStatus === 0) {
               this.list[i].billStatus = '待审核'
             } else if (this.list[i].billStatus === 1) {
               this.list[i].billStatus = '已审核'
+            }
+            const query = {
+              chargeProjectId: this.list[i].chargeProjectId
             }
           }
         }

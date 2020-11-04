@@ -10,8 +10,7 @@ export function listPayDetail(query) {
 // 查询周期详情
 export function getPaymentCycle(query) {
   return request({
-    url: '/paymentCycle/getPaymentCycle',
-    method: 'get',
-    params: query
+    url: '/paymentCycle/getPaymentCycle/' + query,
+    method: 'get'
   })
 }
