@@ -68,7 +68,7 @@
       <el-checkbox v-model="checkAll">导出所有数据</el-checkbox>
     </el-row>
 
-    <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange" :default-sort = "{prop: 'loginTime', order: 'descending'}">
+    <el-table v-loading="loading" :data="list" :default-sort="{prop: 'loginTime', order: 'descending'}" @selection-change="handleSelectionChange">
       <el-table-column label="访问编号" align="center" prop="id" />
       <el-table-column label="用户名称" align="center" prop="userAccount" :show-overflow-tooltip="true" />
       <el-table-column label="登录IP" align="center" prop="ip" width="130" :show-overflow-tooltip="true" />

@@ -294,20 +294,17 @@ const defaultUser = {
   userName: null,
   gender: '',
   password: '',
-  userTag: '',
-  deleteStatus: 0,
-  enabled: 1,
-  realName: '',
-  roleIds: null,
-  userId: 1,
+  isEnable: undefined,
+  property: undefined, // 所属管理编号
+  roleIds: undefined
 }
 export default {
   name: 'User',
-  // components: { Treeselect },
+
   data() {
     return {
       dialogVisible: false,
-      openalloc:false,
+      openalloc: false,
       isEdit: false,
       user: Object.assign({}, defaultUser), // user为对话框中:model
       defaultRoleId: null,
@@ -320,12 +317,12 @@ export default {
       showSearch: true, // 显示搜索条件
       total: 0, // 总条数
       id: store.getters.id,
-      userList: null, // 用户表格数据
+      userList: [], // 用户表格数据
       open: false, // 是否显示弹出层
       initPassword: undefined, // 默认密码
       dateRange: [], // 日期范围
-      statusOptions: [{ dictLabel: '启用', dictValue: 1 }, { dictLabel: '停用', dictValue: 0 }], // 状态数据字典
-      sexOptions: [{ dictLabel: '男', dictValue: 'M' }, { dictLabel: '女', dictValue: 'F' }], // 性别状态字典
+      statusOptions: [], // 状态数据字典
+      selectOptions: [], // 性别状态字典
       roleOptions: [], // 角色选项
       form: {}, // 表单参数
       // 用户导入参数
@@ -341,22 +338,21 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        account: undefined,
-        realName: undefined,
-        mobilePhone: undefined,
-        enabled: undefined
+        data: {
+          userAccount: undefined,
+          userName: undefined,
+          mobilePhone: undefined,
+          isEnable: undefined
+        }
       },
       // 表单校验
       rules: {
-        account: [
+        userAccount: [
           { required: true, message: '用户账号不能为空', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { min: 4, max: 20, message: '长度在 4 到 20 个字符', trigger: 'blur' }
         ],
-        realName: [
+        userName: [
           { required: true, message: '用户姓名不能为空', trigger: 'blur' }
-        ],
-        password: [
-          { required: true, message: '用户密码不能为空', trigger: 'blur' }
         ],
         email: [
           { required: true, message: '邮箱地址不能为空', trigger: 'blur' },
@@ -379,19 +375,41 @@ export default {
   },
   computed: {
     newEnable() {
-      return this.queryParams.enabled
+      return this.queryParams.data.isEnable
+    },
+    newDate() {
+      return this.dateRange
     }
   },
   watch: {
     newEnable() {
+      this.getList()
+    },
+    newDate() {
       this.getList()
     }
   },
   created() {
     this.getList()
     this.getRoleList() // 获取角色
+    this.getOperationStatusDict()
+    this.getSexOptionStatusDict()
   },
   methods: {
+
+    // 获取回显字典
+    getOperationStatusDict() {
+      getDictVal('tb_common_field', 'is_enable').then(res => {
+        this.statusOptions = this.selectDictLabels(res.data)
+      })
+    },
+    // 获取回显字典
+    getSexOptionStatusDict() {
+      getDictVal('tb_user_info', 'sex').then(res => {
+        this.selectOptions = this.selectDictLabels(res.data)
+      })
+    },
+
     /** 查询用户列表 */
     getList() {
       this.loading = true
@@ -438,7 +456,7 @@ export default {
       changeUserStatus(row.userAccount, row.isEnable).then(() => {
         this.getList()
       }).catch(function() {
-        row.enabled = row.enabled === 0 ? 1 : 0
+        row.isEnable = row.isEnable === 0 ? 1 : 0
       })
     },
     /** 搜索按钮操作 */
@@ -448,7 +466,7 @@ export default {
     /** 重置按钮操作 */
     resetQuery() {
       this.dateRange = []
-      this.resetForm('queryForm')
+      Object.assign(this.$data.queryParams, this.$options.data().queryParams)
       this.handleQuery()
     },
     // 多选框选中数据
@@ -469,7 +487,6 @@ export default {
     },
     // 按修改键弹出对话框（传入当前行的数据）
     handleTopUpdate() {
-      // console.log(this.updataData)
       this.handleUpdate(this.updataData[0])
     },
     // 按修改键弹出对话框（传入当前行的数据）
@@ -531,7 +548,7 @@ export default {
       this.$refs['form'].validate((valid) => {
         if (valid) {
           // eslint-disable-next-line eqeqeq
-          if (this.form.id != undefined) {
+          if (this.form.id !== undefined) {
             updateUser(this.form).then((response) => {
               if (response.code === 2000) {
                 this.msgSuccess('修改成功')
