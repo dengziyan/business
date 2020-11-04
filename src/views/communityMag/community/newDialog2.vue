@@ -1,6 +1,7 @@
 <template>
   <!--新增按钮的弹框  -->
   <div>
+    2
     <!--表格组件      -->
     <FormVue ref="form" :form-data="formData" class="formMain"/>
     <span slot="footer" class="dialog-footer">
@@ -16,7 +17,7 @@ import { updatePayBills, addPayBills, listChargeCategoryOptions, listChargeProje
 import fileDownload from 'js-file-download'
 import { getToken } from '@/utils/auth'
 export default {
-  name: 'NewDialog',
+  name: 'NewDialog2',
   components: {
     FormVue
   },
@@ -156,7 +157,7 @@ export default {
 </script>
 
 <style scoped>
-.formMain{
-  height: 400px;
-}
+  .formMain{
+    height: 400px;
+  }
 </style>

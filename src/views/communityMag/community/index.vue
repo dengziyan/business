@@ -1,56 +1,46 @@
 <template>
   <div>
-    <div class="tree">
-      <!--小区左边的树形控件组件  -->
-      <div class="expand">
-        <div>
-          小区信息
-          <el-button @click="handleAddTop">导入</el-button>
-          <el-tree
-            v-show="isLoadingTree"
-            ref="expandMenuList"
-            class="expand-tree"
-            :data="treeList"
-            :render-content="renderContent"
-            :props="defaultProps"
-            node-key="id"
-            highlight-current
-            accordion
-            :check-strictly="true"
-            auto-expand-parent
-            @node-click="handleNodeClick"
-          />
-          <!--点击+新增后出现的弹框    -->
-          <el-dialog :title="treeIsEdit?'编辑用户':'添加用户'" :visible.sync="treeDialogVisible" width="650px">
-            <!--弹框子组件      -->
-            <new-dialog />
-          </el-dialog>
-        </div>
+    <!--小区左边的树形控件组件  -->
+    <div class="expand">
+      <div>
+        小区信息
+        <el-button @click="handleAddTop">导入</el-button>
+        <el-tree
+          v-show="isLoadingTree"
+          ref="expandMenuList"
+          class="expand-tree"
+          :data="treeList"
+          :render-content="renderContent"
+          :props="defaultProps"
+          node-key="id"
+          highlight-current
+          accordion
+          :check-strictly="true"
+          auto-expand-parent
+          @node-click="handleNodeClick"
+        />
+        <!--点击+新增后出现的弹框    -->
+        <el-dialog :title="treeIsEdit?'编辑':'添加'" :visible.sync="treeDialogVisible" width="650px">
+          <!--弹框子组件      -->
+          <new-dialog1 v-if="newdialog === 1"/>
+          <new-dialog2 v-if="newdialog === 2"/>
+          <new-dialog3 v-if="newdialog === 3"/>
+          <new-dialog4 v-if="newdialog === 4"/>
+        </el-dialog>
       </div>
     </div>
     <div class="resident">
       住户信息
       <div class="detail">
         <!--引入搜索条件子组件        -->
-        <search-form
-          class="searchMain"
-          size="mini"
-          label-width="80px"
-          :search-data="searchData"
-          :search-form="searchForm"
-          :search-handle="searchHandle"
-        />
+        <search-form class="searchMain" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle"/>
         <!--小区表格及操作组件  -->
         <div class="table">
           <!-- 各个操作按钮 -->
           <el-row :gutter="10" class="mb8">
-            <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增
-            </el-button>
-            <el-button type="info" icon="el-icon-upload2" size="mini" :disabled="!multiple" @click="handleImport">导入
-            </el-button>
-            <el-button type="warning" icon="el-icon-download" size="mini" :disabled="!multiple" @click="handleExport">
-              导出
-            </el-button>
+            <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
+            <el-button type="info" icon="el-icon-upload2" size="mini" :disabled="!multiple" @click="handleImport">导入</el-button>
+            <el-button type="warning" icon="el-icon-download" size="mini" :disabled="!multiple" @click="handleExport">导出</el-button>
             <el-checkbox v-model="checkAll">导出所有数据</el-checkbox>
           </el-row>
           <!--引入表格组件        -->
@@ -62,14 +52,7 @@
             </template>
           </TableVue>
           <!--分页    -->
-          <pagination
-            v-show="total>0"
-            :total="total"
-            :page.sync="searchData.pageNum"
-            :limit.sync="searchData.pageSize"
-            :page-sizes="[10,25,50]"
-            @pagination="getList"
-          />
+          <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList"/>
         </div>
       </div>
     </div>
@@ -78,7 +61,10 @@
 
 <script>
 import TreeRender from '@/components/Tree/index'
-import newDialog from './newDialog'
+import newDialog1 from './newDialog1'
+import newDialog2 from './newDialog2'
+import newDialog3 from './newDialog3'
+import newDialog4 from './newDialog4'
 import TableVue from '@/components/TableVue'
 import SearchForm from '@/components/SearchForm'
 import { listProperty, listResident } from '@/api/CommunityMag/community'
@@ -86,16 +72,12 @@ import { addDateRange } from '@/utils/userright'
 
 const id = 1000
 export default {
-  components: {
-    newDialog,
-    TableVue,
-    SearchForm
-  },
+  components: { newDialog1, newDialog2, newDialog3, newDialog4, TableVue, SearchForm },
   data() {
     return {
       // 左边的树（maxexpandId:新增节点开始id，isLoadingTree: 是否加载节点树，defaultExpandKeys默认展开节点列表
       treeList: [], maxexpandId: 95, non_maxexpandId: 95, isLoadingTree: false,
-      defaultExpandKeys: [], treeDialogVisible: false, treeIsEdit: false,
+      defaultExpandKeys: [], treeDialogVisible: false, treeIsEdit: false,newdialog: 0,
       defaultProps: { children: 'children', label: 'name', id: 'name' },
       queryParams: { userId: undefined },
       // 查询表单
@@ -114,14 +96,8 @@ export default {
       total: 0, loading: true, list: [],
       levels: [-1, -1, -1, -1],
       searchData: { // 查询参数
-        pageNum: 1,
-        pageSize: 10,
-        userId: undefined,
-        buildingId: undefined,
-        communityId: undefined,
-        merchantId: undefined,
-        roomNo: undefined,
-        unitId: undefined,
+        pageNum: 1, pageSize: 10, userId: undefined, buildingId: undefined, communityId: undefined,
+        merchantId: undefined, roomNo: undefined, unitId: undefined,
         data: { mobilePhone: undefined, residentName: undefined }
       },
       columns: Object.freeze([
@@ -135,10 +111,7 @@ export default {
         { attrs: { prop: 'certificateNo', label: '证件号', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'residentIdentity', label: '住户身份', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'createTime', label: '创建时间', width: '100', 'show-overflow-tooltip': true }},
-        {
-          slot: 'handle',
-          attrs: { label: '操作', width: '180', 'class-name': 'small-padding fixed-width', align: 'center' }
-        }
+        { slot: 'handle', attrs: { label: '操作', width: '180', 'class-name': 'small-padding fixed-width', align: 'center' }}
       ])
     }
   },
@@ -173,20 +146,13 @@ export default {
         this.loading = false
       })
     },
-    initExpand() {
-      // this.list.map((a) => {
-      //   this.defaultExpandKeys.push(a.id)
-      // })
-      // this.isLoadingTree = true
-    },
+    initExpand() {},
     handleNodeClick(d, node, s) { // 点击节点
       // 置空 物业 单元 楼栋 小区
       this.levels = [-1, -1, -1, -1]
-
       // 遍历节点信息
       this.nodeCheck(node)
       d.treeIsEdit = false// 放弃编辑状态
-
       // 设置选中
       this.nodeSet()
       // 获取住户信息
@@ -227,15 +193,24 @@ export default {
     handleAddTop() {
     },
     nodeAdd(s, d, n) { // 增加节点
+      if (n.level === 1) {
+        this.newdialog = 1
+      } else if (n.level === 2) {
+        this.newdialog = 2
+      } else if (n.level === 3) {
+        this.newdialog = 3
+      } else {
+        this.newdialog = 4
+      }
       this.treeDialogVisible = true
       this.treeIsEdit = false
       // this.community = Object.assign({}, defaultCommunity) // 默认值为空
     },
     nodeEdit(s, d, n) { // 编辑节点
-      console.log(s, d, n)
+      // console.log(s, d, n)
     },
     nodeDelete(s, d, n) { // 删除节点
-      console.log(s, d, n)
+      // console.log(s, d, n)
       const that = this
       // 有子级不删除
       if (d.children && d.children.length !== 0) {
@@ -272,7 +247,7 @@ export default {
     },
     // 表格方法
     handleUpdate(row, index) {
-      console.log(row, index)
+      // console.log(row, index)
     },
     // 按添加按钮，弹出对话框
     handleAdd() {
@@ -308,12 +283,12 @@ export default {
         { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
       ).then(function() {
         exportUser(searchData).then(res => {
-          console.log(res)
+          // console.log(res)
           const sysDate = moment(new Date()).format('YYYY-MM-DDHHmm')
-          console.log(sysDate)
+          // console.log(sysDate)
           fileDownload(res, sysDate + '用户信息表.xlsx')
         }).catch(err => {
-          console.log(err)
+          // console.log(err)
         })
       }).catch(function() {
       })
