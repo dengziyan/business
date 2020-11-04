@@ -7,16 +7,17 @@
           小区信息
           <el-button @click="handleAddTop">导入</el-button>
           <el-tree
-            v-if="isLoadingTree"
+            v-show="isLoadingTree"
             ref="expandMenuList"
             class="expand-tree"
             :data="treeList"
+            :render-content="renderContent"
+            :props="defaultProps"
             node-key="id"
             highlight-current
-            :props="defaultProps"
-            :expand-on-click-node="false"
-            :render-content="renderContent"
-            :default-expanded-keys="defaultExpandKeys"
+            accordion
+            :check-strictly="true"
+            auto-expand-parent
             @node-click="handleNodeClick"
           />
           <!--点击+新增后出现的弹框    -->
@@ -31,14 +32,25 @@
       住户信息
       <div class="detail">
         <!--引入搜索条件子组件        -->
-        <search-form class="searchMain" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle"/>
+        <search-form
+          class="searchMain"
+          size="mini"
+          label-width="80px"
+          :search-data="searchData"
+          :search-form="searchForm"
+          :search-handle="searchHandle"
+        />
         <!--小区表格及操作组件  -->
         <div class="table">
           <!-- 各个操作按钮 -->
           <el-row :gutter="10" class="mb8">
-            <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
-            <el-button type="info" icon="el-icon-upload2" size="mini" :disabled="!multiple" @click="handleImport">导入</el-button>
-            <el-button type="warning" icon="el-icon-download" size="mini" :disabled="!multiple" @click="handleExport">导出</el-button>
+            <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增
+            </el-button>
+            <el-button type="info" icon="el-icon-upload2" size="mini" :disabled="!multiple" @click="handleImport">导入
+            </el-button>
+            <el-button type="warning" icon="el-icon-download" size="mini" :disabled="!multiple" @click="handleExport">
+              导出
+            </el-button>
             <el-checkbox v-model="checkAll">导出所有数据</el-checkbox>
           </el-row>
           <!--引入表格组件        -->
@@ -50,7 +62,14 @@
             </template>
           </TableVue>
           <!--分页    -->
-          <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList"/>
+          <pagination
+            v-show="total>0"
+            :total="total"
+            :page.sync="searchData.pageNum"
+            :limit.sync="searchData.pageSize"
+            :page-sizes="[10,25,50]"
+            @pagination="getList"
+          />
         </div>
       </div>
     </div>
@@ -63,7 +82,8 @@ import newDialog from './newDialog'
 import TableVue from '@/components/TableVue'
 import SearchForm from '@/components/SearchForm'
 import { listProperty, listResident } from '@/api/CommunityMag/community'
-import { addDateRange } from "@/utils/userright";
+import { addDateRange } from '@/utils/userright'
+
 const id = 1000
 export default {
   components: {
@@ -76,8 +96,8 @@ export default {
       // 左边的树（maxexpandId:新增节点开始id，isLoadingTree: 是否加载节点树，defaultExpandKeys默认展开节点列表
       treeList: [], maxexpandId: 95, non_maxexpandId: 95, isLoadingTree: false,
       defaultExpandKeys: [], treeDialogVisible: false, treeIsEdit: false,
-      defaultProps: { children: 'children', label: 'name' },
-      queryParams: { userId: this.$store.getters.id },
+      defaultProps: { children: 'children', label: 'name', id: 'name' },
+      queryParams: { userId: undefined },
       // 查询表单
       searchForm: [
         { type: 'Input', label: '室', prop: 'roomNo', width: '100px', placeholder: '请输入室...' },
@@ -92,16 +112,17 @@ export default {
       single: true, multiple: true, checkAll: false, dialogVisible: false, isEdit: false,
       // 表格（total: 总条数）
       total: 0, loading: true, list: [],
+      levels: [-1, -1, -1, -1],
       searchData: { // 查询参数
         pageNum: 1,
         pageSize: 10,
-        userId: this.$store.getters.id || 1,
+        userId: undefined,
         buildingId: undefined,
         communityId: undefined,
         merchantId: undefined,
         roomNo: undefined,
         unitId: undefined,
-        data: { mobilePhone: '1', residentName: undefined }
+        data: { mobilePhone: undefined, residentName: undefined }
       },
       columns: Object.freeze([
         { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
@@ -114,24 +135,38 @@ export default {
         { attrs: { prop: 'certificateNo', label: '证件号', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'residentIdentity', label: '住户身份', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'createTime', label: '创建时间', width: '100', 'show-overflow-tooltip': true }},
-        { slot: 'handle', attrs: { label: '操作', width: '180', 'class-name': 'small-padding fixed-width', align: 'center' }}
+        {
+          slot: 'handle',
+          attrs: { label: '操作', width: '180', 'class-name': 'small-padding fixed-width', align: 'center' }
+        }
       ])
     }
   },
   mounted() {
-    this.getList()
     this.initExpand()
+    this.getProperty()
   },
   methods: {
     // 表格重置
     resetForm() {
       Object.assign(this.$data.searchData, this.$options.data().searchData)
     },
+    // 获取物业菜单
+    async getProperty() {
+      this.queryParams.userId = this.$store.getters.id
+      await listProperty(this.queryParams).then((response) => {
+        this.treeList = response.data
+        this.isLoadingTree = true
+      })
+      this.getList()
+    },
+
     // 获取小区列表、表格信息
     getList() {
-      listProperty(this.queryParams).then((response) => {
-        this.treeList = response.data
-      })
+      this.searchData.userId = this.$store.getters.id
+      this.searchData.data.mobilePhone = this.searchData.mobilePhone
+      this.searchData.data.residentName = this.searchData.residentName
+      this.loading = true
       listResident(this.searchData).then((response) => {
         this.list = response.data.rows
         this.total = response.data.total
@@ -139,13 +174,43 @@ export default {
       })
     },
     initExpand() {
-      this.list.map((a) => {
-        this.defaultExpandKeys.push(a.id)
-      })
-      this.isLoadingTree = true
+      // this.list.map((a) => {
+      //   this.defaultExpandKeys.push(a.id)
+      // })
+      // this.isLoadingTree = true
     },
-    handleNodeClick(d, n, s) { // 点击节点
+    handleNodeClick(d, node, s) { // 点击节点
+      // 置空 物业 单元 楼栋 小区
+      this.levels = [-1, -1, -1, -1]
+
+      // 遍历节点信息
+      this.nodeCheck(node)
       d.treeIsEdit = false// 放弃编辑状态
+
+      // 设置选中
+      this.nodeSet()
+      // 获取住户信息
+      this.getList()
+    },
+    nodeCheck(node) {
+      // 终止条件
+      if (node.key === undefined || node === undefined) {
+        return
+      }
+      // 判断level
+      this.levels[node.level - 1] = node.key
+      this.nodeCheck(node.parent)
+    },
+    nodeSet() {
+      const level = this.levels
+      // 物业编号
+      this.searchData.merchantId = level[0] === -1 ? undefined : level[0]
+      // 小区编号
+      this.searchData.communityId = level[1] === -1 ? undefined : level[1]
+      // 楼栋编号
+      this.searchData.buildingId = level[2] === -1 ? undefined : level[2]
+      // 单元编号
+      this.searchData.unitId = level[3] === -1 ? undefined : level[3]
     },
     renderContent(h, { node, data, store }) { // 加载节点
       const that = this
@@ -179,7 +244,8 @@ export default {
       } else {
         // 新增节点直接删除，否则要询问是否删除
         const delNode = () => {
-          const list = n.parent.data.children || n.parent.data; let // 节点同级数据
+          const list = n.parent.data.children || n.parent.data
+          let // 节点同级数据
             _index = 99999// 要删除的index
           list.map((c, i) => {
             if (d.id == c.id) {
@@ -212,7 +278,6 @@ export default {
     handleAdd() {
       this.dialogVisible = true
       this.isEdit = false
-      this.user = Object.assign({}, defaultUser) // 默认值为空
     },
     handleDelete(row) {
       const userIds = row.id || this.ids
@@ -258,65 +323,79 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .expand{
-    width:100%;
-    height:80%;
-    overflow:hidden;
+  .expand {
+    width: 100%;
+    height: 80%;
+    overflow: hidden;
     float: left;
     width: 17%;
   }
-  .expand>div{
+
+  .expand > div {
     padding-top: 20px;
     max-width: 400px;
     overflow-y: auto;
+    /*text-align: center;*/
   }
-  .expand>div::-webkit-scrollbar-track{
-    box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-    border-radius:5px;
+
+  .expand > div::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+    border-radius: 5px;
   }
-  .expand>div::-webkit-scrollbar-thumb{
-    background-color:rgba(50, 65, 87, 0.5);
-    outline:1px solid slategrey;
-    border-radius:5px;
+
+  .expand > div::-webkit-scrollbar-thumb {
+    background-color: rgba(50, 65, 87, 0.5);
+    outline: 1px solid slategrey;
+    border-radius: 5px;
   }
-  .expand>div::-webkit-scrollbar{
-    width:10px;
+
+  .expand > div::-webkit-scrollbar {
+    width: 10px;
   }
-  .expand-tree{
-    border:none;
-    margin-top:10px;
+
+  .expand-tree {
+    border: none;
+    margin-top: 10px;
+    /*margin-left: 60px;*/
   }
+
   .expand-tree .el-tree-node.is-current,
-  .expand-tree .el-tree-node:hover{
-    overflow:hidden;
+  .expand-tree .el-tree-node:hover {
+    overflow: hidden;
   }
-  .expand-tree .is-current>.el-tree-node__content .tree-btn,
-  .expand-tree .el-tree-node__content:hover .tree-btn{
-    display:inline-block;
+
+  .expand-tree .is-current > .el-tree-node__content .tree-btn,
+  .expand-tree .el-tree-node__content:hover .tree-btn {
+    display: inline-block;
   }
-  .expand-tree .is-current>.el-tree-node__content .tree-label{
-    font-weight:600;
-    white-space:normal;
+
+  .expand-tree .is-current > .el-tree-node__content .tree-label {
+    font-weight: 600;
+    white-space: normal;
   }
-  .el-button{
+
+  .el-button {
     padding: 5px 10px;
   }
-    /*左边的树*/
+
+  /*左边的树*/
   /*.tree{*/
   /*  float: left;*/
   /*  width: 17%;*/
   /*}*/
-    /* 右边的住户信息 */
-  .resident{
+  /* 右边的住户信息 */
+  .resident {
     float: left;
     width: 82%;
     padding-top: 20px;
     margin-left: 10px;
   }
+
   .myTrees {
     width: 288px;
     background: rebeccapurple;
   }
+
   .custom-tree-node {
     flex: 1;
     display: flex;
@@ -325,38 +404,45 @@ export default {
     font-size: 14px;
     padding-right: 8px;
   }
-/*  表格*/
-  .el-row{
+
+  /*  表格*/
+  .el-row {
     margin-left: 10px !important;
   }
-  .el-table{
+
+  .el-table {
     width: 98% !important;
     border-right: none !important;
   }
+
   .el-checkbox:last-of-type {
     margin-right: 0;
     float: right;
   }
-  .el-button+.el-button {
+
+  .el-button + .el-button {
     margin-left: 10px;
     float: right;
   }
-  .el-button+.el-button[data-v-b649ad9e] {
+
+  .el-button + .el-button[data-v-b649ad9e] {
     margin-left: 10px;
     float: right;
   }
+
   /*搜索条件*/
-  .ces-search{
+  .ces-search {
     height: 50px;
     margin-top: 10px;
   }
-  .searchMain{
+
+  .searchMain {
     height: 100px;
   }
 </style>
 <style>
-  .expand-tree .is-current>.el-tree-node__content .tree-btn,
-  .expand-tree .el-tree-node__content:hover .tree-btn{
-    display:inline-block;
+  .expand-tree .is-current > .el-tree-node__content .tree-btn,
+  .expand-tree .el-tree-node__content:hover .tree-btn {
+    display: inline-block;
   }
 </style>

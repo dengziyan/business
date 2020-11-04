@@ -495,6 +495,7 @@ export default {
         })
       } else { // 插入一条资源数据（即添加）
         addUser(this.user).then(response => {
+          console.log(this.user)
           if (response.code === 2000) {
             this.$message({
               message: '添加成功！',

@@ -240,7 +240,7 @@ export default {
     },
     //  保存分配的菜单
     handleSave() {
-      const checkedNodes = this.$refs.tree.getCheckedNodes()
+      const checkedNodes = this.$refs.tree.getHalfCheckedNodes()
       const checkedMenuIds = new Set()
       if (checkedNodes != null && checkedNodes.length > 0) {
         for (let i = 0; i < checkedNodes.length; i++) {

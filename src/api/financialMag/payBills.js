@@ -47,7 +47,7 @@ export function delBatch(id) {
     method: 'delete'
   })
 }
-// 批量新增-導入賬單
+// 新增
 export function addPayBills(data) {
   return request({
     url: '/sys/user',

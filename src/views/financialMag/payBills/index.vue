@@ -42,11 +42,7 @@ import { listPayBills, delBatch, updatePayBills } from '@/api/financialMag/payBi
 const defaultPayBills = {}
 export default {
   name: 'PayBillsTable',
-  components: {
-    newDialog,
-    TableVue,
-    SearchForm
-  },
+  components: { newDialog, TableVue, SearchForm },
   data() {
     return {
       // 操作按钮
