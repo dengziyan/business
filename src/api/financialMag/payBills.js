@@ -76,6 +76,6 @@ export function importTemplates(data) {
     url: '/chargeBill/template',
     method: 'get',
     responseType: 'arraybuffer',
-    params: { projectId: data }
+    params: { chargeCategory: data }
   })
 }

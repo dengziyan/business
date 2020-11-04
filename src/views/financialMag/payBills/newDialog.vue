@@ -126,7 +126,7 @@ export default {
     },
     // 下载模板
     importTemplate() {
-      importTemplates(2).then(res => {
+      importTemplates(this.formData.formItem[0].value).then(res => {
         fileDownload(res, '批量导入模板.xlsx')
       })
         .catch(err => {
@@ -143,12 +143,9 @@ export default {
       }
       listChargeProjectOptions(chargeBatch).then(response => {
         chargeBatch.chargeProjectId = response.data.rows[0].id
-        console.log(response.data.rows[0].id)
-        console.log(this.formData.formItem)
         console.log(JSON.parse(JSON.stringify(chargeBatch)))
         formData.append('chargeBatch', JSON.stringify(chargeBatch))
         formData.append('file', val.file)
-        console.log(val)
         batchAddBatchBills(0, this.formData.formItem[4].value, formData).then(res => {
           val.onSuccess()
         }).catch(res => {

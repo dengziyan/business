@@ -115,6 +115,13 @@ export default {
           this.list = response.data.rows
           this.total = response.data.total
           this.loading = false
+          for (let i = 0; i < this.list.length; i++) {
+            if (this.list[i].billStatus === 0) {
+              this.list[i].billStatus = '待审核'
+            } else if (this.list[i].billStatus === 1) {
+              this.list[i].billStatus = '已审核'
+            }
+          }
         }
       )
     },
@@ -124,7 +131,9 @@ export default {
       this.$router.push({
         name: 'payDetail',
         params: {
-          id: row.id
+          id: row.id,
+          billName: row.billName,
+          projectName: row.chargeProjectId
         }
       })
     },

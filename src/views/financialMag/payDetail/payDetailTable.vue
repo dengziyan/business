@@ -1,7 +1,7 @@
 <template>
   <!--收费详情管理表格及操作组件  -->
   <div>
-    <search-form size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle"/>
+    <search-form size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
     <!--引入操作子组件        -->
     <table-handle />
     <!--引入表格组件        -->
@@ -14,7 +14,7 @@
       </template>
     </TableVue>
     <!--  分页  -->
-    <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList"/>
+    <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
     <!--点击审核后出现的弹框    -->
     <el-dialog title="收费详情管理" :visible.sync="dialogVisible" width="30%">
       <!--弹框子组件      -->
@@ -64,10 +64,10 @@ export default {
         { attrs: { prop: 'communityName', label: '小区', width: '60', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'billName', label: '账单名称', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'buildingName', label: '房屋（栋-单元-室/车位号/车牌号）', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'chargeProjectName', label: '收费项目', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'projectName', label: '收费项目', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'residentName', label: '姓名', width: '70', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'mobliePhone', label: '手机号', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'amountPayable', label: '应缴金额', width: '80', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'mobilePhone', label: '手机号', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'amount', label: '应缴金额', width: '80', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'amountActuallyPaid', label: '实缴金额', width: '80', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'paymentStatus', label: '缴费状态', width: '80', 'show-overflow-tooltip': true }},
         { attrs: { label: '周期详情', width: '80', 'class-name': 'small-padding fixed-width', align: 'center' }},
@@ -93,6 +93,19 @@ export default {
       listPayDetail(this.searchData).then(
         (response) => {
           this.list = response.data.rows
+          console.log(response.data)
+          for (let i = 0; i < this.list.length; i++) {
+            this.list[i].billName = this.$route.params.billName
+            this.list[i].projectName = this.$route.params.projectName
+            this.list[i].amountActuallyPaid = response.data.amountActuallyPaid[i]
+            // 判断 审核状态
+            if (this.list[i].approvalStatus === 0) {
+              this.list[i].approvalStatus = '待审核'
+            } else if (this.list[i].approvalStatus === 1) {
+              this.list[i].approvalStatus = '已审核'
+            }
+          }
+          console.log(this.list)
           this.total = response.data.total
           this.loading = false
         }
