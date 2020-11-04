@@ -6,19 +6,24 @@
     <table-handle />
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
+      <!--  文字按钮    -->
+      <template #handle2="{scope: { row }}">
+        <el-button type="text" @click="handleDetail(row)">详情</el-button>
+      </template>
       <!-- 下面是上面的简写，#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
       <template #handle="{scope: {row, $index}}">
-        <el-button type="primary" size="mini" @click="handleReject(row, $index)">拒绝</el-button>
+        <el-button type="primary" size="mini" @click="handleReject(row, 0)">同意</el-button>
+        <el-button type="primary" size="mini" @click="handleReject(row, 1)">拒绝</el-button>
         <el-button type="danger" size="mini" @click="handleDelete()">删除</el-button>
         <el-button type="primary" size="mini" @click="handleEdit(row, $index)">编辑</el-button>
       </template>
     </TableVue>
     <!--  分页  -->
     <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
-    <!--点击审核后出现的弹框    -->
-    <el-dialog title="收费详情管理" :visible.sync="dialogVisible" width="30%">
+    <!--点击详情后出现的弹框    -->
+    <el-dialog title="周期详情" :visible.sync="dialogVisible" width="30%">
       <!--弹框子组件      -->
-      <pay-detail />
+      <detail-dialog :visible.sync="dialogVisible" :detailId="detailId"/>
     </el-dialog>
   </div>
 </template>
@@ -27,11 +32,11 @@
 import tableHandle from './tableHandle'
 import TableVue from '@/components/TableVue'
 import SearchForm from '@/components/SearchForm'
-import PayDetail from '../payDetail'
 import { listPayDetail } from '@/api/financialMag/payDetail'
+import DetailDialog from './detailDialog'
 export default {
   name: 'PayBillsTable',
-  components: { tableHandle, TableVue, PayDetail, SearchForm },
+  components: { DetailDialog, tableHandle, TableVue, SearchForm },
   data() {
     return {
       // 查询表单
@@ -55,10 +60,7 @@ export default {
         { label: '重置', type: 'primary', handle: this.resetForm }
       ],
       // table表格数据
-      total: 0,
-      loading: true,
-      list: [],
-      dialogVisible: false,
+      total: 0, loading: true, list: [], dialogVisible: false, detailId: 0, // 表单参数
       columns: Object.freeze([
         { attrs: { prop: 'approvalStatus', label: '审核状态', width: '80', align: 'center' }},
         { attrs: { prop: 'communityName', label: '小区', width: '60', 'show-overflow-tooltip': true }},
@@ -70,7 +72,7 @@ export default {
         { attrs: { prop: 'amount', label: '应缴金额', width: '80', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'amountActuallyPaid', label: '实缴金额', width: '80', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'paymentStatus', label: '缴费状态', width: '80', 'show-overflow-tooltip': true }},
-        { attrs: { label: '周期详情', width: '80', 'class-name': 'small-padding fixed-width', align: 'center' }},
+        { slot: 'handle2', attrs: { label: '周期详情', width: '80', 'class-name': 'small-padding fixed-width', align: 'center' }},
         { attrs: { prop: 'note', label: '备注', width: '80', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'createTime', label: '创建时间', 'show-overflow-tooltip': true }},
         { slot: 'handle', attrs: { label: '操作', width: '220', 'class-name': 'small-padding fixed-width', align: 'center' }}
@@ -112,6 +114,11 @@ export default {
       )
     },
     // 表格方法
+    handleDetail(row) {
+      this.dialogVisible = true
+      this.detailId = row.id
+      // console.log(this.detailId)
+    },
     handleReject(row, index) {
       // this.dialogVisible = true
       // this.isEdit = false
