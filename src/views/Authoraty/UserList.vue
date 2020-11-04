@@ -422,21 +422,20 @@ export default {
     // 置空参数
     clearParams(val) {
       if (val === 'enabled') {
-        this.queryParams.enabled = undefined
+        this.queryParams.data.isEnable = undefined
       }
       if (val === 'phone') {
-        this.queryParams.mobilePhone = undefined
+        this.queryParams.data.mobilePhone = undefined
       }
       if (val === 'account') {
-        this.queryParams.account = undefined
+        this.queryParams.data.userAccount = undefined
       }
       this.getList()
     },
 
     // 用户状态修改
     handleStatusChange(row) {
-      const type = row.enabled === 1 ? { label: '启用', value: 'enable' } : { label: '停用', value: 'disable' }
-      changeUserStatus(row.account, type.value).then(() => {
+      changeUserStatus(row.userAccount, row.isEnable).then(() => {
         this.getList()
       }).catch(function() {
         row.enabled = row.enabled === 0 ? 1 : 0
@@ -464,6 +463,9 @@ export default {
       this.dialogVisible = true
       this.isEdit = false
       this.user = Object.assign({}, defaultUser) // 默认值为空
+      this.$nextTick(() => {
+        this.$refs.www.clearValidate()
+      })
     },
     // 按修改键弹出对话框（传入当前行的数据）
     handleTopUpdate() {
@@ -482,30 +484,33 @@ export default {
 
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
-      if (this.isEdit) { // 更新资源数据（即编辑修改）
-        updateUser(this.user).then(response => {
-          if (response.code === 2000) {
-            this.$message({
-              message: '修改成功！',
-              type: 'success'
+      this.$refs.www.validate((valid) => {
+        if (valid) {
+          if (this.isEdit) { // 更新资源数据（即编辑修改）
+            updateUser(this.user).then(response => {
+              if (response.code === 2000) {
+                this.$message({
+                  message: '修改成功！',
+                  type: 'success'
+                })
+                this.dialogVisible = false
+                this.getList()
+              }
             })
-            this.dialogVisible = false
-            this.getList()
-          }
-        })
-      } else { // 插入一条资源数据（即添加）
-        addUser(this.user).then(response => {
-          console.log(this.user)
-          if (response.code === 2000) {
-            this.$message({
-              message: '添加成功！',
-              type: 'success'
+          } else { // 插入一条资源数据（即添加）
+            addUser(this.user).then(response => {
+              if (response.code === 2000) {
+                this.$message({
+                  message: '添加成功！',
+                  type: 'success'
+                })
+                this.dialogVisible = false
+                this.getList()
+              }
             })
-            this.dialogVisible = false
-            this.getList()
           }
-        })
-      }
+        }
+      })
     },
     /** 重置密码按钮操作 */
     handleResetPwd(row) {

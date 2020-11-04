@@ -16,13 +16,14 @@ import 'element-ui/lib/theme-chalk/index.css'
 import request from '@/utils/request'
 
 import { getConfigKey } from '@/api/opeConfig'
-import { getStatusVal,parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, download, handleTree } from '@/utils/userright'
+import { getStatusVal,parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, download, handleTree,getSelectVal } from '@/utils/userright'
 
 // 第三方包
 import ElementUI from 'element-ui'
 import locale from 'element-ui/lib/locale/lang/zh-CN'
 
 // 全局方法挂载
+Vue.prototype.getSelectVal = getSelectVal
 Vue.prototype.getStatusVal = getStatusVal
 Vue.prototype.getConfigKey = getConfigKey
 Vue.prototype.parseTime = parseTime

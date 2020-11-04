@@ -59,7 +59,7 @@ export function resetForm(refName) {
 export function addDateRange(params, dateRange) {
   const search = params
 
-  if (dateRange!=null&&dateRange.length !== 0) {
+  if (dateRange != null && dateRange.length !== 0) {
     search.beginTime = dateRange[0]
     search.endTime = dateRange[1]
     search.chargeBeginTime = ''
@@ -82,6 +82,16 @@ export function selectDictLabel(data) {
 // 回显字典值
 export function getStatusVal(option) {
   return this.statusOptions.map(function(item) {
+    if (item.value === '' + option) {
+      return item.label
+    }
+  }).filter(function(item) {
+    return item !== undefined
+  })[0]
+}
+
+export function getSelectVal(option) {
+  return this.selectOptions.map(function(item) {
     if (item.value === '' + option) {
       return item.label
     }
