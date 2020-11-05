@@ -120,6 +120,10 @@ export default {
     this.getProperty()
   },
   methods: {
+    // 关闭弹框是重置表格
+    // closeImport() {
+    //   this.$refs['ref1'].resetFields()
+    // },
     // 表格重置
     resetForm() {
       Object.assign(this.$data.searchData, this.$options.data().searchData)
@@ -207,7 +211,9 @@ export default {
       // this.community = Object.assign({}, defaultCommunity) // 默认值为空
     },
     nodeEdit(s, d, n) { // 编辑节点
-      // console.log(s, d, n)
+      this.treeDialogVisible = true
+      this.treeIsEdit = false
+      // this.tree = Object.assign({}, n)
     },
     nodeDelete(s, d, n) { // 删除节点
       // console.log(s, d, n)
@@ -247,12 +253,14 @@ export default {
     },
     // 表格方法
     handleUpdate(row, index) {
-      // console.log(row, index)
+      this.dialogVisible = true
+      this.isEdit = true
     },
     // 按添加按钮，弹出对话框
     handleAdd() {
       this.dialogVisible = true
       this.isEdit = false
+      this.user = Object.assign({}, row)
     },
     handleDelete(row) {
       const userIds = row.id || this.ids
@@ -266,6 +274,7 @@ export default {
       }).catch(function() {
       })
     },
+
     /** 导入按钮操作 */
     handleImport() {
       this.upload.title = '用户导入'

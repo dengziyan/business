@@ -96,7 +96,7 @@ export default {
       listPayDetail(this.searchData).then(
         (response) => {
           this.list = response.data.rows
-          console.log(response.data)
+          // console.log(response.data)
           for (let i = 0; i < this.list.length; i++) {
             this.list[i].billName = this.$route.params.billName
             this.list[i].projectName = this.$route.params.projectName
@@ -108,7 +108,7 @@ export default {
               this.list[i].approvalStatus = '已审核'
             }
           }
-          console.log(this.list)
+          // console.log(this.list)
           this.total = response.data.total
           this.loading = false
         }

@@ -14,3 +14,11 @@ export function getPaymentCycle(query) {
     method: 'get'
   })
 }
+// 现金支付
+export function updateByAmountPaid(query) {
+  return request({
+    url: '/paymentCycle/updateByAmountPaid',
+    method: 'post',
+    params: query
+  })
+}

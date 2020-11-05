@@ -160,17 +160,7 @@ export default {
     },
     // 提交上传文件
     submitFileForm() {
-      // this.$refs.form.$refs.upload[0].submit()
-      addPayBills(this.user).then(response => {
-        if (response.code === 2000) {
-          this.$message({
-            message: '添加成功！',
-            type: 'success'
-          })
-          this.dialogVisible = false
-          this.getList()
-        }
-      })
+      this.$refs.form.$refs.upload[0].submit()
     },
     handleRemove(file, fileList) {
       console.log(file, fileList)

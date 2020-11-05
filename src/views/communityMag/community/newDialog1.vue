@@ -3,7 +3,7 @@
   <div>
     小区
     <!--表格组件      -->
-    <FormVue ref="form" :form-data="formData" class="formMain"/>
+    <FormVue ref="form" :form-data="formData" :form="form" class="formMain"/>
     <span slot="footer" class="dialog-footer">
       <el-button size="small" @click="cancel(false)">取 消</el-button>
       <el-button type="primary" size="small" @click="handleDialogConfirm()">新建</el-button>
@@ -15,19 +15,29 @@
 import FormVue from '@/components/FormVue'
 import { updateCommunity, addCommunity } from '@/api/CommunityMag/community'
 import { getToken } from '@/utils/auth'
+const form = {
+  merchantId: 333,
+  communityName: '',
+  category: '',
+  billName: '',
+  admin: '',
+  mobilePhone: '',
+  location: ''
+}
 export default {
   name: 'NewDialog1',
   components: { FormVue },
   props: ['visible'],
   data() {
     return {
+      community: Object.assign({}, form),
       treeDialogVisible: this.visible,
       formData: {
         labelWidth: '100px', inline: false, labelPosition: 'right', size: 'small',
         formItem: [
-          { type: 'text', label: '商户名称', prop: 'merchantName', size: 'small', isDisabled: false, required: true },
+          { type: 'text', label: '商户Id', prop: 'merchantId', size: 'small', isDisabled: false, required: true },
           { type: 'text', label: '小区编码', prop: 'communityId', size: 'small', isDisabled: false, required: true },
-          { type: 'text', label: '小区名称', prop: 'communityName', size: 'small', isDisabled: false, required: true },
+          { type: 'text', label: '小区名称', prop: 'communityName', size: 'small', isDisabled: false },
           { type: 'select', label: '小区类别', prop: 'category', tip: '', value: '', isDisabled: false, multiple: false, options: [] },
           { type: 'text', label: '总户数', prop: 'billName', size: 'small', isDisabled: false, required: true },
           { type: 'text', label: '联系人', prop: 'admin', size: 'small', isDisabled: false, required: true },
@@ -84,6 +94,8 @@ export default {
     cancel(val) {
       this.treeDialogVisible = val
       this.$emit('update:visible', this.treeDialogVisible)
+      // this.$refs.form.clearValidate()
+      // this.$refs.form.resetFields()
     }
   }
 }

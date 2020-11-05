@@ -11,24 +11,11 @@
     :size="formData.size"
     :label-position="formData.labelPosition"
   >
-    <el-form-item
-      v-for="(item, index) in formData.formItem"
-      :key="index"
-      :label="item.label"
-      :prop="item.prop"
-    >
+    <el-form-item v-for="(item, index) in formData.formItem" :key="index" :label="item.label" :prop="item.prop">
       <!-- 文本框 -->
-      <el-input
-        v-if="item.type === 'text'"
-        v-model="item.value"
-        :disabled="item.isDisabled"
-        :size="item.size"
-      />
+      <el-input v-if="item.type === 'text'" v-model="form[item.prop]" :disabled="item.isDisabled" :size="item.size"/>
       <!--      -->
-      <h4
-        v-if="item.type === 'text2'"
-        v-model="form[item.prop]"
-      >
+      <h4 v-if="item.type === 'text2'" v-model="form[item.prop]">
         <p >{{form[item.prop]}}</p>
       </h4>
       <!-- 密码框 -->
@@ -191,6 +178,10 @@ import { importTemplates } from '@/api/CommunityMag/community'
 export default {
   props: {
     formData: {
+      type: Object,
+      required: true
+    },
+    form: {
       type: Object,
       required: true
     }

@@ -471,6 +471,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
+      // console.log(selection)
       this.updataData = selection.length === 1 ? selection : {}
       this.ids = selection.map(item => item.id)
       this.single = selection.length !== 1
@@ -495,7 +496,7 @@ export default {
       this.isEdit = true
       this.user = Object.assign({}, row)
     },
-    alloc(){
+    alloc() {
       this.openalloc = true
     },
 
