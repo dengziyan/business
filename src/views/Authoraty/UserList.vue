@@ -84,40 +84,47 @@
       <el-checkbox v-model="checkAll">导出所有数据</el-checkbox>
     </el-row>
     <!-- 表格-->
-    <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="50" align="center"/>
+    <el-table
+      v-loading="loading"
+      :data="userList"
+      :default-sort="{prop: 'createTime', order: 'descending'}"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" align="center"/>
       <el-table-column label="编号" align="center" prop="id"/>
-      <el-table-column label="账号" align="center" prop="account" :show-overflow-tooltip="true"/>
-      <el-table-column label="姓名" align="center" prop="realName" :show-overflow-tooltip="true"/>
-      <el-table-column label="性别" align="center" prop="gender">
+      <el-table-column label="账号" align="center" prop="userAccount" :show-overflow-tooltip="true"/>
+      <el-table-column label="姓名" align="center" prop="userName" :show-overflow-tooltip="true"/>
+      <el-table-column label="性别" align="center" prop="sex">
         <template slot-scope="scope">
-          <span style="margin-left: 10px">{{ scope.row.gender == 'F' ? '女' : '男' }}</span>
+          {{ getSelectVal(scope.row.sex) }}
         </template>
       </el-table-column>
       <el-table-column label="邮箱" align="center" prop="email" :show-overflow-tooltip="true"/>
-      <el-table-column label="手机号码" align="center" prop="mobilePhone" width="120" :show-overflow-tooltip="true"/>
-      <el-table-column label="创建时间" align="center" prop="createDate" width="160" :show-overflow-tooltip="true">
+      <el-table-column label="手机号码" align="center" prop="mobilePhone" :show-overflow-tooltip="true"/>
+      <el-table-column label="创建时间" align="center" prop="createTime" sortable :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createDate) }}</span>
+          <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="是否启用" width="80">
         <template slot-scope="scope">
           <el-switch
-            v-model="scope.row.enabled"
+            v-model="scope.row.isEnable"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
             :active-value="1"
             :inactive-value="0"
             @change="handleStatusChange(scope.row)"
           />
         </template>
       </el-table-column>
-      <el-table-column label="最后登录" align="center" prop="lastLoginTime" width="160" :show-overflow-tooltip="true">
+      <el-table-column label="最后登录" align="center" prop="lastLoginTime" sortable :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.lastLoginTime) }}</span>
         </template>
       </el-table-column>
       <!--  每行的操作按钮-->
-      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="170" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
           <el-button size="mini" type="text" icon="el-icon-circle-check" @click="alloc(scope.row)">分配角色</el-button>
@@ -167,7 +174,7 @@
       </el-upload>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitFileForm">确 定</el-button>
-        <el-button @click="upload.open = false">取 消</el-button>
+        <el-button @click="handleFileCancel">取 消</el-button>
       </div>
     </el-dialog>
 
@@ -176,8 +183,8 @@
       <el-form ref="www" :model="user" label-width="150px" :rules="rules" size="small">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="用户账号" prop="account">
-              <el-input v-model="user.account" placeholder="请输入用户账号"/>
+            <el-form-item label="用户账号" prop="userAccount">
+              <el-input v-model="user.userAccount" placeholder="请输入用户账号"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -185,61 +192,54 @@
               <el-input v-model="user.mobilePhone" placeholder="请输入手机号码" maxlength="11"/>
             </el-form-item>
           </el-col>
+
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item v-if="user.id == undefined" label="用户姓名" prop="realName">
-              <el-input v-model="user.realName" placeholder="请输入用户姓名"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item v-if="user.id == undefined" label="默认密码：" prop="password">
-              <el-input v-model="user.password" placeholder="88888888" :disabled="true" type="text"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="邮箱" prop="email">
+            <el-form-item label="用户邮箱" prop="email">
               <el-input v-model="user.email" placeholder="请输入邮箱" maxlength="50"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="状态">
-              <el-radio-group v-model="user.enabled">
-                <el-radio v-for="dict in statusOptions" :key="dict.dictValue" :label="dict.dictValue">
-                  {{ dict.dictLabel }}
-                </el-radio>
-              </el-radio-group>
+            <el-form-item label="账号状态:">
+              <el-switch
+                v-model="user.isEnable"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                :active-value="1"
+                :inactive-value="0"
+                active-text="启用"
+                inactive-text="禁用"
+              />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
+            <el-form-item label="用户姓名" prop="userName">
+              <el-input v-model="user.userName" placeholder="请输入用户姓名"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item v-show="user.id === undefined" label="默认密码:" prop="password">
+              <el-input value="a123456" placeholder="a123456" :disabled="true" type="text"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
             <el-form-item label="用户性别">
-              <el-select v-model="user.gender" placeholder="请选择">
+              <el-select v-model="user.sex" placeholder="请选择">
                 <el-option
-                  v-for="dict in sexOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictLabel"
-                  :value="dict.dictValue"
+                  v-for="dict in selectOptions"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
                 />
               </el-select>
             </el-form-item>
           </el-col>
-<!--          <el-col :span="12">-->
-<!--            <el-form-item label="角色">-->
-<!--              <el-select v-model="user.roleIds" multiple placeholder="请选择">-->
-<!--                <el-option-->
-<!--                  v-for="item in roleOptions"-->
-<!--                  :key="item.value"-->
-<!--                  :label="item.label"-->
-<!--                  :value="item.value"-->
-<!--                  :disabled="item.enabled == 1"-->
-<!--                />-->
-<!--              </el-select>-->
-<!--            </el-form-item>-->
-<!--          </el-col>-->
         </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -248,55 +248,99 @@
       </span>
     </el-dialog>
     <!--    分配角色的对话框-->
-    <el-dialog  :visible.sync="openalloc" width="40%">
-      <el-form ref="www" :model="user" label-width="150px" :rules="rules" size="small">
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="角色">
-              <el-select v-model="user.roleIds" multiple placeholder="请选择">
-                <el-option
-                  v-for="item in roleOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                  :disabled="item.enabled == 1"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
+    <el-dialog title="分配角色" :visible.sync="openalloc" width="20%">
+      <el-form ref="www" v-loading="loadingRole" :model="user" label-width="100px" size="small">
+        <el-form-item label="角色">
+
+          <el-select v-model="user.roleIds" placeholder="请选择角色">
+            <el-option
+              v-for="item in roleOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+              @click.native="selectExitSelectConfig(item)"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-show="building||community||merchant" :label="'商户'">
+          <el-select v-model="user.merchant" placeholder="请选择商户">
+            <el-option
+              v-for="item in merchantOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+              :disabled="item.enabled === 1"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-show="building||community" :label="'小区'">
+          <el-select v-model="user.community" placeholder="请选择小区">
+            <el-option
+              v-for="item in communityOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+              :disabled="item.enabled === 1"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-show="building" :label="'楼栋'">
+          <el-select v-model="user.building" placeholder="请选择楼栋">
+            <el-option
+              v-for="item in buildingOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+              :disabled="item.enabled === 1"
+            />
+          </el-select>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button size="small" @click="openalloc = false">取 消</el-button>
         <el-button type="primary" size="small" @click="handleDialogConfirm()">确 定</el-button>
       </span>
     </el-dialog>
+
   </div>
 </template>
 
 <script>
 import {
-  listUser, delUser, addUser, updateUser, exportUser, resetUserPwd, importTemplates, batchAddUser, changeUserStatus
+  listUser,
+  delUser,
+  addUser,
+  updateUser,
+  exportUser,
+  resetUserPwd,
+  importTemplates,
+  batchAddUser,
+  changeUserStatus,
+  listUserRole
 } from '@/api/authoraty/user'
 import { getToken } from '@/utils/auth'
 import fileDownload from 'js-file-download'
 import moment from 'moment'
-import { listRole } from '@/api/authoraty/role'
+import { listRoleById } from '@/api/authoraty/role'
 import store from '../../store'
+import { getDictVal } from '@/api/system/logininfor'
+import { listProperty } from '@/api/CommunityMag/community'
 // 用于复制给user
 const defaultUser = {
-  account: '',
-  accountNonExpired: 0,
-  accountNonLocked: 1,
-  avatarUrl: '',
+  userAccount: '',
   mobilePhone: '',
   email: '',
-  userName: null,
-  gender: '',
+  userName: undefined,
+  sex: '',
   password: '',
   isEnable: undefined,
   property: undefined, // 所属管理编号
-  roleIds: undefined
+  roleIds: undefined,
+  id: undefined,
+  merchant: undefined,
+  community: undefined,
+  building: undefined
+
 }
 export default {
   name: 'User',
@@ -309,6 +353,7 @@ export default {
       user: Object.assign({}, defaultUser), // user为对话框中:model
       defaultRoleId: null,
       loading: true, // 遮罩层
+      loadingRole: true,
       ids: [], // 多选时选中数组
       updataData: {},
       single: true, // 非单个禁用
@@ -324,13 +369,19 @@ export default {
       statusOptions: [], // 状态数据字典
       selectOptions: [], // 性别状态字典
       roleOptions: [], // 角色选项
+      merchantOptions: [],
+      communityOptions: [],
+      buildingOptions: [],
+      merchant: false,
+      community: false,
+      building: false,
+      proerty: [], // 物业信息列表
       form: {}, // 表单参数
       // 用户导入参数
       upload: {
         open: false, // 是否显示弹出层（用户导入）
         title: '', // 弹出层标题（用户导入）
         isUploading: false, // 是否禁用上传
-        updateSupport: 0, // 是否更新已经存在的用户数据
         headers: { Authorization: getToken() }, // 设置上传的请求头部
         url: process.env.VUE_APP_BASE_API + '/sys/user/import' // 上传的地址
       },
@@ -343,7 +394,8 @@ export default {
           userName: undefined,
           mobilePhone: undefined,
           isEnable: undefined
-        }
+        },
+        userId: undefined
       },
       // 表单校验
       rules: {
@@ -391,6 +443,7 @@ export default {
   },
   created() {
     this.getList()
+    this.getProperty()
     this.getRoleList() // 获取角色
     this.getOperationStatusDict()
     this.getSexOptionStatusDict()
@@ -423,18 +476,18 @@ export default {
     },
     // 获取到角色
     getRoleList() {
-      listRole().then(response => {
+      listRoleById(this.id).then(response => {
         const res = response.data
-        if (res.total === 0) {
+        if (response.code !== 2000) {
           this.roleOptions = []
           return true
         }
-        const roleList = res.rows
+        console.log(res)
+        const roleList = res
         for (let i = 0; i < roleList.length; i++) {
           const role = roleList[i]
           this.roleOptions.push({ label: role.roleName, value: role.id })
         }
-        this.defaultRoleId = roleList[0].id
       })
     },
     // 置空参数
@@ -471,7 +524,6 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      // console.log(selection)
       this.updataData = selection.length === 1 ? selection : {}
       this.ids = selection.map(item => item.id)
       this.single = selection.length !== 1
@@ -495,36 +547,68 @@ export default {
       this.dialogVisible = true
       this.isEdit = true
       this.user = Object.assign({}, row)
+      this.$nextTick(() => {
+        this.$refs.www.clearValidate()
+      })
     },
-    alloc() {
+    alloc(row) {
+      this.setStatus()
+      this.user.roleIds = undefined
+      this.loadingRole = true
+      listUserRole(row.id).then(res => {
+        if (res.code === 2000) {
+          this.setRole(res.data)
+        }
+        this.loadingRole = false
+      })
       this.openalloc = true
+      this.user.id = row.id
     },
-
+    setStatus() {
+      this.merchant = false
+      this.community = false
+      this.building = false
+    },
+    setRole(data) {
+      if (data.role.id === 2) {
+        this.merchant = true
+        this.user.merchant = data.merchant
+        console.log(this.community)
+      }
+      if (data.role.id === 3) {
+        this.community = true
+        this.user.merchant = data.merchant
+        this.user.community = data.community
+      }
+      if (data.role.id === 4) {
+        this.building = true
+        this.user.merchant = data.merchant
+        this.user.community = data.community
+        this.user.building = data.building
+      }
+      this.user.roleIds = data.role.id
+    },
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
       this.$refs.www.validate((valid) => {
         if (valid) {
           if (this.isEdit) { // 更新资源数据（即编辑修改）
-            updateUser(this.user).then(response => {
-              if (response.code === 2000) {
-                this.$message({
-                  message: '修改成功！',
-                  type: 'success'
-                })
-                this.dialogVisible = false
-                this.getList()
-              }
+            updateUser(this.user).then(res => {
+              this.$message({
+                message: res.message,
+                type: res.code === 2000 ? 'success' : 'error'
+              })
+              this.dialogVisible = false
+              this.getList()
             })
           } else { // 插入一条资源数据（即添加）
-            addUser(this.user).then(response => {
-              if (response.code === 2000) {
-                this.$message({
-                  message: '添加成功！',
-                  type: 'success'
-                })
-                this.dialogVisible = false
-                this.getList()
-              }
+            addUser(this.user).then(res => {
+              this.$message({
+                message: res.message,
+                type: res.code === 2000 ? 'success' : 'error'
+              })
+              this.dialogVisible = false
+              this.getList()
             })
           }
         }
@@ -537,9 +621,10 @@ export default {
         cancelButtonText: '取消'
       }).then(() => {
         resetUserPwd(row.account, row.email).then((response) => {
-          if (response.code === 2000) {
-            this.msgSuccess('修改成功')
-          }
+          this.$message({
+            message: res.message,
+            type: res.code === 2000 ? 'success' : 'error'
+          })
         })
       }).catch(() => {
       })
@@ -548,22 +633,23 @@ export default {
     submitForm: function() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          // eslint-disable-next-line eqeqeq
           if (this.form.id !== undefined) {
-            updateUser(this.form).then((response) => {
-              if (response.code === 2000) {
-                this.msgSuccess('修改成功')
-                this.open = false
-                this.getList()
-              }
+            updateUser(this.form).then((res) => {
+              this.$message({
+                message: res.message,
+                type: res.code === 2000 ? 'success' : 'error'
+              })
+              this.open = false
+              this.getList()
             })
           } else {
-            addUser(this.form).then((response) => {
-              if (response.code === 2000) {
-                this.msgSuccess('新增成功')
-                this.open = false
-                this.getList()
-              }
+            addUser(this.form).then((res) => {
+              this.$message({
+                message: res.message,
+                type: res.code === 2000 ? 'success' : 'error'
+              })
+              this.open = false
+              this.getList()
             })
           }
         }
@@ -584,9 +670,12 @@ export default {
         .then(function() {
           return delUser(userIds)
         })
-        .then(() => {
+        .then((res) => {
           this.getList()
-          this.msgSuccess('删除成功')
+          this.$message({
+            message: res.message,
+            type: res.code === 2000 ? 'success' : 'error'
+          })
         })
         .catch(function() {
         })
@@ -597,7 +686,7 @@ export default {
       if (this.checkAll) {
         queryParams.pageNum = undefined
         queryParams.pageSize = undefined
-        queryParams.type = 'all'
+        queryParams.export = 'all'
       }
       this.$confirm('是否确认导出用户数据项?', '警告', {
         confirmButtonText: '确定',
@@ -612,11 +701,16 @@ export default {
             fileDownload(res, sysDate + '用户信息表.xlsx')
           })
             .catch(err => {
-              // console.log(err)
+              console.log(err)
             })
         })
         .catch(function() {
         })
+    },
+    handleFileCancel() {
+      this.$refs.upload.clearFiles()
+      this.upload.open = false
+      this.upload.isUploading = false
     },
     /** 导入按钮操作 */
     handleImport() {
@@ -627,10 +721,9 @@ export default {
     importTemplate() {
       importTemplates().then(res => {
         fileDownload(res, '批量用户导入模板.xlsx')
+      }).catch(err => {
+        console.log(err)
       })
-        .catch(err => {
-          // console.log(err)
-        })
     },
     handleFileUpload(val) {
       const formData = new FormData()
@@ -639,11 +732,12 @@ export default {
       batchAddUser(formData).then(res => {
         val.onSuccess()
       }).catch(res => {
-        val.onError()
+        val.onError(res)
       })
     },
     // 文件上传成功处理
     handleFileSuccess() {
+      this.$refs.upload.clearFiles()
       this.upload.open = false
       this.upload.isUploading = false
       this.getList()
@@ -651,6 +745,37 @@ export default {
     // 提交上传文件
     submitFileForm() {
       this.$refs.upload.submit()
+    },
+
+    // 获取物业菜单
+    getProperty() {
+      this.queryParams.userId = this.$store.getters.id
+      listProperty(this.queryParams).then((response) => {
+        const tree = response.data
+        this.proerty = tree
+        const merchant = tree.map(function(val) {
+          return { label: val.name, value: val.id, children: val.children }
+        })
+        this.merchantOptions = merchant
+      })
+    },
+
+    // 选择
+    selectExitSelectConfig(role) {
+      console.log(role.label)
+      if (role.label === '财务管理员') {
+        this.merchant = true
+        this.community = false
+        this.building = false
+      }
+      if (role.label === '小区管理员') {
+        this.community = true
+        this.building = false
+      }
+      if (role.label === '楼栋管理员') {
+        this.building = true
+      }
+      console.log(role)
     }
   }
 }

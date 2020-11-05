@@ -1,24 +1,15 @@
 <template>
-<!--  <el-breadcrumb class="app-breadcrumb" separator="/">-->
-<!--    <transition-group name="breadcrumb">-->
-<!--      <el-breadcrumb-item v-for="(item,index) in levelList" :key="item.path">-->
-<!--        <span v-if="item.redirect==='noRedirect'||index==levelList.length-1" class="no-redirect">{{ item.meta.title }}</span>-->
-<!--        <a v-else @click.prevent="handleLink(item)">{{ item.meta.title }}</a>-->
-<!--      </el-breadcrumb-item>-->
-<!--    </transition-group>-->
-<!--  </el-breadcrumb>-->
   <el-breadcrumb separator="/">
-    <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-    <el-breadcrumb-item v-if="current" :to="'/'+current.name" :replace="true">{{
-      current.title
-      }}
+    <el-breadcrumb-item :to="{ path: '/dashboard' }">首页</el-breadcrumb-item>
+    <el-breadcrumb-item v-if="current&&current.name!=='dashboard'" :to="current.webRoute" :replace="true">{{
+      current.menuName || current.title
+    }}
     </el-breadcrumb-item>
   </el-breadcrumb>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import store from '../../store'
 export default {
   data() {
     return {
@@ -51,5 +42,7 @@ export default {
       }
     }
   }
-
+.el-breadcrumb{
+  margin-left: 3px;
+}
 </style>

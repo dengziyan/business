@@ -7,7 +7,7 @@ import {
   getBaseUrl,
   getAvatar,
   getAccount,
-  setBaseUrl, setAvatar, setAccount
+  setBaseUrl, setAvatar, setAccount,setRole,getRole
 } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
@@ -22,7 +22,8 @@ const getDefaultState = () => {
     mobilePhone: '',
     createDate: '',
     gender: '',
-    baseUrl: getBaseUrl()
+    baseUrl: getBaseUrl(),
+    role: getRole()
   }
 }
 
@@ -34,6 +35,9 @@ const mutations = {
   },
   SET_TOKEN: (state, token) => {
     state.token = token
+  },
+  SET_ROLE: (state, role) => {
+    state.role = role
   },
   SET_NAME: (state, name) => {
     state.name = name
@@ -72,6 +76,7 @@ const actions = {
       login({ userName: username.trim(), password: password }).then(response => {
         const data = response.data
         const token = data.token
+        const role = data.role
         commit('SET_TOKEN', token) // token
         commit('SET_ID', data.user.id) // 用户编号
 
@@ -84,6 +89,7 @@ const actions = {
         const gender = data.user.sex
         const url = data.baseUrl
 
+        commit('SET_ROLE', role)
         commit('SET_REAL_NAME', userName)
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
@@ -97,6 +103,7 @@ const actions = {
         setBaseUrl(url)
         setAvatar(avatar)
         setAccount(name)
+        setRole(role)
         resolve()
       }).catch(error => {
         reject(error)

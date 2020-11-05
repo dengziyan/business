@@ -5,6 +5,7 @@
     <div class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
         <navbar />
+        <common-tab />
       </div>
       <app-main />
     </div>
@@ -14,13 +15,14 @@
 <script>
 import { Navbar, Sidebar, AppMain } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
-
+import commonTab from '@/layout/components/CommonTab'
 export default {
   name: 'Layout',
   components: {
     Navbar,
     Sidebar,
-    AppMain
+    AppMain,
+    commonTab
   },
   mixins: [ResizeMixin],
   computed: {

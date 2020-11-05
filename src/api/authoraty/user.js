@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 import { praseStrEmpty } from '@/utils/userright'
-import Qs from "qs";
+import Qs from 'qs'
 
 // 查询用户列表
 export function listUser(query) {
@@ -27,6 +27,7 @@ export function addUser(data) {
     data: data
   })
 }
+
 // 新增用户
 export function batchAddUser(data) {
   return request({
@@ -85,6 +86,7 @@ export function resetUserPwd(account, email) {
     data
   })
 }
+
 // 用户状态修改
 export function changeUserStatus(account, type) {
   const data = {
@@ -105,8 +107,6 @@ export function changeUserStatus(account, type) {
   })
 }
 
-
-
 // 修改用户个人信息
 export function updateUserProfile(data) {
   return request({
@@ -115,6 +115,7 @@ export function updateUserProfile(data) {
     data: data
   })
 }
+
 // 查询用户个人信息
 export function getUserProfile(id) {
   return request({
@@ -123,6 +124,7 @@ export function getUserProfile(id) {
     data: id
   })
 }
+
 // // 用户密码重置
 // export function updateUserPwd(oldPassword, newPassword) {
 //   const data = {
@@ -153,6 +155,7 @@ export function importTemplates() {
     responseType: 'arraybuffer'
   })
 }
+
 // 发送短信验证码找回密码
 export function getCode(phoneNumber) {
   return request({
@@ -160,10 +163,18 @@ export function getCode(phoneNumber) {
     method: 'get'
   })
 }
+
 // 发送短信验证码找回密码
 export function codeEquals(code) {
   return request({
     url: '/sysUser/codeEquals/' + code,
+    method: 'get'
+  })
+}
+
+export function listUserRole(id) {
+  return request({
+    url: '/sys/user/user-role/' + id,
     method: 'get'
   })
 }

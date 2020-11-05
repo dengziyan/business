@@ -1,19 +1,35 @@
 import request from '@/utils/request'
 
 // 查询所有菜单
-export function fetchList(query) {
-  console.log(query)
+export function fetchLists(query) {
+
   return request({
-    url: '/sys/menu/',
+    url: '/sys/menu',
+    method: 'get',
+    params: {
+      pageNum: 0,
+      pageSize: 100
+    }
+  })
+}
+// 查询所有菜单
+export function fetchList(query) {
+
+  return request({
+    url: '/sys/menu/tree-list',
     method: 'get',
     params: query
   })
 }
+
 // 根据ID删除菜单
-export function deleteMenu(id) {
+export function deleteMenu(ids) {
   return request({
-    url: '/sysMenu/delete?id=' + id,
-    method: 'post'
+    url: '/sys/menu',
+    method: 'delete',
+    params: {
+      ids: ids + ''
+    }
   })
 }
 // 查询所有菜单
@@ -26,27 +42,27 @@ export function treeList(userId) {
 // 添加菜单信息
 export function createMenu(data) {
   return request({
-    url: '/sysMenu/insert',
+    url: '/sys/menu',
     method: 'post',
     data: data
   })
 }
 // 更新菜单
-export function updateMenu(id, data) {
+export function updateMenu(data) {
   return request({
-    url: '/sysMenu/update?id=' + id,
-    method: 'post',
+    url: '/sys/menu',
+    method: 'put',
     data: data
   })
 }
 // 修改菜单显示状态
 export function updateEnable(id, enabled) {
   return request({
-    url: '/sysMenu/updateEnable',
+    url: 'sys/menu/status',
     method: 'post',
     params: {
       id: id,
-      enabled: enabled
+      type: enabled
     }
   })
 }

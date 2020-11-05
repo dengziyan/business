@@ -32,7 +32,6 @@ export default {
     routePathNow() {
       const activePath = this.treeMenu.filter(item => item.path === this.$route.path)
       activePath.length !== 0 ? activePath[0].effect = 'dark' : ''
-      // console.log(activePath[0])
       return activePath[0]
     },
     isCollapse() {
@@ -56,7 +55,7 @@ export default {
       })
     },
     clickMenu(item) {
-      this.$router.push({ name: item.name })
+      this.$router.push({ name: item.webName })
       this.$store.commit('selectMenu', item)
     },
     dynamicRouter(item) {
@@ -66,10 +65,10 @@ export default {
           this.dynamicRouter(obj.children)
         } else {
           this.treeMenu.push({
-            path: '/' + obj.name,
-            name: obj.name || '',
-            title: obj.title || '',
-            icon: obj.icon || '',
+            path: obj.webRoute,
+            name: obj.webName || '',
+            title: obj.menuName || '',
+            icon: obj.webIcon || '',
             type: '',
             effect: 'plain'
           })

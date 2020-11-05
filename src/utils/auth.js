@@ -58,3 +58,10 @@ export function setAvatar(val) {
 export function setAccount(val) {
   sessionStorage.setItem('account', val)
 }
+
+export function setRole(val) {
+  sessionStorage.setItem('role', val)
+}
+export function getRole() {
+  return sessionStorage.getItem('role')
+}

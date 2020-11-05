@@ -1,10 +1,10 @@
 // eslint-disable-next-line no-unused-vars
 
 const baseTabList = [{
-  path: '/',
-  name: 'home',
+  path: '/dashboard',
+  name: 'dashboard',
   title: '首页',
-  icon: 'home',
+  icon: 'dashboard',
   type: '',
   effect: 'plain'
 }]
@@ -18,8 +18,16 @@ export default {
   },
   mutations: {
     selectMenu(state, val) {
-      if (val.name !== 'home') {
-        // console.log(val.name)
+      val = {
+        path: val.webRoute || val.path || '',
+        name: val.webName || val.name || '',
+        title: val.menuName || val.title || '',
+        icon: val.webIcon || val.icon || '',
+        type: '',
+        effect: 'plain'
+      }
+      console.log(val)
+      if (val.webName !== 'dashboard') {
         state.currentMenu = val
         const result = state.tabsList.findIndex(item => item.name === val.name)
         // tags动态显示，当前路由高亮
@@ -32,7 +40,7 @@ export default {
       } else {
         // tags动态显示，当前路由高亮
         val.effect = 'dark'
-        // console.log(state.tabsList)
+
         state.tabsList.forEach(function(value, index) {
           if (index !== 0) {
             value.effect = 'plain'
@@ -42,17 +50,18 @@ export default {
         state.tabsList.splice(0, 1, val)
         state.currentMenu = null
       }
-      // val.name === 'home' ? (state.currentMenu = null) : (state.currentMenu = val)
     },
     closeTab(state, val) {
+      console.log(val)
       const result = state.tabsList.findIndex(item => item.name === val.name)
       state.tabsList.splice(result, 1)
+      console.log(state.tabsList)
     },
     collapseMenu(state) {
       state.isCollapse = !state.isCollapse
     },
     setTabList(state, menu) {
-      // console.log(menu)
+      state.currentMenu = menu.name === 'dashboard' ? null : menu
       state.tabsList.forEach(function(value, index) {
         value.effect = 'plain'
         state.tabsList.splice(index, 1, value)
@@ -62,7 +71,6 @@ export default {
       }
       const result = state.tabsList.findIndex(item => item.name === menu.name)
       result === -1 ? state.tabsList.push(menu) : state.tabsList.splice(result, 1, menu)
-      state.currentMenu = menu.name === 'home' ? null : menu
     }
   },
   actions: {}

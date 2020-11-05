@@ -9,6 +9,18 @@ export function listRole(query) {
     params: query
   })
 }
+listRoleById
+
+// 查询角色列表
+export function listRoleById(user) {
+  return request({
+    url: '/sys/role/list',
+    method: 'get',
+    params: {
+      user: user
+    }
+  })
+}
 
 // 查询角色详细
 export function getRole(roleId) {
@@ -47,21 +59,13 @@ export function dataScope(data) {
 
 // 角色状态修改
 export function changeRoleStatus(id, type) {
-  const data = {
-    id,
-    type
-  }
   return request({
     url: '/sys/role/status',
     method: 'put',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-    },
-    transformRequest: [function(data) { // 在请求之前对data传参进行格式转换
-      data = Qs.stringify(data)
-      return data
-    }],
-    data
+    params: {
+      id: id,
+      type: type
+    }
   })
 }
 
@@ -92,7 +96,6 @@ export function listMenuRole(roleId) {
     method: 'get'
   })
 }
-
 
 export function listMenuByRole(menuIds, roleId) {
   const data = {

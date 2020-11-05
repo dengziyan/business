@@ -1,54 +1,104 @@
 <template>
   <div class="app-container">
+    <!-- 搜索框-->
+    <el-form ref="queryForm" :model="queryParams" :inline="true" label-width="68px">
+      <el-form-item label="菜单名称" prop="menuName">
+        <el-select
+          v-model="queryParams.menuName"
+          filterable
+          clearable
+          size="small"
+          style="width: 160px"
+          placeholder="请选择菜单名称"
+          @clear="clearParams('menuName')"
+        >
+          <el-option
+            v-for="item in selectMenuList"
+            v-show="item.value!==0"
+            :key="item.value"
+            :label="item.label"
+            :value="item.label"
+            :disabled="item.value===0"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="是否显示" prop="isEnable">
+        <el-select
+          v-model="queryParams.isEnable"
+          placeholder="菜单状态"
+          clearable
+          size="small"
+          style="width: 110px"
+          @clear="clearParams('enabled')"
+        >
+          <el-option
+            v-for="dict in selectOptions"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item>
+        <el-button type="cyan" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
     <!--   添加按钮-->
     <el-card class="operate-container" shadow="never">
-      <!--      <i class="el-icon-tickets" style="margin-top: 5px"></i>-->
-      <!--      <span style="margin-top: 5px">数据列表</span>-->
       <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
     </el-card>
     <!--  表格    -->
     <div class="table-container">
-      <el-table ref="menuTable" v-loading="listLoading" style="width: 100%" :data="list">
-        <el-table-column label="编号" width="100" align="center">
-          <template slot-scope="scope" v-modle="queryParams.parentId">{{ scope.row.id }}</template>
+      <el-table
+        ref="menuTable"
+        v-loading="listLoading"
+        style="width: 100%"
+        :data="list"
+        row-key="id"
+        border
+        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      >
+        <el-table-column label="编号" align="center">
+          <template slot-scope="scope">{{ scope.row.id }}</template>
         </el-table-column>
         <el-table-column label="菜单名称" align="center">
-          <template slot-scope="scope">{{ scope.row.title }}</template>
-        </el-table-column>
-        <el-table-column label="菜单级数" width="100" align="center">
-          <template slot-scope="scope">{{ scope.row.level | levelFilter }}</template>
+          <template slot-scope="scope">{{ scope.row.menuName }}</template>
         </el-table-column>
         <el-table-column label="前端名称" align="center">
-          <template slot-scope="scope">{{ scope.row.name }}</template>
+          <template slot-scope="scope">{{ scope.row.webName }}</template>
         </el-table-column>
-        <el-table-column label="前端图标" width="100" align="center">
-          <template slot-scope="scope"><i :class="'el-icon-'+scope.row.icon" /></template>
+        <el-table-column label="前端图标" align="center">
+          <template slot-scope="scope"><i :class="'el-icon-'+scope.row.webIcon" /></template>
         </el-table-column>
-        <el-table-column label="是否显示" width="100" align="center">
+        <el-table-column label="是否显示" align="center">
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.enabled"
+              v-model="scope.row.isEnable"
               :active-value="1"
               :inactive-value="0"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
               @change="handleHiddenChange(scope.$index, scope.row)"
             />
           </template>
         </el-table-column>
-        <el-table-column label="排序" width="100" align="center">
+        <el-table-column label="排序" align="center">
           <template slot-scope="scope">{{ scope.row.sort }}</template>
         </el-table-column>
-        <el-table-column label="设置" width="120" align="center">
+        <el-table-column label="类型" align="center">
           <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="text"
-              :disabled="scope.row.menuType | disableNextLevel"
-              @click="handleShowNextLevel(scope.$index, scope.row)"
-            >查看下级
-            </el-button>
+            <el-tag
+              :key="scope.row.type"
+              :type="scope.row.type===1? '':'success'"
+              effect="dark"
+            >
+              {{ getStatusVal(scope.row.type) }}
+            </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" align="center">
+        <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -66,56 +116,44 @@
         </el-table-column>
       </el-table>
     </div>
-    <div class="pagination-container">
-      <el-pagination
-        background
-        layout="total, sizes,prev, pager, next,jumper"
-        :page-size="queryParams.pageSize"
-        :page-sizes="[10,25,50]"
-        :current-page.sync="queryParams.pageNum"
-        :total="total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
-    </div>
-
     <!-- 添加或修改菜单配置对话框 -->
     <el-dialog :title="isEdit?'编辑菜单':'添加菜单'" :visible.sync="dialogVisible" width="60%">
       <el-form ref="www" :model="menu" label-width="150px" :rules="rules" size="small">
-        <el-form-item label="菜单名称：" prop="title">
-          <el-input v-model="menu.title" />
+        <el-form-item label="菜单名称：" prop="menuName">
+          <el-input v-model="menu.menuName" />
         </el-form-item>
-        <el-form-item label="上级菜单：">
+        <el-form-item label="上级菜单：" prop="parentId">
           <el-select v-model="menu.parentId" placeholder="请选择菜单">
             <el-option
               v-for="item in selectMenuList"
-              :key="item.id"
-              :label="item.title"
-              :value="item.id"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+              :disabled="item.value===menu.id"
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="前端名称：" prop="name">
-          <el-input v-model="menu.name" />
+        <el-form-item label="前端名称：" prop="webName">
+          <el-input v-model="menu.webName" />
         </el-form-item>
-        <el-form-item label="前端图标：" prop="icon">
-          <el-input v-model="menu.icon" style="width: 80%" />
-          <svg-icon style="margin-left: 8px" :icon-class="menu.icon" />
+        <el-form-item label="前端图标：" prop="webIcon">
+          <el-input v-model="menu.webIcon" style="width: 80%" />
         </el-form-item>
         <el-form-item label="是否显示：">
-          <el-radio-group v-model="menu.enabled">
-            <el-radio :label="1">是</el-radio>
-            <el-radio :label="0">否</el-radio>
-          </el-radio-group>
+          <el-switch
+            v-model="menu.isEnable"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            :active-value="1"
+            :inactive-value="0"
+            active-text="显示"
+            inactive-text="隐藏"
+          />
         </el-form-item>
 
         <el-form-item label="排序：">
           <el-input v-model="menu.sort" />
         </el-form-item>
-        <!--        <el-form-item>-->
-        <!--          <el-button type="primary" @click="onSubmit('menuFrom')">提交</el-button>-->
-        <!--          <el-button v-if="!isEdit" @click="resetForm('menuFrom')">重置</el-button>-->
-        <!--        </el-form-item>-->
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button size="small" @click="dialogVisible = false">取 消</el-button>
@@ -127,83 +165,77 @@
 </template>
 
 <script>
-import { fetchList, deleteMenu, updateMenu, updateEnable, createMenu, getMenu } from '@/api/authoraty/menu'
-import { addRole, updateRole } from '@/api/authoraty/role'
+import { fetchList, fetchLists, deleteMenu, updateMenu, updateEnable, createMenu, getMenu } from '@/api/authoraty/menu'
+
+import { getDictVal } from '@/api/system/logininfor'
 // 用于复制给user
 const defaultMenu = {
-  deleteStatus: 0,
-  enabled: 1,
-  level: 0,
-  menuType: 0,
+  isEnable: 1,
   parentId: 0,
   sort: 0,
-  name: '',
-  icon: '',
-  title: ''
+  menuName: '',
+  webIcon: '',
+  webName: ''
 }
 export default {
   name: 'MenuList',
-  filters: {
-    levelFilter(value) {
-      if (value === 0) {
-        return '一级'
-      } else if (value === 1) {
-        return '二级'
-      } else if (value === 2) {
-        return '三级'
-      } else {
-        return '四级'
-      }
-    },
-    disableNextLevel(value) {
-      if (value === 1) {
-        return false
-      } else {
-        return true
-      }
-    }
-  },
-  // props: {
-  //   isEdit: {
-  //     type: Boolean,
-  //     default: false
-  //   }
-  // },
   data() {
     return {
       dialogVisible: false,
       isEdit: false,
-      menu: Object.assign({}, defaultMenu), // menu为对话框中:model
+      menu: undefined,
       list: [],
-      total: null,
       listLoading: true,
       queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        menuType: 0,
-        parentId: '0'
+        isEnable: undefined,
+        menuName: undefined,
+        parentId: undefined
       },
+      statusOptions: [],
+      selectOptions: [],
       parentId: 0,
       selectMenuList: [],
       rules: {
-        title: [
+        menuName: [
           { required: true, message: '请输入菜单名称', trigger: 'blur' },
           { min: 2, max: 140, message: '长度在 2 到 140 个字符', trigger: 'blur' }
         ],
-        name: [
+        webName: [
           { required: true, message: '请输入前端名称', trigger: 'blur' },
           { min: 2, max: 140, message: '长度在 2 到 140 个字符', trigger: 'blur' }
         ],
-        icon: [
+        webIcon: [
           { required: true, message: '请输入前端图标', trigger: 'blur' },
           { min: 2, max: 140, message: '长度在 2 到 140 个字符', trigger: 'blur' }
+        ],
+        parentId: [
+          { required: true, message: '请选择上级菜单', trigger: 'blur' }
         ]
       }
+    }
+  },
+  computed: {
+    newEnable() {
+      return this.queryParams.isEnable
+    },
+    newMenuName() {
+      return this.queryParams.menuName
+    }
+  },
+  watch: {
+    newEnable() {
+      this.getList()
+    },
+    newMenuName() {
+      this.getList()
     }
   },
   created() {
     this.resetParentId()
     this.getList()
+    this.getMenuList()
+    this.getStatusDict()
+    this.getSelectStatusDict()
     if (this.isEdit) {
       getMenu(this.$route.query.id).then(response => {
         this.menu = response.data
@@ -214,8 +246,53 @@ export default {
     // this.getSelectMenuList();
   },
   methods: {
+
+    // 获取回显字典
+    getStatusDict() {
+      getDictVal('tb_menu_info', 'type').then(res => {
+        this.statusOptions = this.selectDictLabels(res.data)
+      })
+    },
+    getSelectStatusDict() {
+      getDictVal('tb_menu_info', 'is_enable').then(res => {
+        this.selectOptions = this.selectDictLabels(res.data)
+      })
+    },
+
+    getMenuList() {
+      fetchLists().then(res => {
+        const menu = res.data.rows
+        const list = menu.map(function(val) {
+          return { label: val.menuName, value: val.id }
+        })
+        list.push({ label: '根目录', value: 0 })
+        this.selectMenuList = list.sort(function(a, b) {
+          return a.value - b.value
+        })
+      })
+    },
+    // 置空参数
+    clearParams(val) {
+      if (val === 'enabled') {
+        this.queryParams.isEnable = undefined
+      }
+      if (val === 'menuName') {
+        this.queryParams.menuName = undefined
+      }
+      this.getList()
+    },
+
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.getList()
+    },
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.dateRange = []
+      Object.assign(this.$data.queryParams, this.$options.data().queryParams)
+      this.handleQuery()
+    },
     resetParentId() {
-      this.queryParams.pageNum = 1
       if (this.$route.query.parentId != null) {
         this.parentId = this.$route.query.parentId
       } else {
@@ -237,113 +314,61 @@ export default {
     },
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
-      if (this.isEdit) { // 更新资源数据（即编辑修改）
-        updateMenu(this.menu.id, this.menu).then(response => {
-          this.$message({
-            message: '修改成功！',
-            type: 'success'
-          })
-          this.dialogVisible = false
-          this.getList()
-        })
-      } else { // 插入一条资源数据（即添加）
-        createMenu(this.menu).then(response => {
-          this.$message({
-            message: '添加成功！',
-            type: 'success'
-          })
-          this.dialogVisible = false
-          this.getList()
-        })
-      }
+      this.$refs['www'].validate((valid) => {
+        if (valid) {
+          if (this.isEdit) { // 更新资源数据（即编辑修改）
+            updateMenu(this.menu).then(response => {
+              this.$message({
+                message: response.message,
+                type: response.code === 2000 ? 'success' : 'error'
+              })
+              this.dialogVisible = false
+              this.getList()
+            })
+          } else { // 插入一条资源数据（即添加）
+            createMenu(this.menu).then(response => {
+              this.$message({
+                message: response.message,
+                type: response.code === 2000 ? 'success' : 'error'
+              })
+              this.dialogVisible = false
+              this.getList()
+            })
+          }
+        }
+      })
     },
     // 获取列表数据
     getList() {
       this.listLoading = true
       fetchList(this.queryParams).then(response => {
         this.listLoading = false
-        this.list = response.data.rows
-        this.total = response.data.total
+        this.list = response.data
       })
     },
     handleSizeChange(val) {
-      this.queryParams.pageNum = 1
-      this.queryParams.pageSize = val
       this.getList()
     },
     handleCurrentChange(val) {
-      this.queryParams.pageNum = val
       this.getList()
     },
     handleHiddenChange(index, row) {
-      updateEnable(row.id, row.enabled).then(response => {
+      updateEnable(row.id, row.isEnable).then(response => {
         this.$message({
-          message: '修改成功',
-          type: 'success',
+          message: response.message,
+          type: response.code === 2000 ? 'success' : 'error',
           duration: 1000
         })
+        this.getList()
       })
     },
     handleShowNextLevel(index, row) {
       this.queryParams.parentId = row.id
       fetchList(this.queryParams).then(response => {
         this.listLoading = false
-        this.list = response.data.rows
-        this.total = response.data.total
+        this.list = response.data
       })
     },
-    /*    getSelectMenuList() {
-      fetchList(0, {pageSize: 100, pageNum: 1}).then(response => {
-        this.selectMenuList = response.data.list;
-        this.selectMenuList.unshift({id: 0, title: '无上级菜单'});
-      });
-    },*/
-    // onSubmit(formName) {
-    //   this.$refs[formName].validate((valid) => {
-    //     if (valid) {
-    //       this.$confirm('是否提交数据', '提示', {
-    //         confirmButtonText: '确定',
-    //         cancelButtonText: '取消',
-    //         type: 'warning'
-    //       }).then(() => {
-    //         if (this.isEdit) {
-    //           updateMenu(this.$route.query.id, this.menu).then(response => {
-    //             this.$message({
-    //               message: '修改成功',
-    //               type: 'success',
-    //               duration: 1000
-    //             });
-    //             this.$router.back();
-    //           });
-    //         } else {
-    //           createMenu(this.menu).then(response => {
-    //             this.$refs[formName].resetFields();
-    //             this.resetForm(formName);
-    //             this.$message({
-    //               message: '提交成功',
-    //               type: 'success',
-    //               duration: 1000
-    //             });
-    //             this.$router.back();
-    //           });
-    //         }
-    //       });
-    //
-    //     } else {
-    //       this.$message({
-    //         message: '验证失败',
-    //         type: 'error',
-    //         duration: 1000
-    //       });
-    //       return false;
-    //     }
-    //   });
-    // },
-    // resetForm(formName) {
-    //   this.$refs[formName].resetFields();
-    //   this.menu = Object.assign({}, defaultMenu);
-    //   this.getSelectMenuList();
-    // },
     handleDelete(index, row) {
       this.$confirm('是否要删除该菜单', '提示', {
         confirmButtonText: '确定',
@@ -352,8 +377,8 @@ export default {
       }).then(() => {
         deleteMenu(row.id).then(response => {
           this.$message({
-            message: '删除成功',
-            type: 'success',
+            message: response.message,
+            type: response.code === 2000 ? 'success' : 'error',
             duration: 1000
           })
           this.getList()
@@ -365,7 +390,7 @@ export default {
 </script>
 
 <style scoped>
-  .el-card{
-    border: 0px;
-  }
+.el-card {
+  border: 0px;
+}
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="menutree">
     <label v-for="menu in data">
-      <el-submenu v-if="menu.children" :index="'/' + menu.webName">
+      <el-submenu v-if="menu.children" :index="menu.webRoute">
         <template slot="title">
           <i :class="'el-icon-'+menu.webIcon"/>
           <span>{{ menu.menuName }}</span>
@@ -10,7 +10,7 @@
           <menutree :data="menu.children"/>
         </el-menu-item-group>
       </el-submenu>
-      <el-menu-item v-else :index="'/'+menu.webName" @click="clickMenu(menu)">
+      <el-menu-item v-else :index="menu.webRoute" @click="clickMenu(menu)">
         <i :class="'el-icon-'+menu.webIcon"/>
         <span slot="title">{{ menu.menuName }}</span>
       </el-menu-item>
@@ -26,7 +26,7 @@ export default {
   components: {
     menutree: menutree
   },
-  // eslint-disable-next-line vue/require-prop-types
+
   props: ['data'],
   data() {
     return {
@@ -35,7 +35,7 @@ export default {
   },
   methods: {
     clickMenu(item) {
-      this.$router.push({ name: item.name })
+      this.$router.push({ name: item.webName })
       this.$store.commit('selectMenu', item)
     }
   }

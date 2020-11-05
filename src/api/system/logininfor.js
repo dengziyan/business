@@ -42,7 +42,7 @@ export function getDictVal(table, field) {
   return request({
     url: '/sys/sql/table-field',
     method: 'get',
-    params:{
+    params: {
       table,
       field
     }
