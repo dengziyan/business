@@ -50,7 +50,7 @@ export default {
       single: true, multiple: true, checkAll: false, dialogVisible: false, isEdit: false, // single:非多个禁用 multiple:非单个禁用
       statusOptions: [{ dictLabel: '全部', dictValue: null }, { dictLabel: '待审核', dictValue: 0 }, { dictLabel: '已审核', dictValue: 1 }], // 状态数据字典
       // 查询表单
-      searchData: { pageNum: 1, pageSize: 10, startTime: null, endTime: null, chargeBeginTime: null, communityId: null, billName: null, billStatus: null }, // 查询参数
+      searchData: { pageNum: 1, pageSize: 10, startTime: null, endTime: null, chargeBeginTime: null, communityId: null, billName: null, billStatus: null ,userId: null}, // 查询参数
       searchForm: [
         { type: 'datetimerange', label: '账单开始日期', prop: 'chargeBeginTime', width: '1000px' },
         { type: 'Input', label: '小区', prop: 'communityId', width: '100px', placeholder: '请输入小区...' },
@@ -152,8 +152,9 @@ export default {
     handleEdit(row, index) {
       this.dialogVisible = true
       this.isEdit = true
-      // console.log(row, index)
-      updatePayBills(row)
+      console.log(row, index)
+      console.log(this.list)
+      // updatePayBills(row)
     },
     // 删除
     handleDelete(row) {

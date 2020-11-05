@@ -6,7 +6,7 @@
     <!--引入操作子组件        -->
     <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
     <!--点击新增后出现的弹框    -->
-    <el-dialog :title="isEdit?'编辑用户':'添加用户'" :visible.sync="dialogVisible" width="30%">
+    <el-dialog :title="isEdit?'编辑收费项目':'添加收费项目'" :visible.sync="dialogVisible" width="30%">
       <!--弹框子组件      -->
       <new-dialog />
     </el-dialog>
@@ -65,7 +65,7 @@ export default {
   },
   created() {
     this.getList()
-    this.loading = false
+    this.loading = true
     this.getChargeCategory()
   },
   methods: {
@@ -89,19 +89,21 @@ export default {
     },
     // 查询收费项目列表
     getList() {
-      console.log('查询批次列表成功')
       // this.loading = true
       listChargeProject(this.queryParams).then(
         (response) => {
           this.list = response.data.rows
           this.total = response.data.total
-          // this.loading = false
+          this.loading = false
         }
       )
     },
     // 表格方法
     handleUpdate(row, index) {
-
+      this.dialogVisible = true
+      console.log(row)
+      this.isEdit = true
+      row = this.list
     },
     handleDelete() {
       this.list = []

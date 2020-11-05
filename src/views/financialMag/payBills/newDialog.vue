@@ -37,6 +37,7 @@ export default {
         inline: false,
         labelPosition: 'right',
         size: 'small',
+
         formItem: [
           { type: 'select', isDisabled: false, multiple: false, label: '收费类型', tip: '', value: '', options: [] },
           { type: 'select', isDisabled: false, multiple: false, label: '收费项目名称', tip: '', value: '', options: [] },

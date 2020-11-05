@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TableVue v-if="dialogVisible" v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
+    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
       <!-- 下面是上面的简写，#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
       <template #handle="{scope: {row, $index}}">
         <el-button type="danger" size="mini" @click="handleDelete()">删除</el-button>
