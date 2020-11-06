@@ -91,13 +91,11 @@ export function updateUnit(id, data) {
   })
 }
 // 删除物业
-export function delProperty(ids) {
+export function delProperty(data) {
   return request({
     url: '/sys/property/info',
     method: 'delete',
-    params: {
-      ids: ids + ''
-    }
+    data: data
   })
 }
 // 下载导入模板

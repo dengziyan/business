@@ -86,10 +86,10 @@ export default {
         communityId: null,
       },
       delBuilding: {
-        userId: this.$store.getters.id,
-        merchantId: null,
-        communityId: null,
-        buildingId: null,
+        // userId: this.$store.getters.id,
+        // merchantId: null,
+        // communityId: null,
+        buildingId: null
       },
       delUnit: {
         userId: this.$store.getters.id,
@@ -253,17 +253,19 @@ export default {
       // this.tree = Object.assign({}, n)
     },
     nodeDelete(s, d, n) { // 删除节点
-      console.log(s, d, n)
       if (n.level === 1) {
         this.delQuery = this.delMerchant
+        console.log(n.id)
       } else if (n.level === 2) {
         this.delQuery = this.delCommunity
+        console.log(n.id)
       } else if (n.level === 3) {
+        this.delBuilding.delBuildingId = n.id
         this.delQuery = this.delBuilding
       } else {
         this.delQuery = this.delUnit
       }
-      this.$confirm('是否确认删除用户编号为"' + n.id + '"的数据项?', '警告',
+      this.$confirm('是否确认删除编号为"' + n.id + '"的数据项?', '警告',
         { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
       ).then(function() {
         return delProperty(this.delQuery)

@@ -74,7 +74,7 @@ export default {
               type: 'success'
             })
             this.treeDialogVisible = false
-            this.getList()
+            this.$parent.getList()
           }
         })
       }
