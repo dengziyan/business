@@ -3,9 +3,13 @@
   <div>
     <!--引入搜索条件子组件        -->
     <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
+    <div class="txt">
+      <span>收入金额总计: {{sum}}<br></span>
+      <span>收入笔数: {{total}}<br></span>
+      <span>收入金额总计: 0.0<br></span>
+    </div>
     <!--引入操作子组件        -->
-
-    <!--引入表格组件        -->
+    <!--引入表格组件  -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
     </TableVue>
     <!--  分页  -->
@@ -27,6 +31,7 @@ export default {
   components: { TableVue, SearchForm },
   data() {
     return {
+      sum: 0,
       // 查询表单
       searchData: { pageNum: 1, pageSize: 10, startTime: null, endTime: null, amountActuallyPaid: null, name: null, createTime: null, billName: null }, // 查询参数
       searchForm: [
@@ -45,8 +50,8 @@ export default {
       list: [],
       total: 0, // 总条数
       columns: Object.freeze([
-        { attrs: { prop: 'name', label: '小区', width: '100', align: 'center' }},
-        { attrs: { prop: 'communityId', label: '渠道', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
+        { attrs: { prop: 'paymentMethod', label: '渠道', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'chargeProjectId', label: '收入金额', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'chargeBeginTime', label: '收入笔数', width: '154', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'amountPayable', label: '手续费金额统计', 'show-overflow-tooltip': true }},
@@ -71,6 +76,8 @@ export default {
       listIncomeStatic(addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
         (response) => {
           this.list = response.data.rows
+          this.sum = response.data.sum
+          console.log(this.list)
           this.total = response.data.total
           this.loading = false
         }
@@ -103,6 +110,9 @@ export default {
 </script>
 
 <style scoped>
+  .txt{
+    height: 20px;
+  }
   .el-row{
     margin-left: 10px !important;
   }

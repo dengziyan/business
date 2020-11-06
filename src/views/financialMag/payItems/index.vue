@@ -35,7 +35,7 @@ export default {
       // 查询表单
       searchData: { name: null, age: null, sex: null, interst: null },
       searchForm: [
-        { type: 'Select', isDisabled: false, multiple: false, label: '收费类型', prop: 'chargeCategoryName', value: '请选择收费类型', options: [] }, // multiple:是否开启多选
+        { type: 'Select', isDisabled: false, multiple: false, label: '收费类型', prop: 'chargeCategoryName', value: '请选择收费类型', options: [], change: this.getList }, // multiple:是否开启多选
         { type: 'Input', label: '收费标准名称', prop: 'communityId', width: '1000px', placeholder: '请输入收费名称...' }
       ],
       searchHandle: [

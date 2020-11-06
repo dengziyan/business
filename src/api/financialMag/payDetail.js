@@ -26,3 +26,12 @@ export function updateByAmountPaid(query) {
     }
   })
 }
+// 导出收费详情列表
+export function exportChargeBill(data) {
+  return request({
+    url: '/chargeBill/export',
+    method: 'get',
+    responseType: 'arraybuffer',
+    params: data
+  })
+}

@@ -2,11 +2,11 @@
   <!--收费批次管理表格及操作组件  -->
   <div>
     <!--引入搜索条件子组件        -->
-    <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle"/>
+    <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
     <!--引入操作子组件        -->
     <!-- 各个操作按钮 -->
     <el-radio-group v-model="searchData.billStatus" @change="getList">
-      <el-radio-button v-for="dict in statusOptions" :key="dict.dictValue" :value="dict.dictValue" :label="dict.dictLabel"/>
+      <el-radio-button v-for="dict in statusOptions" :key="dict.dictValue" :value="dict.dictValue" :label="dict.dictLabel" />
     </el-radio-group>
     <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
     <!--点击新增后出现的弹框    -->
@@ -18,7 +18,7 @@
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="No data~">
       <!--  文字按钮    -->
       <template #handle2="{scope: { row }}">
-        <el-button type="text" @click="handleCheck(row)">{{row.billName}}</el-button>
+        <el-button type="text" @click="handleCheck(row)">{{ row.billName }}</el-button>
       </template>
       <!-- 操作按钮 。#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
       <template #handle="{scope: {row, $index}}">
@@ -28,7 +28,7 @@
       </template>
     </TableVue>
     <!--  分页  -->
-    <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList"/>
+    <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
   </div>
 </template>
 
@@ -50,7 +50,7 @@ export default {
       single: true, multiple: true, checkAll: false, dialogVisible: false, isEdit: false, // single:非多个禁用 multiple:非单个禁用
       statusOptions: [{ dictLabel: '全部', dictValue: null }, { dictLabel: '待审核', dictValue: 0 }, { dictLabel: '已审核', dictValue: 1 }], // 状态数据字典
       // 查询表单
-      searchData: { pageNum: 1, pageSize: 10, startTime: null, endTime: null, chargeBeginTime: null, communityId: null, billName: null, billStatus: null ,userId: null}, // 查询参数
+      searchData: { pageNum: 1, pageSize: 10, startTime: null, endTime: null, chargeBeginTime: null, communityId: null, billName: null, billStatus: null, userId: null }, // 查询参数
       searchForm: [
         { type: 'datetimerange', label: '账单开始日期', prop: 'chargeBeginTime', width: '1000px' },
         { type: 'Input', label: '小区', prop: 'communityId', width: '100px', placeholder: '请输入小区...' },
@@ -128,6 +128,8 @@ export default {
               this.list[i].billStatus = '待审核'
             } else if (this.list[i].billStatus === 1) {
               this.list[i].billStatus = '已审核'
+            } else if (this.list[i].billStatus === 2) {
+              this.list[i].billStatus = '缴费中'
             }
             const query = {
               chargeProjectId: this.list[i].chargeProjectId
