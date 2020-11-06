@@ -102,6 +102,14 @@ export const constantRoutes = [
         }
       },
       {
+        path: '/test',
+        name: 'test',
+        component: () => import('@/views/financialMag/test/index'),
+        meta: {
+          keepAlive: true // 需要缓存的页面
+        }
+      },
+      {
         path: '/userList',
         name: 'userList',
         component: () => import('@/views/Authoraty/UserList'),

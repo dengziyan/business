@@ -37,6 +37,9 @@ export function addCommunity(data) {
   return request({
     url: '/sys/community',
     method: 'post',
+    params: {
+      merchantId: data.merchantId
+    },
     data: data
   })
 }

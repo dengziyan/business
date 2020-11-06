@@ -22,10 +22,10 @@
         <!--点击+新增后出现的弹框    -->
         <el-dialog :title="treeIsEdit?'编辑':'添加'" :visible.sync="treeDialogVisible" width="650px">
           <!--弹框子组件      -->
-          <new-dialog1 v-if="newdialog === 1" :visible.sync="treeDialogVisible"/>
-          <new-dialog2 v-if="newdialog === 2" :visible.sync="treeDialogVisible"/>
-          <new-dialog3 v-if="newdialog === 3" :visible.sync="treeDialogVisible"/>
-          <new-dialog4 v-if="newdialog === 4" :visible.sync="treeDialogVisible"/>
+          <new-dialog1 v-if="newdialog === 1" :visible.sync="treeDialogVisible" :require-id="requireId"/>
+          <new-dialog2 v-if="newdialog === 2" :visible.sync="treeDialogVisible" :require-id="requireId"/>
+          <new-dialog3 v-if="newdialog === 3" :visible.sync="treeDialogVisible" :require-id="requireId"/>
+          <new-dialog4 v-if="newdialog === 4" :visible.sync="treeDialogVisible" :require-id="requireId"/>
         </el-dialog>
       </div>
     </div>
@@ -76,7 +76,7 @@ export default {
   data() {
     return {
       // 左边的树（maxexpandId:新增节点开始id，isLoadingTree: 是否加载节点树，defaultExpandKeys默认展开节点列表
-      treeList: [], maxexpandId: 95, non_maxexpandId: 95, isLoadingTree: false,
+      treeList: [], maxexpandId: 95, non_maxexpandId: 95, isLoadingTree: false, requireId: 0,
       defaultExpandKeys: [], treeDialogVisible: false, treeIsEdit: false, newdialog: 0,
       defaultProps: { children: 'children', label: 'name', id: 'name' },
       queryParams: { userId: undefined },
@@ -197,6 +197,7 @@ export default {
     handleAddTop() {
     },
     nodeAdd(s, d, n) { // 增加节点
+      // console.log(n.key)
       if (n.level === 1) {
         this.newdialog = 1
       } else if (n.level === 2) {
@@ -206,13 +207,26 @@ export default {
       } else {
         this.newdialog = 4
       }
+      this.requireId = n.key
       this.treeDialogVisible = true
       this.treeIsEdit = false
       // this.community = Object.assign({}, defaultCommunity) // 默认值为空
     },
     nodeEdit(s, d, n) { // 编辑节点
+      if (n.level === 1) {
+        this.newdialog = 0
+
+      } else if (n.level === 2) {
+        this.newdialog = 1
+        this.user = Object.assign({}, n.data)
+        console.log(n)
+      } else if (n.level === 3) {
+        this.newdialog = 2
+      } else {
+        this.newdialog = 3
+      }
       this.treeDialogVisible = true
-      this.treeIsEdit = false
+      this.treeIsEdit = true
       // this.tree = Object.assign({}, n)
     },
     nodeDelete(s, d, n) { // 删除节点

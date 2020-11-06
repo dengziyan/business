@@ -8,6 +8,12 @@
     <el-table-column v-for="(item, index) in columns" :key="index" v-bind="item.attrs">
       <el-table-column type="selection" v-if="item.type==='selection'" width="55">
       </el-table-column>
+<!--      <template slot-scope="scope" v-if="item.type==='edit'">-->
+<!--        <slot :scope="scope" :name="item.slot" v-if="item.slot"></slot>-->
+<!--        <template v-else>-->
+<!--          <el-input v-model="scope.row.name" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input>-->
+<!--        </template>-->
+<!--      </template>-->
       <template slot-scope="scope" >
         <slot :scope="scope" :name="item.slot" v-if="item.slot"></slot>
         <template v-else>

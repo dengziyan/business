@@ -19,6 +19,10 @@ export function updateByAmountPaid(query) {
   return request({
     url: '/paymentCycle/updateByAmountPaid',
     method: 'post',
-    params: query
+    params: {
+      userId: query.userId,
+      AmountPaid: query.AmountPaid,
+      id: query.id
+    }
   })
 }

@@ -1,7 +1,7 @@
 <template>
   <!--新增按钮的弹框  -->
   <div>
-    小区
+    小区信息
     <!--表格组件      -->
     <FormVue ref="form" :form-data="formData" :form="form" class="formMain"/>
     <span slot="footer" class="dialog-footer">
@@ -14,32 +14,28 @@
 <script>
 import FormVue from '@/components/FormVue'
 import { updateCommunity, addCommunity } from '@/api/CommunityMag/community'
-import { getToken } from '@/utils/auth'
-const form = {
-  merchantId: 333,
-  communityName: '',
-  category: '',
-  billName: '',
-  admin: '',
-  mobilePhone: '',
-  location: ''
-}
+import { getDictVal } from '@/api/system/logininfor'
 export default {
   name: 'NewDialog1',
   components: { FormVue },
-  props: ['visible'],
+  props: ['visible', 'requireId'],
   data() {
     return {
-      community: Object.assign({}, form),
       treeDialogVisible: this.visible,
+      form: {
+        merchantId: this.requireId,
+        communityName: '',
+        category: '',
+        admin: '',
+        mobilePhone: '',
+        location: ''
+      },
       formData: {
         labelWidth: '100px', inline: false, labelPosition: 'right', size: 'small',
         formItem: [
           { type: 'text', label: '商户Id', prop: 'merchantId', size: 'small', isDisabled: false, required: true },
-          { type: 'text', label: '小区编码', prop: 'communityId', size: 'small', isDisabled: false, required: true },
           { type: 'text', label: '小区名称', prop: 'communityName', size: 'small', isDisabled: false },
-          { type: 'select', label: '小区类别', prop: 'category', tip: '', value: '', isDisabled: false, multiple: false, options: [] },
-          { type: 'text', label: '总户数', prop: 'billName', size: 'small', isDisabled: false, required: true },
+          { type: 'select', label: '小区类别', prop: 'category', size: 'small', tip: '', value: '', isDisabled: false, multiple: false, options: [] },
           { type: 'text', label: '联系人', prop: 'admin', size: 'small', isDisabled: false, required: true },
           { type: 'text', label: '联系电话', prop: 'mobilePhone', size: 'small', isDisabled: false, required: true },
           { type: 'text', label: '位置信息', prop: 'location', size: 'small', isDisabled: false, required: true }
@@ -61,32 +57,40 @@ export default {
   //   }
   // },
   created() {
+    console.log(this.requireId)
+    this.getOptionStatusDict()
   },
   computed: {
   },
   methods: {
+    // 获取回显字典
+    getOptionStatusDict() {
+      getDictVal('tb_community_info', 'category').then(res => {
+        this.formData.formItem[2].options = this.selectDictLabels(res.data)
+      })
+    },
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
       if (this.treeIsEdit) { // 更新资源数据（即编辑修改）
-        updateCommunity(this.community).then(response => {
+        updateCommunity(this.form).then(response => {
           if (response.code === 2000) {
             this.$message({
               message: '修改成功！',
               type: 'success'
             })
             this.treeDialogVisible = false
-            this.getList()
+            this.getOptionStatusDict()
           }
         })
       } else { // 插入一条资源数据（即添加）
-        addCommunity(this.community).then(response => {
+        addCommunity(this.form).then(response => {
           if (response.code === 2000) {
             this.$message({
               message: '添加成功！',
               type: 'success'
             })
             this.treeDialogVisible = false
-            this.getList()
+            this.getOptionStatusDict()
           }
         })
       }

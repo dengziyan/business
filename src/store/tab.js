@@ -61,14 +61,15 @@ export default {
       state.isCollapse = !state.isCollapse
     },
     setTabList(state, menu) {
+      if (!menu || !menu.name) {
+        return
+      }
+      console.log(menu)
       state.currentMenu = menu.name === 'dashboard' ? null : menu
       state.tabsList.forEach(function(value, index) {
         value.effect = 'plain'
         state.tabsList.splice(index, 1, value)
       })
-      if (!menu || !menu.name) {
-        return
-      }
       const result = state.tabsList.findIndex(item => item.name === menu.name)
       result === -1 ? state.tabsList.push(menu) : state.tabsList.splice(result, 1, menu)
     }

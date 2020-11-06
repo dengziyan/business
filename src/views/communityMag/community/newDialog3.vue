@@ -1,9 +1,9 @@
 <template>
   <!--新增按钮的弹框  -->
   <div>
-    单元
+    单元信息
     <!--表格组件      -->
-    <FormVue ref="form" :form-data="formData" class="formMain"/>
+    <FormVue ref="form" :form-data="formData" :form="form" class="formMain"/>
     <span slot="footer" class="dialog-footer">
       <el-button size="small" @click="cancel(false)">取 消</el-button>
       <el-button type="primary" size="small" @click="handleDialogConfirm()">新建</el-button>
@@ -18,17 +18,22 @@ import { getToken } from '@/utils/auth'
 export default {
   name: 'NewDialog3',
   components: { FormVue },
-  props: ['visible'],
+  props: ['visible', 'requireId'],
   data() {
     return {
       treeDialogVisible: this.visible,
+      form: {
+        buildingId: this.requireId,
+        unitName: '',
+        affiliationId: '',
+        createTime: ''
+      },
       formData: {
         labelWidth: '100px', inline: false, labelPosition: 'right', size: 'small',
         formItem: [
-          { type: 'text', label: '小区名称', size: 'small', isDisabled: false, prop: 'communityName', required: true },
-          { type: 'text', label: '栋名称', size: 'small', isDisabled: false, prop: 'buildingName', required: true },
-          { type: 'text', label: '单元名称', size: 'small', isDisabled: false, prop: 'unitName', required: true },
-          { type: 'text', label: '楼栋管理员/编号', size: 'small', isDisabled: false, prop: 'affiliationId', required: true },
+          { type: 'text', label: '栋编号', prop: 'buildingId', size: 'small', isDisabled: false, required: true },
+          { type: 'text', label: '单元名称', prop: 'unitName', size: 'small', isDisabled: false, required: true },
+          { type: 'text', label: '楼栋管理员/编号', prop: 'affiliationId', size: 'small', isDisabled: false, required: true },
           { type: 'date', label: '创建时间', prop: 'createTime', value: '' }
         ],
         rules: {

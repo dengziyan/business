@@ -1,12 +1,22 @@
 <template>
   <div>
-    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据" @selection-change="handleSelectionChange">
-      <!-- 下面是上面的简写，#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
-      <template #handle="{scope: {row, $index}}">
-        <el-button type="danger" size="mini" @click="handleDelete()">删除</el-button>
-        <el-button type="primary" size="mini" @click="handleEdit(row, $index)">编辑</el-button>
-      </template>
-    </TableVue>
+    <el-table :data="list" border class="tb-edit" style="width: 100%" highlight-current-row @selection-change="handleSelectionChange">
+      <el-table-column type="selection" align="center"/>
+      <el-table-column label="缴费周期" width="180" align="center" prop="paymentCycle"/>
+      <el-table-column label="金额" width="180" align="center" prop="amountPayable"/>
+      <el-table-column prop="amountActuallyPaid" label="已缴金额">
+        <template scope="scope">
+          <el-input size="small" v-model="scope.row.amountActuallyPaid" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input> <span>{{scope.row.address}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="paymentStatus" label="缴费状态" align="center" />
+      <el-table-column label="操作">
+        <template scope="scope">
+          <!--<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>-->
+          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
     <span slot="footer" class="dialog-footer">
       <el-button size="small" @click="cancel(false)">取 消</el-button>
       <el-button type="primary" size="small" @click="cashPay()">现金支付</el-button>
@@ -19,11 +29,13 @@ import { getPaymentCycle, updateByAmountPaid } from '@/api/financialMag/payDetai
 export default {
   name: 'DetailDialog',
   props: ['detailId', 'visible'],
-  components: { TableVue },
+  // components: { TableVue },
   data() {
     return {
-      quary: {
-
+      query: {
+        userId: '',
+        id: 0,
+        AmountPaid: ''
       },
       ids: [], // 多选时选中数组
       dialogVisibled: this.visible,
@@ -32,20 +44,40 @@ export default {
       billId: this.detailId,
       list: [],
       total: 0, // 总条数
-      columns: Object.freeze([
-        { type: 'selection' },
-        { attrs: { prop: 'paymentCycle', label: '缴费周期', width: '100', align: 'center' }},
-        { attrs: { prop: 'amountPayable', label: '金额', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'amountActuallyPaid', label: '已缴金额', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'paymentStatus', label: '缴费状态', 'show-overflow-tooltip': true }},
-        { slot: 'handle', attrs: { label: '操作', width: '250', 'class-name': 'small-padding fixed-width', align: 'center' }}
-      ])
+      requaryId: null,
+      requaryAmountActuallyPaid: null
     }
   },
   created() {
     this.getList()
   },
   methods: {
+    // 某行点击
+    handleCurrentChange(row, event, column) {
+      // console.log(row.id)
+      // console.log(row.amountActuallyPaid)
+      // console.log(row, event, column, event.currentTarget)
+    },
+    handleEdit(index, row) {
+      this.query.id = row.id
+      this.query.AmountPaid = row.amountActuallyPaid
+      this.query.userId = this.$store.getters.id
+      console.log(this.query)
+      updateByAmountPaid(this.query).then(response => {
+        if (response.code === 2000) {
+          this.$message({
+            message: '支付成功！',
+            type: 'success'
+          })
+          this.dialogVisibled = false
+          this.getList()
+        }
+      })
+      console.log(index, row)
+    },
+    handleDelete(index, row) {
+      console.log(index, row);
+    },
     // 按取消按钮
     cancel(val) {
       this.dialogVisibled = val

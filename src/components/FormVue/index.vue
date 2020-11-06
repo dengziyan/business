@@ -4,24 +4,29 @@
   <el-form
     ref="ruleForm"
     class="demo-ruleForm"
-    :model="form"
     :label-width="formData.labelWidth"
+    :model="dataForm"
     :inline="formData.inline"
     :rules="formData.rules"
     :size="formData.size"
     :label-position="formData.labelPosition"
   >
-    <el-form-item v-for="(item, index) in formData.formItem" :key="index" :label="item.label" :prop="item.prop">
+    <el-form-item
+      v-for="(item, index) in formData.formItem"
+      :key="index"
+      :label="item.label"
+      :prop="item.prop">
       <!-- 文本框 -->
-      <el-input v-if="item.type === 'text'" v-model="form[item.prop]" :disabled="item.isDisabled" :size="item.size"/>
+      <el-input
+        v-if="item.type === 'text'"
+        v-model="dataForm[item.prop]"
+        :disabled="item.isDisabled"
+        :size="item.size"/>
       <!--      -->
-      <h4 v-if="item.type === 'text2'" v-model="form[item.prop]">
-        <p >{{form[item.prop]}}</p>
-      </h4>
       <!-- 密码框 -->
       <el-input
         v-if="item.type === 'password'"
-        v-model="form[item.prop]"
+        v-model="dataForm[item.prop]"
         type="password"
         :disabled="item.isDisabled"
       />
@@ -41,7 +46,7 @@
       <!-- 单选按钮 -->
       <el-radio-group
         v-if="item.type==='radioButton'"
-        v-model="form[item.prop]"
+        v-model="dataForm[item.prop]"
         :disabled="item.isDisabled"
       >
         <el-radio-button
@@ -55,7 +60,7 @@
       <!-- 多选框组 -->
       <el-checkbox-group
         v-if="item.type==='checkbox'"
-        v-model="form[item.prop]"
+        v-model="dataForm[item.prop]"
       >
         <el-checkbox
           v-for="item in item.options"
@@ -70,7 +75,7 @@
       <el-select
         ref="selectForm"
         v-if="item.type==='select'"
-        v-model="item.value"
+        v-model="dataForm[item.prop]"
         :multiple="item.multiple"
         :value="item.tip"
         collapse-tags
@@ -89,7 +94,7 @@
       <!-- 联级面板 -->
       <el-cascader
         v-if="item.type==='cascader'"
-        v-model="form[item.prop]"
+        v-model="dataForm[item.prop]"
         :options="item.options"
         :props="item.isMore"
         clearable
@@ -97,12 +102,12 @@
       <!-- 开关 -->
       <el-switch
         v-if="item.type==='switch'"
-        v-model="form[item.prop]"
+        v-model="dataForm[item.prop]"
       />
       <!-- 日期选择器 -->
       <el-date-picker
         v-if="item.type==='date'"
-        v-model="item.value"
+        v-model="dataForm[item.prop]"
         type="date"
         value-format="yyyy-MM-dd"
         placeholder="选择日期"
@@ -110,20 +115,20 @@
       <!-- 时间选择器 -->
       <el-time-picker
         v-if="item.type==='time'"
-        v-model="item.value"
+        v-model="dataForm[item.prop]"
         placeholder="请选择时间"
       />
       <!-- 日期时间选择器 -->
       <el-date-picker
         v-if="item.type==='dateTime'"
-        v-model="item.value"
+        v-model="dataForm[item.prop]"
         type="datetime"
         placeholder="选择日期时间"
       />
       <!-- 日期范围选择器     -->
       <el-date-picker
         v-if="item.type==='daterange'"
-        v-model="form[item.prop]"
+        v-model="dataForm[item.prop]"
         type="daterange"
         range-separator="至"
         start-placeholder="开始日期"
@@ -131,7 +136,7 @@
       <!-- 日期和时间范围选择器  -->
       <el-date-picker
         v-if="item.type==='datetimerange'"
-        v-model="form[item.prop]"
+        v-model="dataForm[item.prop]"
         type="datetimerange"
         range-separator="至"
         start-placeholder="开始日期"
@@ -153,28 +158,12 @@
         </el-upload>
       </div>
     </el-form-item>
-<!--    </el-form-item>-->
-<!--    <el-form-item>-->
-<!--      <el-button-->
-<!--        type="primary"-->
-<!--        @click="onSubmit('ruleForm')"-->
-<!--      >-->
-<!--        保存-->
-<!--      </el-button>-->
-<!--      <el-button-->
-<!--        @click="resetForm('ruleForm')"-->
-<!--      >-->
-<!--        重置-->
-<!--      </el-button>-->
-<!--    </el-form-item>-->
   </el-form>
 
 </template>
 
 <script>
-import fileDownload from 'js-file-download'
 import { getToken } from '@/utils/auth'
-import { importTemplates } from '@/api/CommunityMag/community'
 export default {
   props: {
     formData: {
@@ -188,7 +177,7 @@ export default {
   },
   data() {
     return {
-      form: {},
+      dataForm: this.form,
       value1: '',
       fileList: [],
       // 用户导入参数
@@ -202,6 +191,12 @@ export default {
       }
     }
   },
+  watch: {
+    formWatch: function(val) {
+      this.dataForm = val
+    }
+  },
+
   created() {
     // console.log('qwwwww')
     this.bindValue()
@@ -234,7 +229,6 @@ export default {
         // 这里不能写成this.form = obj  因为传递的不是值，而是引用，他们指向了同一个空间！
         obj[item.prop] = item.value
       })
-      this.form = { ...obj }
     }
   }
 }

@@ -153,7 +153,6 @@ export default {
       this.dialogVisible = true
       this.isEdit = true
       console.log(row, index)
-      console.log(this.list)
       // updatePayBills(row)
     },
     // 删除
