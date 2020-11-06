@@ -24,16 +24,18 @@ export default {
       treeDialogVisible: this.visible,
       form: {
         communityId: this.requireId,
-        buildingName: ''
+        admin: ''
       },
       formData: {
         labelWidth: '100px', inline: false, labelPosition: 'right', size: 'small',
         formItem: [
           { type: 'text', label: '小区编号', prop: 'communityId', size: 'small', isDisabled: false, required: true },
-          { type: 'text', label: '楼栋名称', prop: 'buildingName', size: 'small', isDisabled: false, required: true }
+          { type: 'text', label: '楼栋名称', prop: 'buildingName', size: 'small', isDisabled: false, required: true },
+          { type: 'text', label: '楼栋管理员', prop: 'admin', size: 'small', isDisabled: false, required: true }
         ],
         rules: {
-          buildingName: [{ required: true, message: '请输入楼栋名称', trigger: 'blur' }]
+          buildingName: [{ required: true, message: '请输入楼栋名称', trigger: 'blur' }],
+          admin: [{ required: true, message: '请输入楼栋管理员编号', trigger: 'blur' }]
         }
       }
     }
@@ -67,6 +69,7 @@ export default {
           }
         })
       } else { // 插入一条资源数据（即添加）
+        // this.form.communityId = this.requireId
         addBuilding(this.form).then(response => {
           if (response.code === 2000) {
             this.$message({

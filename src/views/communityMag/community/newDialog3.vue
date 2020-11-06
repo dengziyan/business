@@ -23,10 +23,7 @@ export default {
     return {
       treeDialogVisible: this.visible,
       form: {
-        buildingId: this.requireId,
-        unitName: '',
-        affiliationId: '',
-        createTime: ''
+        buildingId: this.requireId
       },
       formData: {
         labelWidth: '100px', inline: false, labelPosition: 'right', size: 'small',
@@ -59,7 +56,7 @@ export default {
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
       if (this.treeIsEdit) { // 更新资源数据（即编辑修改）
-        updateUnit(this.unit).then(response => {
+        updateUnit(this.form).then(response => {
           if (response.code === 2000) {
             this.$message({
               message: '修改成功！',
@@ -70,7 +67,7 @@ export default {
           }
         })
       } else { // 插入一条资源数据（即添加）
-        addUnit(this.uidnit).then(response => {
+        addUnit(this.form).then(response => {
           if (response.code === 2000) {
             this.$message({
               message: '添加成功！',

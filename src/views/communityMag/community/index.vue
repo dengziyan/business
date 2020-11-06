@@ -67,7 +67,7 @@ import newDialog3 from './newDialog3'
 import newDialog4 from './newDialog4'
 import TableVue from '@/components/TableVue'
 import SearchForm from '@/components/SearchForm'
-import { listProperty, listResident } from '@/api/CommunityMag/community'
+import { listProperty, listResident, delProperty } from '@/api/CommunityMag/community'
 import { addDateRange } from '@/utils/userright'
 
 const id = 1000
@@ -76,6 +76,29 @@ export default {
   data() {
     return {
       // 左边的树（maxexpandId:新增节点开始id，isLoadingTree: 是否加载节点树，defaultExpandKeys默认展开节点列表
+      delMerchant: {
+        userId: this.$store.getters.id,
+        merchantId: null,
+      },
+      delCommunity: {
+        userId: this.$store.getters.id,
+        merchantId: null,
+        communityId: null,
+      },
+      delBuilding: {
+        userId: this.$store.getters.id,
+        merchantId: null,
+        communityId: null,
+        buildingId: null,
+      },
+      delUnit: {
+        userId: this.$store.getters.id,
+        merchantId: null,
+        communityId: null,
+        buildingId: null,
+        unitId: null
+      },
+      delQuery: {},
       treeList: [], maxexpandId: 95, non_maxexpandId: 95, isLoadingTree: false, requireId: 0,
       defaultExpandKeys: [], treeDialogVisible: false, treeIsEdit: false, newdialog: 0,
       defaultProps: { children: 'children', label: 'name', id: 'name' },
@@ -230,40 +253,28 @@ export default {
       // this.tree = Object.assign({}, n)
     },
     nodeDelete(s, d, n) { // 删除节点
-      // console.log(s, d, n)
-      const that = this
-      // 有子级不删除
-      if (d.children && d.children.length !== 0) {
-        this.$message.error('此节点有子级，不可删除！')
-        return false
+      console.log(s, d, n)
+      if (n.level === 1) {
+        this.delQuery = this.delMerchant
+      } else if (n.level === 2) {
+        this.delQuery = this.delCommunity
+      } else if (n.level === 3) {
+        this.delQuery = this.delBuilding
       } else {
-        // 新增节点直接删除，否则要询问是否删除
-        const delNode = () => {
-          const list = n.parent.data.children || n.parent.data
-          let // 节点同级数据
-            _index = 99999// 要删除的index
-          list.map((c, i) => {
-            if (d.id == c.id) {
-              _index = i
-            }
-          })
-          const k = list.splice(_index, 1)
-          this.$message.success('删除成功！')
-        }
-        const isDel = () => {
-          that.$confirm('是否删除此节点？', '提示', {
-            confirmButtonText: '确认',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            delNode()
-          }).catch(() => {
-            return false
-          })
-        }
-        // 判断是否新增
-        d.id > this.non_maxexpandId ? delNode() : isDel()
+        this.delQuery = this.delUnit
       }
+      this.$confirm('是否确认删除用户编号为"' + n.id + '"的数据项?', '警告',
+        { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
+      ).then(function() {
+        return delProperty(this.delQuery)
+      }).then((res) => {
+        this.getList()
+        this.$message({
+          message: res.message,
+          type: res.code === 2000 ? 'success' : 'error'
+        })
+      }).catch(function() {
+      })
     },
     // 表格方法
     handleUpdate(row, index) {

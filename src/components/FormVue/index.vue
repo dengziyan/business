@@ -109,7 +109,7 @@
         v-if="item.type==='date'"
         v-model="dataForm[item.prop]"
         type="date"
-        value-format="yyyy-MM-dd"
+        value-format="yyyy-MM-dd HH:mm:ss"
         placeholder="选择日期"
       />
       <!-- 时间选择器 -->

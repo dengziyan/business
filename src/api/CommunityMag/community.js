@@ -56,6 +56,10 @@ export function addBuilding(data) {
   return request({
     url: '/sys/community/building',
     method: 'post',
+    params: {
+      communityId: data.communityId,
+      admin: data.admin
+    },
     data: data
   })
 }
@@ -72,6 +76,9 @@ export function addUnit(data) {
   return request({
     url: '/sys/community/unit',
     method: 'post',
+    params: {
+      buildingId: data.buildingId,
+    },
     data: data
   })
 }
@@ -81,6 +88,16 @@ export function updateUnit(id, data) {
     url: '/sys/community/unit' + id,
     method: 'post',
     data: data
+  })
+}
+// 删除物业
+export function delProperty(ids) {
+  return request({
+    url: '/sys/property/info',
+    method: 'delete',
+    params: {
+      ids: ids + ''
+    }
   })
 }
 // 下载导入模板
