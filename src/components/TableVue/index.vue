@@ -21,7 +21,6 @@
         </template>
       </template>
     </el-table-column>
-
   </el-table>
 </template>
 

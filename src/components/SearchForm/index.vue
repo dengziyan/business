@@ -21,6 +21,14 @@
         <el-checkbox-group v-if="item.type==='Checkbox'" v-model="searchData[item.prop]">
           <el-checkbox v-for="ch in item.checkboxs" :key="ch.value" :label="ch.value">{{ ch.label }}</el-checkbox>
         </el-checkbox-group>
+        <!--  年份选择器      -->
+        <el-date-picker
+          v-if="item.type==='year'"
+          v-model="searchData[item.prop]"
+          value-format="yyyy-MM-dd HH:mm:ss"
+          type="year"
+          placeholder="选择年">
+        </el-date-picker>
         <!-- 日期 -->
         <el-date-picker v-if="item.type==='Date'" v-model="searchData[item.prop]" />
         <!-- 时间 -->
@@ -31,6 +39,7 @@
         <el-date-picker
           v-if="item.type==='daterange'"
           v-model="searchData[item.prop]"
+          value-format="yyyy-MM-dd HH:mm:ss"
           type="daterange"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
