@@ -56,10 +56,11 @@ export function addPayBills(data) {
   })
 }
 // 获取收费类型列表
-export function listChargeCategoryOptions() {
+export function listChargeCategoryOptions(query) {
   return request({
-    url: '/chargeCategory/listChargeCategoryName',
-    method: 'get'
+    url: '/chargeCategory/listChargeCategory',
+    method: 'post',
+    params: query
   })
 }
 // 获取收费项目名称列表

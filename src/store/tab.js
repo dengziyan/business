@@ -26,7 +26,6 @@ export default {
         type: '',
         effect: 'plain'
       }
-      console.log(val)
       if (val.webName !== 'dashboard') {
         state.currentMenu = val
         const result = state.tabsList.findIndex(item => item.name === val.name)

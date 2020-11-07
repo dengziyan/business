@@ -2,7 +2,7 @@
   <!--新增按钮的弹框  -->
   <div>
     <!--表格组件      -->
-    <FormVue ref="form" :form-data="formData" />
+    <FormVue ref="form" :form-data="formData" :form="form"/>
     <span slot="footer" class="dialog-footer">
       <el-button size="small" @click="cancel(false)">取 消</el-button>
       <el-button type="primary" size="small" @click="submitFileForm()">新建</el-button>
@@ -27,6 +27,14 @@ export default {
       // dialogVisible: false,
       chargeCategoryOptions: [], // 收费类型选项
       chargeProjectOptions: [], // 收费项目名称
+      form: {
+        chargeCategoryName: '',
+        chargeProjectName: '',
+        billName: '',
+        chargeBeginTime: '',
+        modle: '',
+        billUpload: ''
+      },
       formData: {
         rules: {
           // userName: [
@@ -37,14 +45,13 @@ export default {
         inline: false,
         labelPosition: 'right',
         size: 'small',
-
         formItem: [
-          { type: 'select', isDisabled: false, multiple: false, label: '收费类型', tip: '', value: '', options: [] },
-          { type: 'select', isDisabled: false, multiple: false, label: '收费项目名称', tip: '', value: '', options: [] },
-          { type: 'text', label: '账单名称', size: 'small', isDisabled: false, placeholder: '请输入账单名称', value: '', prop: 'billName', required: true },
-          { type: 'date', label: '收费开始时间', prop: 'starTime', value: '' },
-          { type: 'radio', label: '账单模式', isDisabled: false, prop: 'modle', value: '', options: [{ name: '按月', value: '1' }, { name: '按年', value: '0' }] },
-          { type: 'upload', label: '账单上传', isDisabled: false, value: '', fileList: [],
+          { type: 'select', label: '收费类型', prop: 'chargeCategoryName', isDisabled: false, multiple: false, tip: '', value: '', options: [] },
+          { type: 'select', label: '收费项目名称', prop: 'chargeProjectName', isDisabled: false, multiple: false, tip: '', value: '', options: [] },
+          { type: 'text', label: '账单名称', prop: 'billName', size: 'small', isDisabled: false, placeholder: '请输入账单名称', value: '', required: true },
+          { type: 'date', label: '收费开始时间', prop: 'chargeBeginTime', value: '' },
+          { type: 'radio', label: '账单模式', prop: 'modle', isDisabled: false, value: '', options: [{ name: '按月', value: '1' }, { name: '按年', value: '0' }] },
+          { type: 'upload', label: '账单上传', prop: 'billUpload', isDisabled: false, value: '', fileList: [],
             upload: {
               open: false, // 是否显示弹出层（用户导入）
               title: '', // 弹出层标题（用户导入）
@@ -105,8 +112,11 @@ export default {
     },
     // 获取收费类型
     getChargeCategory() {
-      listChargeCategoryOptions().then(response => {
-        const chargeCategoryList = response.data
+      const userId = {
+        userId: this.$store.getters.id
+      }
+      listChargeCategoryOptions(userId).then(response => {
+        const chargeCategoryList = response.data.rows
         for (let i = 0; i < chargeCategoryList.length; i++) {
           const cate = chargeCategoryList[i]
           this.chargeCategoryOptions.push({ lable: cate.chargeCategoryName, value: cate.chargeCategoryName, isDisabled: false })
@@ -161,6 +171,7 @@ export default {
     // 提交上传文件
     submitFileForm() {
       this.$refs.form.$refs.upload[0].submit()
+      console.log(this.form)
     },
     handleRemove(file, fileList) {
       console.log(file, fileList)
