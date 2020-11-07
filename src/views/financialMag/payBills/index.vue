@@ -3,37 +3,43 @@
   <div>
     <!--引入搜索条件子组件        -->
     <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
-    <!--引入操作子组件        -->
     <!-- 各个操作按钮 -->
     <el-radio-group v-model="searchData.billStatus" @change="getList">
       <el-radio-button v-for="dict in statusOptions" :key="dict.dictValue" :value="dict.dictValue" :label="dict.dictLabel" />
     </el-radio-group>
     <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
+    <div class="table">
+      <!--引入表格组件        -->
+      <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="No data~">
+        <!--  文字按钮    -->
+        <template #handle2="{scope: { row }}">
+          <el-button type="text" @click="handleCheck(row)">{{ row.billName }}</el-button>
+        </template>
+        <!-- 操作按钮 。#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
+        <template #handle="{scope: {row, $index}}">
+          <el-button type="primary" size="mini" @click="handleCheck(row, $index)">审核</el-button>
+          <el-button type="danger" size="mini" @click="handleDelete(row)">删除</el-button>
+          <el-button type="primary" size="mini"  @click="handleEdit(row, $index)">编辑</el-button>
+        </template>
+      </TableVue>
+      <!--  分页  -->
+      <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
+    </div>
     <!--点击新增后出现的弹框    -->
-    <el-dialog :title="isEdit?'编辑账单批次':'新建账单批次'" :visible.sync="dialogVisible" width="650px">
-      <!--弹框子组件      -->
-      <new-dialog :visible.sync="dialogVisible" />
+    <el-dialog title="新增账单批次" :visible.sync="newVisible" width="650px">
+      <new-dialog :visible.sync="newVisible" />
     </el-dialog>
-    <!--引入表格组件        -->
-    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="No data~">
-      <!--  文字按钮    -->
-      <template #handle2="{scope: { row }}">
-        <el-button type="text" @click="handleCheck(row)">{{ row.billName }}</el-button>
-      </template>
-      <!-- 操作按钮 。#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
-      <template #handle="{scope: {row, $index}}">
-        <el-button type="primary" size="mini" @click="handleCheck(row, $index)">审核</el-button>
-        <el-button type="danger" size="mini" @click="handleDelete(row)">删除</el-button>
-        <el-button type="primary" size="mini" :visible.sync="dialogVisible" :title="isEdit?'编辑账单批次':'新建账单批次'" @click="handleEdit(row, $index)">编辑</el-button>
-      </template>
-    </TableVue>
-    <!--  分页  -->
-    <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
+    <!--点击编辑后出现的弹框    -->
+    <el-dialog title="编辑账单批次" :visible.sync="editVisible" width="650px">
+      <edit-dialog :visible.sync="editVisible" />
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 import newDialog from './newDialog'
+import editDialog from './editDialog'
 import { addDateRange } from '@/utils/userright'
 import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
@@ -43,11 +49,12 @@ import { listChargeProject } from '@/api/financialMag/chargeProject'
 const defaultPayBills = {}
 export default {
   name: 'PayBillsTable',
-  components: { newDialog, TableVue, SearchForm },
+  components: { newDialog, editDialog, TableVue, SearchForm },
   data() {
     return {
+      editData: {},
       // 操作按钮
-      single: true, multiple: true, checkAll: false, dialogVisible: false, isEdit: false, // single:非多个禁用 multiple:非单个禁用
+      single: true, multiple: true, checkAll: false, newVisible: false, editVisible: false, // single:非多个禁用 multiple:非单个禁用
       statusOptions: [{ dictLabel: '全部', dictValue: null }, { dictLabel: '待审核', dictValue: 0 }, { dictLabel: '已审核', dictValue: 1 }], // 状态数据字典
       // 查询表单
       searchData: { pageNum: 1, pageSize: 10, startTime: null, endTime: null, chargeBeginTime: null, communityId: null, billName: null, billStatus: null, userId: null }, // 查询参数
@@ -93,8 +100,7 @@ export default {
     },
     // 按新增按钮，弹出对话框
     handleAdd() {
-      this.dialogVisible = true
-      this.isEdit = false
+      this.newVisible = true
       // eslint-disable-next-line no-undef
       this.payBills = Object.assign({}, defaultPayBills) // 默认值为空
     },
@@ -153,8 +159,8 @@ export default {
     },
     // 编辑
     handleEdit(row, index) {
-      this.dialogVisible = true
-      this.isEdit = true
+      this.editVisible = true
+      this.editData = Object.assign({}, row)
       console.log(row, index)
       // updatePayBills(row)
     },

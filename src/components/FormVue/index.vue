@@ -75,7 +75,7 @@
       <el-select
         ref="selectForm"
         v-if="item.type==='select'"
-        v-model="dataForm[item.prop]"
+        v-model="item.options.value"
         :multiple="item.multiple"
         :value="item.tip"
         collapse-tags

@@ -17,14 +17,11 @@ import fileDownload from 'js-file-download'
 import { getToken } from '@/utils/auth'
 export default {
   name: 'NewDialog',
-  components: {
-    FormVue
-  },
+  components: { FormVue },
   props: ['visible'],
   data() {
     return {
       dialogVisibled: this.visible,
-      // dialogVisible: false,
       chargeCategoryOptions: [], // 收费类型选项
       chargeProjectOptions: [], // 收费项目名称
       form: {
