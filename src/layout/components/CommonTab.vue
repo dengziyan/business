@@ -34,6 +34,11 @@ export default {
       close: 'closeTab'
     }),
     handleClose(tag) {
+      console.log(tag)
+      if (tag.effect === 'plain') {
+        this.close(tag)
+        return
+      }
       const index = this.tags.findIndex(item => item.effect === 'dark')
       this.close(tag)
       const lastTag = index === 0 ? this.tags[0] : this.tags[this.tags.length - 1]

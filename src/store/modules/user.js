@@ -1,13 +1,13 @@
 import { login, logout } from '@/api/user'
 import {
   getToken,
-  getIDKey,
+  getID_KEY,
   setCookies,
   removeCookies,
   getBaseUrl,
   getAvatar,
   getAccount,
-  setBaseUrl, setAvatar, setAccount,setRole,getRole
+  setBaseUrl, setAvatar,setRole,getRole
 } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
@@ -16,7 +16,7 @@ const getDefaultState = () => {
     token: getToken(),
     name: getAccount(),
     userName: '',
-    id: getIDKey(),
+    id: getID_KEY(),
     avatar: getAvatar(),
     email: '',
     mobilePhone: '',
@@ -99,10 +99,9 @@ const actions = {
         commit('SET_GENDER', gender)
         commit('SET_BASE_URL', url)
 
-        setCookies(token, data.user.id)
+        setCookies(token, data.user.id,name)
         setBaseUrl(url)
         setAvatar(avatar)
-        setAccount(name)
         setRole(role)
         resolve()
       }).catch(error => {

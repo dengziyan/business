@@ -26,6 +26,7 @@ export default {
         type: '',
         effect: 'plain'
       }
+      // console.log(val)
       if (val.webName !== 'dashboard') {
         state.currentMenu = val
         const result = state.tabsList.findIndex(item => item.name === val.name)
@@ -51,10 +52,10 @@ export default {
       }
     },
     closeTab(state, val) {
-      console.log(val)
+      // console.log(val)
       const result = state.tabsList.findIndex(item => item.name === val.name)
       state.tabsList.splice(result, 1)
-      console.log(state.tabsList)
+      // console.log(state.tabsList)
     },
     collapseMenu(state) {
       state.isCollapse = !state.isCollapse

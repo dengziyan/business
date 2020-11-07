@@ -58,7 +58,7 @@ export function resetForm(refName) {
 // 添加日期范围
 export function addDateRange(params, dateRange) {
   const search = params
-
+  search.userId = this.$store.getters.id
   if (dateRange != null && dateRange.length !== 0) {
     search.beginTime = dateRange[0]
     search.endTime = dateRange[1]

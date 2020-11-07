@@ -134,14 +134,6 @@ export const constantRoutes = [
         }
       },
       {
-        path: '/addMenu',
-        name: 'addMenu',
-        component: () => import('@/views/Authoraty/addMenu'),
-        meta: {
-          keepAlive: true // 需要缓存的页面
-        }
-      },
-      {
         path: '/resourceList',
         name: 'resourceList',
         component: () => import('@/views/Authoraty/ResourceList'),

@@ -46,76 +46,88 @@
       </el-form-item>
     </el-form>
     <!--   添加按钮-->
-    <el-card class="operate-container" shadow="never">
-      <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
-    </el-card>
+
+    <!-- 各个操作按钮 -->
+    <el-row :gutter="10" class="mb8">
+      <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
+      <el-button type="success" icon="el-icon-edit" size="mini" :disabled="single" @click="handleTopUpdate">修改
+      </el-button>
+      <el-button type="danger" icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除
+      </el-button>
+      <el-button type="warning" icon="el-icon-download" size="mini" :disabled="!multiple" @click="handleExport">导出
+      </el-button>
+    </el-row>
+
     <!--  表格    -->
-    <div class="table-container">
-      <el-table
-        ref="menuTable"
-        v-loading="listLoading"
-        style="width: 100%"
-        :data="list"
-        row-key="id"
-        border
-        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-      >
-        <el-table-column label="编号" align="center">
-          <template slot-scope="scope">{{ scope.row.id }}</template>
-        </el-table-column>
-        <el-table-column label="菜单名称" align="center">
-          <template slot-scope="scope">{{ scope.row.menuName }}</template>
-        </el-table-column>
-        <el-table-column label="前端名称" align="center">
-          <template slot-scope="scope">{{ scope.row.webName }}</template>
-        </el-table-column>
-        <el-table-column label="前端图标" align="center">
-          <template slot-scope="scope"><i :class="'el-icon-'+scope.row.webIcon" /></template>
-        </el-table-column>
-        <el-table-column label="是否显示" align="center">
-          <template slot-scope="scope">
-            <el-switch
-              v-model="scope.row.isEnable"
-              :active-value="1"
-              :inactive-value="0"
-              active-color="#13ce66"
-              inactive-color="#ff4949"
-              @change="handleHiddenChange(scope.$index, scope.row)"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column label="排序" align="center">
-          <template slot-scope="scope">{{ scope.row.sort }}</template>
-        </el-table-column>
-        <el-table-column label="类型" align="center">
-          <template slot-scope="scope">
-            <el-tag
-              :key="scope.row.type"
-              :type="scope.row.type===1? '':'success'"
-              effect="dark"
-            >
-              {{ getStatusVal(scope.row.type) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" align="center">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="text"
-              @click="handleUpdate(scope.$index, scope.row)"
-            >编辑
-            </el-button>
-            <el-button
-              size="mini"
-              type="text"
-              @click="handleDelete(scope.$index, scope.row)"
-            >删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
+    <el-table
+      ref="menuTable"
+      v-loading="listLoading"
+      style="width: 100%"
+      :data="list"
+      row-key="id"
+      border
+      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" align="center" />
+      <el-table-column label="编号" align="center">
+        <template slot-scope="scope">{{ scope.row.id }}</template>
+      </el-table-column>
+      <el-table-column label="菜单名称" align="center">
+        <template slot-scope="scope">{{ scope.row.menuName }}</template>
+      </el-table-column>
+      <el-table-column label="前端名称" align="center">
+        <template slot-scope="scope">{{ scope.row.webName }}</template>
+      </el-table-column>
+      <el-table-column label="前端图标" align="center">
+        <template slot-scope="scope"><i :class="'el-icon-'+scope.row.webIcon" /></template>
+      </el-table-column>
+      <el-table-column label="是否显示" align="center">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.isEnable"
+            :active-value="1"
+            :inactive-value="0"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            @change="handleHiddenChange(scope.row)"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column label="排序" align="center">
+        <template slot-scope="scope">{{ scope.row.sort }}</template>
+      </el-table-column>
+      <el-table-column label="类型" align="center">
+        <template slot-scope="scope">
+          <el-tag
+            :key="scope.row.type"
+            :type="scope.row.type===1? '':'success'"
+            effect="dark"
+          >
+            {{ getStatusVal(scope.row.type) }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="handleUpdate(scope.row)"
+          >编辑
+          </el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+          >删除
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
     <!-- 添加或修改菜单配置对话框 -->
     <el-dialog :title="isEdit?'编辑菜单':'添加菜单'" :visible.sync="dialogVisible" width="60%">
       <el-form ref="www" :model="menu" label-width="150px" :rules="rules" size="small">
@@ -168,6 +180,9 @@
 import { fetchList, fetchLists, deleteMenu, updateMenu, updateEnable, createMenu, getMenu } from '@/api/authoraty/menu'
 
 import { getDictVal } from '@/api/system/logininfor'
+import { exportMenu } from '@/api/authoraty/menu'
+import moment from 'moment'
+import fileDownload from 'js-file-download'
 // 用于复制给user
 const defaultMenu = {
   isEnable: 1,
@@ -191,6 +206,11 @@ export default {
         menuName: undefined,
         parentId: undefined
       },
+      updateData: {},
+      total: 0,
+      multiple: true, // 非多个禁用
+      single: true, // 非单个禁用
+      ids: [],
       statusOptions: [],
       selectOptions: [],
       parentId: 0,
@@ -243,25 +263,30 @@ export default {
     } else {
       this.menu = Object.assign({}, defaultMenu)
     }
-    // this.getSelectMenuList();
   },
   methods: {
 
     // 获取回显字典
     getStatusDict() {
       getDictVal('tb_menu_info', 'type').then(res => {
-        this.statusOptions = this.selectDictLabels(res.data)
+        this.statusOptions = this.selectDictLabels(res.data || [])
       })
     },
     getSelectStatusDict() {
       getDictVal('tb_menu_info', 'is_enable').then(res => {
-        this.selectOptions = this.selectDictLabels(res.data)
+        this.selectOptions = this.selectDictLabels(res.data || [])
       })
     },
-
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.updateData = selection.length === 1 ? selection : {}
+      this.ids = selection.map(item => item.id)
+      this.single = selection.length !== 1
+      this.multiple = !selection.length
+    },
     getMenuList() {
       fetchLists().then(res => {
-        const menu = res.data.rows
+        const menu = res.data.rows || []
         const list = menu.map(function(val) {
           return { label: val.menuName, value: val.id }
         })
@@ -281,16 +306,20 @@ export default {
       }
       this.getList()
     },
-
     /** 搜索按钮操作 */
     handleQuery() {
+      this.restPage()
       this.getList()
+    },
+    restPage() {
+      this.queryParams.pageNum = 1
+      this.queryParams.pageSize = 10
     },
     /** 重置按钮操作 */
     resetQuery() {
       this.dateRange = []
       Object.assign(this.$data.queryParams, this.$options.data().queryParams)
-      this.handleQuery()
+      this.getList()
     },
     resetParentId() {
       if (this.$route.query.parentId != null) {
@@ -306,7 +335,11 @@ export default {
       this.menu = Object.assign({}, defaultMenu) // 默认值为空
     },
     // 按修改键弹出对话框（传入当前行的数据）
-    handleUpdate(index, row) {
+    handleTopUpdate() {
+      this.handleUpdate(this.updateData[0])
+    },
+    // 按修改键弹出对话框（传入当前行的数据）
+    handleUpdate(row) {
       // console.log('row' + row)
       this.dialogVisible = true
       this.isEdit = true
@@ -343,23 +376,19 @@ export default {
       this.listLoading = true
       fetchList(this.queryParams).then(response => {
         this.listLoading = false
-        this.list = response.data
+        this.list = response.data || []
       })
     },
-    handleSizeChange(val) {
-      this.getList()
-    },
-    handleCurrentChange(val) {
-      this.getList()
-    },
-    handleHiddenChange(index, row) {
+    handleHiddenChange(row) {
       updateEnable(row.id, row.isEnable).then(response => {
-        this.$message({
-          message: response.message,
-          type: response.code === 2000 ? 'success' : 'error',
-          duration: 1000
-        })
-        this.getList()
+        if (response.code === 2000) {
+          this.$message({
+            message: response.message,
+            type: response.code === 2000 ? 'success' : 'error',
+            duration: 1000
+          })
+          this.getList()
+        }
       })
     },
     handleShowNextLevel(index, row) {
@@ -369,13 +398,14 @@ export default {
         this.list = response.data
       })
     },
-    handleDelete(index, row) {
+    handleDelete(row) {
+      const menu = row.id || this.ids
       this.$confirm('是否要删除该菜单', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteMenu(row.id).then(response => {
+        deleteMenu(menu).then(response => {
           this.$message({
             message: response.message,
             type: response.code === 2000 ? 'success' : 'error',
@@ -384,6 +414,31 @@ export default {
           this.getList()
         })
       })
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      const queryParams = {}
+      queryParams.data = this.queryParams
+      queryParams.export = 'all'
+      this.$confirm('是否确认导出资源数据项?', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(function() {
+          exportMenu(queryParams).then(res => {
+            // console.log(res)
+            const sysDate = moment(new Date()).format('YYYY-MM-DDHHmm')
+            // console.log(sysDate)
+            fileDownload(res, sysDate + '菜单列表.xlsx')
+            queryParams.export = undefined
+          })
+            .catch(err => {
+              console.log(err)
+            })
+        })
+        .catch(function() {
+        })
     }
   }
 }

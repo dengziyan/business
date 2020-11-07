@@ -90,17 +90,17 @@
       :default-sort="{prop: 'createTime', order: 'descending'}"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" align="center"/>
-      <el-table-column label="编号" align="center" prop="id"/>
-      <el-table-column label="账号" align="center" prop="userAccount" :show-overflow-tooltip="true"/>
-      <el-table-column label="姓名" align="center" prop="userName" :show-overflow-tooltip="true"/>
+      <el-table-column type="selection" align="center" />
+      <el-table-column label="编号" align="center" prop="id" />
+      <el-table-column label="账号" align="center" prop="userAccount" :show-overflow-tooltip="true" />
+      <el-table-column label="姓名" align="center" prop="userName" :show-overflow-tooltip="true" />
       <el-table-column label="性别" align="center" prop="sex">
         <template slot-scope="scope">
           {{ getSelectVal(scope.row.sex) }}
         </template>
       </el-table-column>
-      <el-table-column label="邮箱" align="center" prop="email" :show-overflow-tooltip="true"/>
-      <el-table-column label="手机号码" align="center" prop="mobilePhone" :show-overflow-tooltip="true"/>
+      <el-table-column label="邮箱" align="center" prop="email" :show-overflow-tooltip="true" />
+      <el-table-column label="手机号码" align="center" prop="mobilePhone" :show-overflow-tooltip="true" />
       <el-table-column label="创建时间" align="center" prop="createTime" sortable :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -163,7 +163,7 @@
         :auto-upload="false"
         drag
       >
-        <i class="el-icon-upload"/>
+        <i class="el-icon-upload" />
         <div class="el-upload__text">
           将文件拖到此处，或
           <em>点击上传</em>
@@ -184,20 +184,19 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="用户账号" prop="userAccount">
-              <el-input v-model="user.userAccount" placeholder="请输入用户账号"/>
+              <el-input v-model="user.userAccount" placeholder="请输入用户账号" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="手机号码" prop="mobilePhone">
-              <el-input v-model="user.mobilePhone" placeholder="请输入手机号码" maxlength="11"/>
+              <el-input v-model="user.mobilePhone" placeholder="请输入手机号码" maxlength="11" />
             </el-form-item>
           </el-col>
-
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="用户邮箱" prop="email">
-              <el-input v-model="user.email" placeholder="请输入邮箱" maxlength="50"/>
+              <el-input v-model="user.email" placeholder="请输入邮箱" maxlength="50" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -217,12 +216,12 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="用户姓名" prop="userName">
-              <el-input v-model="user.userName" placeholder="请输入用户姓名"/>
+              <el-input v-model="user.userName" placeholder="请输入用户姓名" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item v-show="user.id === undefined" label="默认密码:" prop="password">
-              <el-input value="a123456" placeholder="a123456" :disabled="true" type="text"/>
+              <el-input value="a123456" placeholder="a123456" :disabled="true" type="text" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -248,17 +247,18 @@
       </span>
     </el-dialog>
     <!--    分配角色的对话框-->
-    <el-dialog title="分配角色" :visible.sync="openalloc" width="20%">
+    <el-dialog title="分配角色" :visible.sync="openAlloc" width="20%">
       <el-form ref="www" v-loading="loadingRole" :model="user" label-width="100px" size="small">
         <el-form-item label="角色">
 
-          <el-select v-model="user.roleIds" placeholder="请选择角色">
+          <el-select v-model="user.role" placeholder="请选择角色">
             <el-option
               v-for="item in roleOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value"
-              @click.native="selectExitSelectConfig(item)"
+              :disabled="item.disable===0"
+              @click.native="selectExitSelectConfig(item,user.id)"
             />
           </el-select>
         </el-form-item>
@@ -269,7 +269,8 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
-              :disabled="item.enabled === 1"
+              :disabled="item.disable&&!building&&!community"
+              @click.native="merchantSelectConfig(item)"
             />
           </el-select>
         </el-form-item>
@@ -280,7 +281,8 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
-              :disabled="item.enabled === 1"
+              :disabled="item.disable&&!building"
+              @click.native="communitySelectConfig(item)"
             />
           </el-select>
         </el-form-item>
@@ -291,14 +293,15 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
-              :disabled="item.enabled === 1"
+              :disabled="item.disable"
             />
           </el-select>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button size="small" @click="openalloc = false">取 消</el-button>
-        <el-button type="primary" size="small" @click="handleDialogConfirm()">确 定</el-button>
+        <el-button size="small" @click="openAlloc = false">取 消</el-button>
+        <el-button type="primary" size="small" @click="assignRole()">确 定</el-button>
+        <el-button type="success" size="small" @click="restRole()">重置</el-button>
       </span>
     </el-dialog>
 
@@ -307,16 +310,17 @@
 
 <script>
 import {
-  listUser,
-  delUser,
   addUser,
-  updateUser,
-  exportUser,
-  resetUserPwd,
-  importTemplates,
   batchAddUser,
   changeUserStatus,
-  listUserRole
+  delUser,
+  exportUser,
+  importTemplates,
+  listUser,
+  listUserRole,
+  resetUserPwd,
+  updateUser,
+  updateUserRole
 } from '@/api/authoraty/user'
 import { getToken } from '@/utils/auth'
 import fileDownload from 'js-file-download'
@@ -333,29 +337,30 @@ const defaultUser = {
   userName: undefined,
   sex: '',
   password: '',
-  isEnable: undefined,
+  isEnable: 0,
   property: undefined, // 所属管理编号
-  roleIds: undefined,
+  role: undefined,
   id: undefined,
   merchant: undefined,
   community: undefined,
   building: undefined
 
 }
+
 export default {
   name: 'User',
 
   data() {
     return {
       dialogVisible: false,
-      openalloc: false,
+      openAlloc: false,
       isEdit: false,
       user: Object.assign({}, defaultUser), // user为对话框中:model
       defaultRoleId: null,
       loading: true, // 遮罩层
       loadingRole: true,
       ids: [], // 多选时选中数组
-      updataData: {},
+      updateData: {},
       single: true, // 非单个禁用
       multiple: true, // 非多个禁用
       checkAll: false,
@@ -375,7 +380,7 @@ export default {
       merchant: false,
       community: false,
       building: false,
-      proerty: [], // 物业信息列表
+      property: [], // 物业信息列表
       form: {}, // 表单参数
       // 用户导入参数
       upload: {
@@ -394,8 +399,7 @@ export default {
           userName: undefined,
           mobilePhone: undefined,
           isEnable: undefined
-        },
-        userId: undefined
+        }
       },
       // 表单校验
       rules: {
@@ -428,17 +432,11 @@ export default {
   computed: {
     newEnable() {
       return this.queryParams.data.isEnable
-    },
-    newDate() {
-      return this.dateRange
     }
   },
   watch: {
     newEnable() {
-      this.getList()
-    },
-    newDate() {
-      this.getList()
+      this.handleQuery()
     }
   },
   created() {
@@ -453,13 +451,13 @@ export default {
     // 获取回显字典
     getOperationStatusDict() {
       getDictVal('tb_common_field', 'is_enable').then(res => {
-        this.statusOptions = this.selectDictLabels(res.data)
+        this.statusOptions = this.selectDictLabels(res.data || [])
       })
     },
     // 获取回显字典
     getSexOptionStatusDict() {
       getDictVal('tb_user_info', 'sex').then(res => {
-        this.selectOptions = this.selectDictLabels(res.data)
+        this.selectOptions = this.selectDictLabels(res.data || [])
       })
     },
     /** 查询用户列表 */
@@ -467,8 +465,8 @@ export default {
       this.loading = true
       listUser(this.addDateRange(this.queryParams, this.dateRange)).then(
         (response) => {
-          this.userList = response.data.rows
-          this.total = response.data.total
+          this.userList = response.data.rows || []
+          this.total = response.data.total || 0
           this.loading = false
         }
       )
@@ -476,16 +474,15 @@ export default {
     // 获取到角色
     getRoleList() {
       listRoleById(this.id).then(response => {
-        const res = response.data
+        const res = response.data || []
         if (response.code !== 2000) {
           this.roleOptions = []
           return true
         }
-        console.log(res)
         const roleList = res
         for (let i = 0; i < roleList.length; i++) {
           const role = roleList[i]
-          this.roleOptions.push({ label: role.roleName, value: role.id })
+          this.roleOptions.push({ label: role.roleName, value: role.id, disable: role.isEnable })
         }
       })
     },
@@ -500,7 +497,7 @@ export default {
       if (val === 'account') {
         this.queryParams.data.userAccount = undefined
       }
-      this.getList()
+      this.handleQuery()
     },
 
     // 用户状态修改
@@ -513,7 +510,12 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
+      this.restPage()
       this.getList()
+    },
+    restPage() {
+      this.queryParams.pageSize = 10
+      this.queryParams.pageNum = 1
     },
     /** 重置按钮操作 */
     resetQuery() {
@@ -523,7 +525,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.updataData = selection.length === 1 ? selection : {}
+      this.updateData = selection.length === 1 ? selection : {}
       this.ids = selection.map(item => item.id)
       this.single = selection.length !== 1
       this.multiple = !selection.length
@@ -539,7 +541,7 @@ export default {
     },
     // 按修改键弹出对话框（传入当前行的数据）
     handleTopUpdate() {
-      this.handleUpdate(this.updataData[0])
+      this.handleUpdate(this.updateData[0])
     },
     // 按修改键弹出对话框（传入当前行的数据）
     handleUpdate(row) {
@@ -551,16 +553,16 @@ export default {
       })
     },
     alloc(row) {
-      this.setStatus()
-      this.user.roleIds = undefined
       this.loadingRole = true
+      this.setStatus()
+      this.user.role = undefined
       listUserRole(row.id).then(res => {
         if (res.code === 2000) {
           this.setRole(res.data)
         }
         this.loadingRole = false
       })
-      this.openalloc = true
+      this.openAlloc = true
       this.user.id = row.id
     },
     setStatus() {
@@ -568,25 +570,65 @@ export default {
       this.community = false
       this.building = false
     },
+    restRole() {
+      this.alloc(this.user)
+    },
+    assignRole() {
+      this.setProperty(this.user.role)
+      updateUserRole(this.id, this.user).then(res => {
+        if (res.code === 2000) {
+          this.$message({
+            message: res.message,
+            type: 'success'
+          })
+          this.openAlloc = false
+          this.getList()
+        }
+      })
+    },
+    setProperty(role) {
+      if (role === 1) { this.user.property = 0 }
+      if (role === 2) { this.user.property = this.user.merchant }
+      if (role === 3) { this.user.property = this.user.community }
+      if (role === 4) { this.user.property = this.user.building }
+      if (role === 5) { this.user.property = -1 }
+    },
     setRole(data) {
       if (data.role.id === 2) {
         this.merchant = true
         this.user.merchant = data.merchant
-        console.log(this.community)
       }
+      this.communityOptions = this.propertyOptions(this.merchantOptions, data.merchant)
       if (data.role.id === 3) {
         this.community = true
         this.user.merchant = data.merchant
-        this.user.community = data.community
+        this.user.community = data.community || undefined
       }
+      this.buildingOptions = this.propertyOptions(this.communityOptions, data.community)
       if (data.role.id === 4) {
         this.building = true
         this.user.merchant = data.merchant
         this.user.community = data.community
-        this.user.building = data.building
+        this.user.building = data.building || undefined
       }
-      this.user.roleIds = data.role.id
+      this.user.role = data.role.id
     },
+    propertyOptions(data, id) {
+      const tree = []
+      const list = data.filter(function(val) {
+        return val.value === id || id === undefined
+      }).map(function(val) {
+        return val.children
+      })
+
+      list.forEach(function(val) {
+        val.forEach(function(params) {
+          tree.push({ label: params.name, value: params.id, children: params.children || [], disable: params.admin })
+        })
+      })
+      return tree
+    },
+
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
       this.$refs.www.validate((valid) => {
@@ -619,7 +661,7 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(() => {
-        resetUserPwd(row.account, row.email).then((response) => {
+        resetUserPwd(row.userAccount, row.email).then((res) => {
           this.$message({
             message: res.message,
             type: res.code === 2000 ? 'success' : 'error'
@@ -698,6 +740,7 @@ export default {
             const sysDate = moment(new Date()).format('YYYY-MM-DDHHmm')
             // console.log(sysDate)
             fileDownload(res, sysDate + '用户信息表.xlsx')
+            queryParams.export = undefined
           })
             .catch(err => {
               console.log(err)
@@ -750,18 +793,21 @@ export default {
     getProperty() {
       this.queryParams.userId = this.$store.getters.id
       listProperty(this.queryParams).then((response) => {
-        const tree = response.data
-        this.proerty = tree
-        const merchant = tree.map(function(val) {
-          return { label: val.name, value: val.id, children: val.children }
+        const tree = response.data || []
+        this.property = tree
+        this.merchantOptions = tree.map(function(val) {
+          return { label: val.name, value: val.id, children: val.children, disable: val.admin }
         })
-        this.merchantOptions = merchant
       })
     },
 
     // 选择
-    selectExitSelectConfig(role) {
-      console.log(role.label)
+    selectExitSelectConfig(role, id) {
+      if (role.disable !== 1) { return }
+
+      this.user = Object.assign({}, defaultUser)// user为对话框中:model
+      this.user.role = role.value
+      this.user.id = id
       if (role.label === '财务管理员') {
         this.merchant = true
         this.community = false
@@ -770,11 +816,25 @@ export default {
       if (role.label === '小区管理员') {
         this.community = true
         this.building = false
+        this.communityOptions = []
       }
       if (role.label === '楼栋管理员') {
         this.building = true
+        this.buildingOptions = []
       }
-      console.log(role)
+      if (role.label === '普通用户' || role.label === '超级管理员') {
+        this.setStatus()
+      }
+    },
+    merchantSelectConfig(item) {
+      this.communityOptions = []
+      this.user.community = undefined
+      this.communityOptions = this.propertyOptions([item])
+    },
+    communitySelectConfig(item) {
+      this.buildingOptions = []
+      this.user.building = undefined
+      this.buildingOptions = this.propertyOptions([item])
     }
   }
 }

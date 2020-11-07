@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 // 查询所有菜单
-export function fetchLists(query) {
+export function fetchLists() {
 
   return request({
     url: '/sys/menu',
@@ -14,7 +14,6 @@ export function fetchLists(query) {
 }
 // 查询所有菜单
 export function fetchList(query) {
-
   return request({
     url: '/sys/menu/tree-list',
     method: 'get',
@@ -75,8 +74,17 @@ export function getMenu(id) {
 // 获取树形结构的菜单
 export function fetchTreeList() {
   return request({
-    url: '/sysMenu/treeList',
+    url: '/sys/menu/tree-list',
     method: 'get'
+  })
+}
+// 导出资源
+export function exportMenu(query) {
+  return request({
+    url: '/sys/menu/export-menu',
+    method: 'get',
+    responseType: 'arraybuffer',
+    params: query
   })
 }
 

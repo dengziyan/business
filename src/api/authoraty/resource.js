@@ -1,25 +1,27 @@
 import request from '@/utils/request'
-import Qs from 'qs';
+import Qs from 'qs'
 // 查询资源列表
 export function fetchList(params) {
   return request({
-    url: '/sysResources/getResourceList',
+    url: '/sys/resource',
     method: 'get',
     params: params
   })
 }
 // 删除一条资源数据
-export function deleteResource(id) {
+export function deleteResource(ids) {
   return request({
-    url: '/sysResources/delete?id=' + id,
-    method: 'post'
+    url: '/sys/resource',
+    method: 'delete',
+    params: { ids: ids + '' }
   })
 }
 // 更新资源数据
-export function updateResource(id, data) {
+export function updateResource(category, data) {
   return request({
-    url: '/sysResources/update?id=' + id,
-    method: 'post',
+    url: '/sys/resource',
+    method: 'put',
+    params:{category: category},
     data: data
   })
 }
@@ -30,7 +32,7 @@ export function changeResourceStatus(id, type) {
     type
   }
   return request({
-    url: '/sysResources/update/status',
+    url: '/sys/resource/status',
     method: 'put',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -43,10 +45,11 @@ export function changeResourceStatus(id, type) {
   })
 }
 // 插入一条资源数据
-export function createResource(data) {
+export function createResource(category, data) {
   return request({
-    url: '/sysResources/insert',
+    url: '/sys/resource',
     method: 'post',
+    params: { category: category },
     data: data
   })
 }
@@ -58,3 +61,12 @@ export function fetchAllResourceList() {
   })
 }
 
+// 导出资源
+export function exportResource(query) {
+  return request({
+    url: '/sys/resource/export-resource',
+    method: 'get',
+    responseType: 'arraybuffer',
+    params: query
+  })
+}

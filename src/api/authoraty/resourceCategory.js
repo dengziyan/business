@@ -1,33 +1,52 @@
 import request from '@/utils/request'
-import Qs from "qs";
-// 查询所有后台资源分类
+import Qs from 'qs'
+// 查询所有后台资源树
 export function listAllCate() {
   return request({
-    url: '/sysResourcesCategory/listAll',
+    url: '/sys/resource-category/tree-resource',
     method: 'get'
+  })
+}
+
+// 查询所有后台资源分类
+export function listResourceCategory(params) {
+  return request({
+    url: '/sys/resource-category',
+    method: 'get',
+    params: params
   })
 }
 // 添加后台资源分类
 export function createResourceCategory(data) {
   return request({
-    url: '/sysResourcesCategory/create',
+    url: '/sys/resource-category',
     method: 'post',
     data: data
   })
 }
 // 修改后台资源分类
-export function updateResourceCategory(id, data) {
+export function updateResourceCategory(data) {
   return request({
-    url: '/sysResourcesCategory/update?id=' + id,
-    method: 'post',
+    url: '/sys/resource-category',
+    method: 'put',
     data: data
   })
 }
 // 根据ID删除后台资源
-export function deleteResourceCategory(id) {
+export function deleteResourceCategory(ids) {
   return request({
-    url: '/sysResourcesCategory/delete/' + id,
-    method: 'post'
+    url: '/sys/resource-category',
+    method: 'delete',
+    params: { ids: ids + '' }
+
+  })
+}
+
+// 根据ID删除后台资源
+export function getResourceCategory(id) {
+  return request({
+    url: '/sys/resource-category/resource/' + id,
+    method: 'get'
   })
 }
 
@@ -38,7 +57,7 @@ export function changecategoryStatus(id, type) {
     type
   }
   return request({
-    url: '/sysResourcesCategory/update/status',
+    url: '/sys/resource-category/status',
     method: 'put',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -48,5 +67,15 @@ export function changecategoryStatus(id, type) {
       return data
     }],
     data
+  })
+}
+
+// 导出资源
+export function exportResourceCategory(query) {
+  return request({
+    url: '/sys/resource-category/export',
+    method: 'get',
+    responseType: 'arraybuffer',
+    params: query
   })
 }

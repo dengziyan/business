@@ -51,8 +51,8 @@
           value-format="yyyy-MM-dd HH:mm:ss"
           range-separator="-"
           start-placeholder="开始日期"
-          end-placeholder="结束日期">
-        </el-date-picker>
+          end-placeholder="结束日期"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="cyan" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -157,7 +157,7 @@ export default {
     // 获取回显字典
     getLoginStatusDict() {
       getDictVal('tb_login_log', 'login_status').then(res => {
-        this.statusOptions = this.selectDictLabels(res.data)
+        this.statusOptions = this.selectDictLabels(res.data||[])
       })
     },
 
@@ -165,9 +165,11 @@ export default {
     getList() {
       this.loading = true
       loginLoglist(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-        this.list = response.data.rows
-        this.total = response.data.total
-        this.loading = false
+        if (response.code === 2000) {
+          this.list = response.data.rows || []
+          this.total = response.data.total || 0
+          this.loading = false
+        }
       })
     },
     /** 搜索按钮操作 */

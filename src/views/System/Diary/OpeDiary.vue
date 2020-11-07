@@ -179,7 +179,7 @@
           </el-col>
 
           <el-col :span="24">
-            <el-form-item v-if="form.operationStatus === 0" label="异常信息：">{{ form.operationMsg }}</el-form-item >
+            <el-form-item v-if="form.operationStatus === 0" label="异常信息：">{{ form.operationMsg }}</el-form-item>
           </el-col>
 
         </el-row>
@@ -239,9 +239,6 @@ export default {
     },
     newStatus() {
       return this.queryParams.data.operationStatus
-    },
-    newDate() {
-      return this.dateRange
     }
   },
   watch: {
@@ -251,8 +248,6 @@ export default {
     newStatus() {
       this.getList()
     }, newMethod() {
-      this.getList()
-    }, newDate() {
       this.getList()
     }
   },
@@ -275,7 +270,7 @@ export default {
     },
     getSystemModelSelectDict() {
       getResourceSelect().then(res => {
-        const options = res.data
+        const options = res.data || []
         this.childrenOptions = options
         this.systemOptions = options.map(function(val) {
           return { id: val.id, name: val.name }
@@ -288,7 +283,7 @@ export default {
     // 获取回显字典
     getOperationStatusDict() {
       getDictVal('tb_operation_log', 'operation_status').then(res => {
-        this.statusOptions = this.selectDictLabels(res.data)
+        this.statusOptions = this.selectDictLabels(res.data || [])
       })
     },
 
@@ -296,8 +291,8 @@ export default {
     getList() {
       this.loading = true
       list(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-        this.list = response.data.rows
-        this.total = response.data.total
+        this.list = response.data.rows || []
+        this.total = response.data.total || 0
         this.loading = false
       }
       )

@@ -125,19 +125,6 @@ export function getUserProfile(id) {
   })
 }
 
-// // 用户密码重置
-// export function updateUserPwd(oldPassword, newPassword) {
-//   const data = {
-//     oldPassword,
-//     newPassword
-//   }
-//   return request({
-//     url: '/sys/user/profile/updatePwd',
-//     method: 'put',
-//     params: data
-//   })
-// }
-
 // 用户头像上传
 export function uploadAvatar(data) {
   return request({
@@ -176,5 +163,22 @@ export function listUserRole(id) {
   return request({
     url: '/sys/user/user-role/' + id,
     method: 'get'
+  })
+}
+export function updateUserRole(user,data) {
+  return request({
+    url: '/sys/user/assign-role',
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    },
+    transformRequest: [function(data) { // 在请求之前对data传参进行格式转换
+      data = Qs.stringify(data)
+      return data
+    }],
+    params: {
+      user: user
+    },
+    data
   })
 }

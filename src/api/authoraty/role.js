@@ -103,7 +103,7 @@ export function listMenuByRole(menuIds, roleId) {
     role: roleId
   }
   return request({
-    url: '/sys/user/assign-menu',
+    url: '/sys/role/assign-menu',
     method: 'post',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -119,9 +119,9 @@ export function listMenuByRole(menuIds, roleId) {
 export function allocResources(ids, params) {
   return request({
     url: '/sys/role/assign-resource',
-    method: 'get',
+    method: 'post',
     params: {
-      resource: ids,
+      resource: ids + '',
       role: params
     }
   })
