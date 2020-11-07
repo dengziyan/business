@@ -14,7 +14,7 @@
       </el-row>
     </el-button-group>
     <!--点击新增后出现的弹框    -->
-    <el-dialog :title="isEdit?'编辑用户':'添加用户'" :visible.sync="dialogVisible" width="30%">
+    <el-dialog v-if="dialogVisible" :title="isEdit?'编辑用户':'添加用户'" :visible.sync="dialogVisible" width="30%">
       <!--弹框子组件      -->
       <new-dialog />
     </el-dialog>

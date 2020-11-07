@@ -62,7 +62,7 @@ export function addDateRange(params, dateRange) {
   if (dateRange != null && dateRange.length !== 0) {
     search.beginTime = dateRange[0]
     search.endTime = dateRange[1]
-    search.chargeBeginTime = ''
+    search.chargeBeginTime = undefined
   } else {
     search.beginTime = undefined
     search.endTime = undefined

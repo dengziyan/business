@@ -118,8 +118,7 @@ export default {
         this.searchData.billStatus = 1
       } else this.searchData.billStatus = null
       // 调用查询方法
-      this.searchData.userId = this.$store.getters.id
-      listPayBills(addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
+      listPayBills(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
         (response) => {
           this.list = response.data.rows
           this.total = response.data.total
