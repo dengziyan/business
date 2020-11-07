@@ -154,7 +154,8 @@ export default {
         console.log(JSON.parse(JSON.stringify(chargeBatch)))
         formData.append('chargeBatch', JSON.stringify(chargeBatch))
         formData.append('file', val.file)
-        batchAddBatchBills(this.$store.getters.id, this.form.billUpload, formData).then(res => {
+        console.log(this.form)
+        batchAddBatchBills(this.$store.getters.id, this.form.modle, formData).then(res => {
           val.onSuccess()
         }).catch(res => {
           val.onError()
