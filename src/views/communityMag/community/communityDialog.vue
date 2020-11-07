@@ -79,7 +79,7 @@ export default {
               type: 'success'
             })
             this.treeDialogVisible = false
-            this.getOptionStatusDict()
+            this.$parent.getProperty()
           }
         })
       } else { // 插入一条资源数据（即添加）
@@ -90,7 +90,8 @@ export default {
               type: 'success'
             })
             this.treeDialogVisible = false
-            this.getOptionStatusDict()
+            Object.assign(this.$data.form, this.$options.data().form)
+            this.$parent.getProperty()
           }
         })
       }

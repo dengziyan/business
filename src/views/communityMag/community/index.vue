@@ -20,12 +20,12 @@
           @node-click="handleNodeClick"
         />
         <!--点击+新增后出现的弹框    -->
-        <el-dialog :title="treeIsEdit?'编辑':'添加'" :visible.sync="treeDialogVisible" width="650px">
+        <el-dialog v-if="treeDialogVisible" :title="treeIsEdit?'编辑':'添加'" :visible.sync="treeDialogVisible" @close="cancel" width="650px">
           <!--弹框子组件      -->
-          <new-dialog1 v-if="newdialog === 1" :visible.sync="treeDialogVisible" :require-id="requireId"/>
-          <new-dialog2 v-if="newdialog === 2" :visible.sync="treeDialogVisible" :require-id="requireId"/>
-          <new-dialog3 v-if="newdialog === 3" :visible.sync="treeDialogVisible" :require-id="requireId"/>
-          <new-dialog4 v-if="newdialog === 4" :visible.sync="treeDialogVisible" :require-id="requireId"/>
+          <community-dialog v-if="newdialog === 1" :visible.sync="treeDialogVisible" :require-id="requireId" />
+          <building-dialog v-if="newdialog === 2" :visible.sync="treeDialogVisible" :require-id="requireId" :building-id="buildingId" :tree-is-edit="treeIsEdit"/>
+          <unit-dialog v-if="newdialog === 3" :visible.sync="treeDialogVisible" :require-id="requireId" />
+          <merchant-dialog v-if="newdialog === 0" :visible.sync="treeDialogVisible" :require-id="requireId"/>
         </el-dialog>
       </div>
     </div>
@@ -61,44 +61,25 @@
 
 <script>
 import TreeRender from '@/components/Tree/index'
-import newDialog1 from './newDialog1'
-import newDialog2 from './newDialog2'
-import newDialog3 from './newDialog3'
-import newDialog4 from './newDialog4'
+import communityDialog from './communityDialog'
+import buildingDialog from './buildingDialog'
+import unitDialog from './unitDialog'
+import merchantDialog from './merchantDialog'
 import TableVue from '@/components/TableVue'
 import SearchForm from '@/components/SearchForm'
-import { listProperty, listResident, delProperty } from '@/api/CommunityMag/community'
+import { listProperty, listResident, delProperty, listPropertyInfo } from '@/api/CommunityMag/community'
 import { addDateRange } from '@/utils/userright'
 
 const id = 1000
 export default {
-  components: { newDialog1, newDialog2, newDialog3, newDialog4, TableVue, SearchForm },
+  components: { communityDialog, buildingDialog, unitDialog, merchantDialog, TableVue, SearchForm },
   data() {
     return {
+      buildingId: 0,
       // 左边的树（maxexpandId:新增节点开始id，isLoadingTree: 是否加载节点树，defaultExpandKeys默认展开节点列表
-      delMerchant: {
-        userId: this.$store.getters.id,
-        merchantId: null,
-      },
-      delCommunity: {
-        userId: this.$store.getters.id,
-        merchantId: null,
-        communityId: null,
-      },
-      delBuilding: {
-        // userId: this.$store.getters.id,
-        // merchantId: null,
-        // communityId: null,
-        buildingId: null
-      },
-      delUnit: {
-        userId: this.$store.getters.id,
-        merchantId: null,
-        communityId: null,
-        buildingId: null,
-        unitId: null
-      },
-      delQuery: {},
+      delQuery: { userId: this.$store.getters.id, merchantId: '', communityId: '', buildingId: '', unitId: '' },
+      editQuery: { userId: this.$store.getters.id, merchantId: '', communityId: '', buildingId: '', unitId: '' },
+      editBuilding: {},
       treeList: [], maxexpandId: 95, non_maxexpandId: 95, isLoadingTree: false, requireId: 0,
       defaultExpandKeys: [], treeDialogVisible: false, treeIsEdit: false, newdialog: 0,
       defaultProps: { children: 'children', label: 'name', id: 'name' },
@@ -174,7 +155,8 @@ export default {
       })
     },
     initExpand() {},
-    handleNodeClick(d, node, s) { // 点击节点
+    // 点击节点
+    handleNodeClick(d, node, s) {
       // 置空 物业 单元 楼栋 小区
       this.levels = [-1, -1, -1, -1]
       // 遍历节点信息
@@ -219,8 +201,8 @@ export default {
     // 原本用来增添父节点的方法
     handleAddTop() {
     },
-    nodeAdd(s, d, n) { // 增加节点
-      // console.log(n.key)
+    // 增加节点
+    nodeAdd(s, d, n) {
       if (n.level === 1) {
         this.newdialog = 1
       } else if (n.level === 2) {
@@ -233,44 +215,82 @@ export default {
       this.requireId = n.key
       this.treeDialogVisible = true
       this.treeIsEdit = false
-      // this.community = Object.assign({}, defaultCommunity) // 默认值为空
     },
-    nodeEdit(s, d, n) { // 编辑节点
+    // 编辑节点
+    nodeEdit(s, d, n) { // 编辑物业
       if (n.level === 1) {
         this.newdialog = 0
-
-      } else if (n.level === 2) {
+        this.editQuery.merchantId = n.key
+        listPropertyInfo(this.editQuery).then(
+          (response) => {
+            console.log(response.data.merchant)
+          }
+        )
+      } else if (n.level === 2) { // 编辑小区
         this.newdialog = 1
-        this.user = Object.assign({}, n.data)
-        console.log(n)
-      } else if (n.level === 3) {
+        this.editQuery.merchantId = n.parent.key
+        this.editQuery.communityId = n.key
+        listPropertyInfo(this.editQuery).then(
+          (response) => {
+            console.log(response)
+          }
+        )
+      } else if (n.level === 3) { // 编辑楼
         this.newdialog = 2
-      } else {
+        this.editQuery.merchantId = n.parent.parent.key
+        this.editQuery.communityId = n.parent.key
+        this.editQuery.buildingId = n.key
+        listPropertyInfo(this.editQuery).then(
+          (response) => {
+            // this.editBuilding = response.data.building
+            console.log(response.data.building)
+            this.editBuilding = Object.assign({}, response.data.building)
+            this.buildingId = this.editBuilding.id
+            // console.log(response.data.building)
+            // console.log(response.data)
+            // console.log(this.editBuilding)
+          }
+        )
+      } else { // 编辑单元
         this.newdialog = 3
+        this.editQuery.merchantId = n.parent.parent.parent.key
+        this.editQuery.communityId = n.parent.parent.key
+        this.editQuery.buildingId = n.parent.key
+        this.editQuery.unitId = n.key
+        listPropertyInfo(this.editQuery).then(
+          (response) => {
+            console.log(response.data.unit)
+          }
+        )
       }
       this.treeDialogVisible = true
       this.treeIsEdit = true
       // this.tree = Object.assign({}, n)
     },
-    nodeDelete(s, d, n) { // 删除节点
-      if (n.level === 1) {
-        this.delQuery = this.delMerchant
-        console.log(n.id)
-      } else if (n.level === 2) {
-        this.delQuery = this.delCommunity
-        console.log(n.id)
-      } else if (n.level === 3) {
-        this.delBuilding.delBuildingId = n.id
-        this.delQuery = this.delBuilding
-      } else {
-        this.delQuery = this.delUnit
+    // 删除节点
+    nodeDelete(s, d, n) {
+      if (n.level === 1) { // 删除物业
+        this.delQuery.merchantId = n.key
+      } else if (n.level === 2) { // 删除小区
+        this.delQuery.merchantId = n.parent.key
+        this.delQuery.communityId = n.key
+      } else if (n.level === 3) { // 删除楼栋
+        this.delQuery.merchantId = n.parent.parent.key
+        this.delQuery.communityId = n.parent.key
+        this.delQuery.buildingId = n.key
+      } else { // 删除单元
+        this.delQuery.merchantId = n.parent.parent.parent.key
+        this.delQuery.communityId = n.parent.parent.key
+        this.delQuery.buildingId = n.parent.key
+        this.delQuery.unitId = n.key
       }
+      const delQuery = this.delQuery
       this.$confirm('是否确认删除编号为"' + n.id + '"的数据项?', '警告',
         { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
       ).then(function() {
-        return delProperty(this.delQuery)
+        return delProperty(delQuery)
       }).then((res) => {
-        this.getList()
+        this.getProperty()
         this.$message({
           message: res.message,
           type: res.code === 2000 ? 'success' : 'error'
@@ -328,6 +348,12 @@ export default {
         })
       }).catch(function() {
       })
+    },
+    cancel() {
+      this.treeDialogVisible = false
+      // this.$emit('update:visible', this.treeDialogVisible)
+      console.log('xxxxxxxxx')
+      Object.assign(this.$data.form, this.$options.data().form)
     }
   }
 }

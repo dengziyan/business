@@ -5,7 +5,7 @@
     <!--表格组件      -->
     <FormVue ref="form" :form-data="formData" :form="form" class="formMain"/>
     <span slot="footer" class="dialog-footer">
-      <el-button size="small" @click="cancel(false)">取 消</el-button>
+      <el-button size="small" @click="cancel()">取 消</el-button>
       <el-button type="primary" size="small" @click="handleDialogConfirm()">新建</el-button>
     </span>
   </div>
@@ -23,7 +23,10 @@ export default {
     return {
       treeDialogVisible: this.visible,
       form: {
-        buildingId: this.requireId
+        buildingId: this.requireId,
+        unitName: '',
+        affiliationId: '',
+        createTime: ''
       },
       formData: {
         labelWidth: '100px', inline: false, labelPosition: 'right', size: 'small',
@@ -49,6 +52,8 @@ export default {
   //   }
   // },
   created() {
+    // console.log(1234567)
+    console.log(this.editBuilding)
   },
   computed: {
   },
@@ -63,7 +68,7 @@ export default {
               type: 'success'
             })
             this.treeDialogVisible = false
-            this.getList()
+            this.$parent.getProperty()
           }
         })
       } else { // 插入一条资源数据（即添加）
@@ -74,14 +79,16 @@ export default {
               type: 'success'
             })
             this.treeDialogVisible = false
-            this.$parent.getList()
+            this.$parent.getProperty()
           }
         })
       }
     },
-    cancel(val) {
-      this.treeDialogVisible = val
+    cancel() {
+      this.treeDialogVisible = false
       this.$emit('update:visible', this.treeDialogVisible)
+      // console.log('xxxxxxxxx')
+      // Object.assign(this.$data.form, this.$options.data().form)
     }
   }
 }

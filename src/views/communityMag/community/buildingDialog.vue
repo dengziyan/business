@@ -5,7 +5,7 @@
     <!--表格组件      -->
     <FormVue ref="form" :form-data="formData" :form="form" class="formMain"/>
     <span slot="footer" class="dialog-footer">
-      <el-button size="small" @click="cancel(false)">取 消</el-button>
+      <el-button size="small" @click="cancel()">取 消</el-button>
       <el-button type="primary" size="small" @click="handleDialogConfirm()">新建</el-button>
     </span>
   </div>
@@ -16,14 +16,20 @@ import FormVue from '@/components/FormVue'
 import { updateBuilding, addBuilding } from '@/api/CommunityMag/community'
 import { getToken } from '@/utils/auth'
 export default {
-  name: 'NewDialog2',
+  name: 'BuildingDialog',
   components: { FormVue },
-  props: ['visible', 'requireId'],
+  props: {
+    visible: { type: Boolean, required: true },
+    buildingId: { type: Number, required: true },
+    requireId: { type: Number, required: true },
+    treeIsEdit: { type: Boolean, required: true }
+  },
   data() {
     return {
       treeDialogVisible: this.visible,
       form: {
         communityId: this.requireId,
+        buildingName: '',
         admin: ''
       },
       formData: {
@@ -40,14 +46,13 @@ export default {
       }
     }
   },
-  // watch: {
-  //   dialogVisibled(val) {
-  //     console.log(this.visible)
-  //     // 设置监听，如果改变就更新
-  //     this.$emit('update:visible', val)
-  //   }
-  // },
   created() {
+    console.log('this.editBuilding')
+    console.log(this.requireId)
+    // console.log(this.editBuilding.buildingName)
+    this.reflesh()
+    // this.form.buildingName = this.editBuilding.buildingName
+    // this.form = this.editBuilding.admin
   },
   computed: {
     listCategories() {
@@ -55,6 +60,14 @@ export default {
     }
   },
   methods: {
+    reflesh() {
+      if (this.treeIsEdit) {
+        // console.log(2345678)
+        // this.form = Object.assign({}, this.editBuilding)
+        console.log(this.buildingId)
+        // this.form = Object.assign({}, this.editBuilding)
+      }
+    },
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
       if (this.treeIsEdit) { // 更新资源数据（即编辑修改）
@@ -65,11 +78,11 @@ export default {
               type: 'success'
             })
             this.treeDialogVisible = false
-            this.getList()
+            this.treeIsEdit = false
+            this.$parent.getProperty()
           }
         })
       } else { // 插入一条资源数据（即添加）
-        // this.form.communityId = this.requireId
         addBuilding(this.form).then(response => {
           if (response.code === 2000) {
             this.$message({
@@ -77,14 +90,15 @@ export default {
               type: 'success'
             })
             this.treeDialogVisible = false
-            this.getList()
+            Object.assign(this.$data.form, this.$options.data().form)
+            this.$parent.getProperty()
           }
         })
       }
     },
     // 按取消键后
-    cancel(val) {
-      this.treeDialogVisible = val
+    cancel() {
+      this.treeDialogVisible = false
       this.$emit('update:visible', this.treeDialogVisible)
     }
   }

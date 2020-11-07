@@ -462,7 +462,6 @@ export default {
         this.selectOptions = this.selectDictLabels(res.data)
       })
     },
-
     /** 查询用户列表 */
     getList() {
       this.loading = true
@@ -666,7 +665,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }
-      )
+      )　
         .then(function() {
           return delUser(userIds)
         })

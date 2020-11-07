@@ -7,7 +7,12 @@ const state = {
     pageNum: 1,
     pageSize: 10
   },
-  hah: 'hah'
+  hah: 'hah',
+  // editBuilding: {
+  //   communityId: this.requireId,
+  //   buildingName: '',
+  //   admin: ''
+  // }
 }
 
 const mutations = {

@@ -8,6 +8,14 @@ export function listResident(query) {
     params: query
   })
 }
+// 查询物业
+export function listPropertyInfo(query) {
+  return request({
+    url: '/sys/property/info',
+    method: 'get',
+    params: query
+  })
+}
 // 查询物业菜单
 export function listProperty(query) {
   return request({
@@ -64,9 +72,9 @@ export function addBuilding(data) {
   })
 }
 // 修改楼栋
-export function updateBuilding(id, data) {
+export function updateBuilding(data) {
   return request({
-    url: '/sys/community/building' + id,
+    url: '/sys/community/building',
     method: 'post',
     data: data
   })
@@ -95,7 +103,7 @@ export function delProperty(data) {
   return request({
     url: '/sys/property/info',
     method: 'delete',
-    data: data
+    params: data
   })
 }
 // 下载导入模板
