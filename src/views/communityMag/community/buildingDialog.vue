@@ -20,7 +20,7 @@ export default {
   components: { FormVue },
   props: {
     visible: { type: Boolean, required: true },
-    buildingId: { type: Number, required: true },
+    editBuilding: { type: Object, required: true },
     requireId: { type: Number, required: true },
     treeIsEdit: { type: Boolean, required: true }
   },
@@ -47,8 +47,8 @@ export default {
     }
   },
   created() {
-    console.log('this.editBuilding')
-    console.log(this.requireId)
+    // console.log('this.editBuilding')
+    // console.log(this.requireId)
     // console.log(this.editBuilding.buildingName)
     this.reflesh()
     // this.form.buildingName = this.editBuilding.buildingName
@@ -64,8 +64,8 @@ export default {
       if (this.treeIsEdit) {
         // console.log(2345678)
         // this.form = Object.assign({}, this.editBuilding)
-        console.log(this.buildingId)
-        // this.form = Object.assign({}, this.editBuilding)
+        console.log(this.editBuilding)
+        this.form = Object.assign({}, this.editBuilding)
       }
     },
     // 对话框按确定键之后的方法

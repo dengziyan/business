@@ -12,7 +12,7 @@
 
 <script>
 import FormVue from '@/components/FormVue'
-import { updatePayBills, addPayBills, listChargeCategoryOptions, listChargeProjectOptions, importTemplates, batchAddChargeBatch, batchAddBatchBills } from '@/api/financialMag/payBills'
+import { listChargeCategoryOptions, listChargeProjectOptions, importTemplates, batchAddChargeBatch, batchAddBatchBills } from '@/api/financialMag/payBills'
 import fileDownload from 'js-file-download'
 import { getToken } from '@/utils/auth'
 export default {
@@ -81,32 +81,6 @@ export default {
     this.getChargeProject()
   },
   methods: {
-    // 对话框按确定键之后的方法
-    handleDialogConfirm() {
-      if (this.isEdit) { // 更新资源数据（即编辑修改）
-        updatePayBills(this.user).then(response => {
-          if (response.code === 2000) {
-            this.$message({
-              message: '修改成功！',
-              type: 'success'
-            })
-            this.dialogVisible = false
-            this.getList()
-          }
-        })
-      } else { // 插入一条资源数据（即添加）
-        addPayBills(this.user).then(response => {
-          if (response.code === 2000) {
-            this.$message({
-              message: '添加成功！',
-              type: 'success'
-            })
-            this.dialogVisible = false
-            this.getList()
-          }
-        })
-      }
-    },
     // 获取收费类型
     getChargeCategory() {
       const userId = {
@@ -166,18 +140,10 @@ export default {
       this.dialogVisibled = val
       this.$emit('update:visible', this.dialogVisibled)
     },
-    // 提交上传文件
+    // 对话框按确定键之后提交上传文件
     submitFileForm() {
       this.$refs.form.$refs.upload[0].submit()
       console.log(this.form)
-    },
-    handleRemove(file, fileList) {
-      console.log(file, fileList)
-    },
-    handlePreview(file) {
-      console.log(file)
-    },
-    handleChange() {
     }
   }
 }

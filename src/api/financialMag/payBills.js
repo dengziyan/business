@@ -47,14 +47,6 @@ export function delBatch(id) {
     method: 'delete'
   })
 }
-// 新增
-export function addPayBills(data) {
-  return request({
-    url: '/sys/user',
-    method: 'post',
-    data: data
-  })
-}
 // 获取收费类型列表
 export function listChargeCategoryOptions(query) {
   return request({
@@ -71,6 +63,15 @@ export function listChargeProjectOptions(data) {
     data: data
   })
 }
+// 获取小区选项
+export function listCommunityOptions(data) {
+  return request({
+    url: '/project/listProject',
+    method: 'post',
+    data: data
+  })
+}
+
 // 下载模板
 export function importTemplates(data) {
   return request({
