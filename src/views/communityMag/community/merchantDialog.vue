@@ -13,9 +13,8 @@
 
 <script>
 import FormVue from '@/components/FormVue'
-import { updatePayBills, addPayBills, listChargeCategoryOptions, listChargeProjectOptions, importTemplates, batchAddChargeBatch } from '@/api/financialMag/payBills'
+import { updatePayBills, listChargeCategoryOptions, listChargeProjectOptions, importTemplates, batchAddChargeBatch } from '@/api/financialMag/payBills'
 import fileDownload from 'js-file-download'
-import { getToken } from '@/utils/auth'
 export default {
   name: 'NewDialog1',
   components: {

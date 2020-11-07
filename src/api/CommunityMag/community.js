@@ -75,7 +75,7 @@ export function addBuilding(data) {
 export function updateBuilding(data) {
   return request({
     url: '/sys/community/building',
-    method: 'post',
+    method: 'put',
     data: data
   })
 }

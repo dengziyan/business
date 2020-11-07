@@ -3,10 +3,10 @@
   <div>
     楼栋信息
     <!--表格组件      -->
-    <FormVue ref="form" :form-data="formData" :form="form" class="formMain"/>
+    <FormVue ref="form" :form-data="formData" :form="form" class="formMain" />
     <span slot="footer" class="dialog-footer">
       <el-button size="small" @click="cancel()">取 消</el-button>
-      <el-button type="primary" size="small" @click="handleDialogConfirm()">新建</el-button>
+      <el-button type="primary" size="small" @click="handleDialogConfirm()">确定</el-button>
     </span>
   </div>
 </template>
@@ -14,7 +14,6 @@
 <script>
 import FormVue from '@/components/FormVue'
 import { updateBuilding, addBuilding } from '@/api/CommunityMag/community'
-import { getToken } from '@/utils/auth'
 export default {
   name: 'BuildingDialog',
   components: { FormVue },
@@ -22,16 +21,22 @@ export default {
     visible: { type: Boolean, required: true },
     editBuilding: { type: Object, required: true },
     requireId: { type: Number, required: true },
-    treeIsEdit: { type: Boolean, required: true }
+    treeIsEdit: { type: Boolean, required: true },
+    refreshProperty: {
+      type: Function,
+      default: null
+    }
   },
   data() {
     return {
       treeDialogVisible: this.visible,
       form: {
         communityId: this.requireId,
-        buildingName: '',
-        admin: ''
+        buildingName: undefined,
+        admin: undefined
       },
+      isEdit: this.treeIsEdit,
+      building: this.editBuilding,
       formData: {
         labelWidth: '100px', inline: false, labelPosition: 'right', size: 'small',
         formItem: [
@@ -46,60 +51,76 @@ export default {
       }
     }
   },
-  created() {
-    // console.log('this.editBuilding')
-    // console.log(this.requireId)
-    // console.log(this.editBuilding.buildingName)
-    this.reflesh()
-    // this.form.buildingName = this.editBuilding.buildingName
-    // this.form = this.editBuilding.admin
-  },
   computed: {
     listCategories() {
       return []
     }
   },
+  watch: {
+    buildingWatch: function(val) {
+      this.building = val
+    },
+    isEditWatch: function(val) {
+      this.isEdit = val
+    },
+    visibleWatch: function(val) {
+      this.treeDialogVisible = val
+    },
+    propertyWatch: function() {
+      this.refreshProperty()
+    }
+  },
+  created() {
+    this.refresh()
+  },
   methods: {
-    reflesh() {
+    refresh() {
       if (this.treeIsEdit) {
-        // console.log(2345678)
-        // this.form = Object.assign({}, this.editBuilding)
-        console.log(this.editBuilding)
-        this.form = Object.assign({}, this.editBuilding)
+        const building = this.building.building
+        const community = this.building.community
+        this.form.communityId = community.id
+        this.form.admin = building.admin
+        this.form.id = building.id
+        this.form.buildingName = building.buildingName
+      }
+    },
+    propertyRefresh() {
+      if (this.refreshProperty) {
+        this.refreshProperty()
       }
     },
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
-      if (this.treeIsEdit) { // 更新资源数据（即编辑修改）
-        updateBuilding(this.form).then(response => {
+      console.log(this.isEdit)
+      if (this.isEdit) { // 更新资源数据（即编辑修改）
+        const building = this.form
+        updateBuilding(building).then(response => {
           if (response.code === 2000) {
             this.$message({
-              message: '修改成功！',
+              message: response.message,
               type: 'success'
             })
-            this.treeDialogVisible = false
-            this.treeIsEdit = false
-            this.$parent.getProperty()
+            this.cancel()
+            this.propertyRefresh()
           }
         })
       } else { // 插入一条资源数据（即添加）
         addBuilding(this.form).then(response => {
           if (response.code === 2000) {
             this.$message({
-              message: '添加成功！',
+              message: response.message,
               type: 'success'
             })
-            this.treeDialogVisible = false
-            Object.assign(this.$data.form, this.$options.data().form)
-            this.$parent.getProperty()
+            this.cancel()
+            this.propertyRefresh()
           }
         })
       }
     },
     // 按取消键后
     cancel() {
-      this.treeDialogVisible = false
-      this.$emit('update:visible', this.treeDialogVisible)
+      this.$emit('update:visible', false)
+      Object.assign(this.$data.form, this.$options.data().form)
     }
   }
 }

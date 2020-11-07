@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="app-container">
     <!--小区左边的树形控件组件  -->
-    <div class="expand">
+    <div v-loading="loading" class="expand">
       <div>
         小区信息
         <el-button @click="handleAddTop">导入</el-button>
@@ -21,20 +21,20 @@
           @node-click="handleNodeClick"
         />
         <!--点击+新增后出现的弹框    -->
-        <el-dialog v-if="treeDialogVisible" :title="treeIsEdit?'编辑':'添加'" :visible.sync="treeDialogVisible" @close="cancel" width="650px">
+        <el-dialog v-if="treeDialogVisible" :title="treeIsEdit?'编辑':'添加'" :visible.sync="treeDialogVisible" width="650px" @close="cancel">
           <!--弹框子组件      -->
-          <community-dialog v-if="newdialog === 1" :visible.sync="treeDialogVisible" :require-id="requireId" />
-          <building-dialog v-if="newdialog === 2" :visible.sync="treeDialogVisible" :require-id="requireId" :edit-building="editBuilding" :tree-is-edit="treeIsEdit"/>
-          <unit-dialog v-if="newdialog === 3" :visible.sync="treeDialogVisible" :require-id="requireId" />
-          <merchant-dialog v-if="newdialog === 0" :visible.sync="treeDialogVisible" :require-id="requireId"/>
+          <community-dialog v-if="newdialog === 1" :visible.sync="treeDialogVisible" :require-id="requireId" :refresh-property="refreshProperty" />
+          <building-dialog v-if="newdialog === 2" :visible.sync="treeDialogVisible" :require-id="requireId" :refresh-property="refreshProperty" :edit-building="editBuilding" :tree-is-edit="treeIsEdit" />
+          <unit-dialog v-if="newdialog === 3" :visible.sync="treeDialogVisible" :require-id="requireId" :refresh-property="refreshProperty" />
+          <merchant-dialog v-if="newdialog === 0" :visible.sync="treeDialogVisible" :require-id="requireId" :refresh-property="refreshProperty" />
         </el-dialog>
       </div>
     </div>
-    <div class="resident">
+    <div v-loading="loading" class="resident">
       住户信息
       <div class="detail">
         <!--引入搜索条件子组件        -->
-        <search-form class="searchMain" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle"/>
+        <search-form class="searchMain" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
         <!--小区表格及操作组件  -->
         <div class="table">
           <!-- 各个操作按钮 -->
@@ -45,7 +45,7 @@
             <el-checkbox v-model="checkAll">导出所有数据</el-checkbox>
           </el-row>
           <!--引入表格组件        -->
-          <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
+          <TableVue :columns="columns" :data="list" empty-text="暂无数据">
             <!-- #是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
             <template #handle="{scope: {row, $index}}">
               <el-button type="danger" size="mini" @click="handleDelete()">删除</el-button>
@@ -53,10 +53,10 @@
             </template>
           </TableVue>
           <!--分页    -->
-          <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList"/>
+          <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
         </div>
         <el-dialog :title="isEdit?'编辑住户信息':'添加住户信息'" :visible.sync="dialogVisible" width="600px">
-            <new-dialog :visible.sync="dialogVisible"/>
+          <new-dialog :visible.sync="dialogVisible" />
         </el-dialog>
       </div>
     </div>
@@ -72,7 +72,6 @@ import merchantDialog from './merchantDialog'
 import TableVue from '@/components/TableVue'
 import SearchForm from '@/components/SearchForm'
 import { listProperty, listResident, delProperty, listPropertyInfo } from '@/api/CommunityMag/community'
-import { addDateRange } from '@/utils/userright'
 
 const id = 1000
 export default {
@@ -81,8 +80,8 @@ export default {
     return {
       buildingId: 0,
       // 左边的树（maxexpandId:新增节点开始id，isLoadingTree: 是否加载节点树，defaultExpandKeys默认展开节点列表
-      delQuery: { userId: this.$store.getters.id, merchantId: '', communityId: '', buildingId: '', unitId: '' },
-      editQuery: { userId: this.$store.getters.id, merchantId: '', communityId: '', buildingId: '', unitId: '' },
+      delQuery: { merchantId: undefined, communityId: undefined, buildingId: undefined, unitId: undefined },
+      editQuery: { merchantId: undefined, communityId: undefined, buildingId: undefined, unitId: undefined },
       editBuilding: {},
       treeList: [], maxexpandId: 95, non_maxexpandId: 95, isLoadingTree: false, requireId: 0,
       defaultExpandKeys: [], treeDialogVisible: false, treeIsEdit: false, newdialog: 0,
@@ -145,7 +144,9 @@ export default {
       })
       this.getList()
     },
-
+    refreshProperty() {
+      this.getProperty()
+    },
     // 获取小区列表、表格信息
     getList() {
       this.searchData.userId = this.$store.getters.id
@@ -173,7 +174,7 @@ export default {
     },
     nodeCheck(node) {
       // 终止条件
-      if (node.key === undefined || node === undefined) {
+      if (node.key === undefined) {
         return
       }
       // 判断level
@@ -193,6 +194,7 @@ export default {
     },
     renderContent(h, { node, data, store }) { // 加载节点
       const that = this
+      Object.assign(this.$data.editQuery, this.$options.data().editQuery)
       return h(TreeRender, {
         props: { DATA: data, NODE: node, STORE: store, maxexpandId: that.non_maxexpandId },
         on: {
@@ -221,58 +223,42 @@ export default {
       this.treeIsEdit = false
     },
     // 编辑节点
-    nodeEdit(s, d, n) { // 编辑物业
+    async nodeEdit(s, d, n) {
+      this.editQuery.userId = this.$store.getters.id
+      // 编辑物业
       if (n.level === 1) {
         this.newdialog = 0
         this.editQuery.merchantId = n.key
-        listPropertyInfo(this.editQuery).then(
-          (response) => {
-            console.log(response.data.merchant)
-          }
-        )
       } else if (n.level === 2) { // 编辑小区
         this.newdialog = 1
         this.editQuery.merchantId = n.parent.key
         this.editQuery.communityId = n.key
-        listPropertyInfo(this.editQuery).then(
-          (response) => {
-            console.log(response)
-          }
-        )
       } else if (n.level === 3) { // 编辑楼栋
         this.newdialog = 2
         this.editQuery.merchantId = n.parent.parent.key
         this.editQuery.communityId = n.parent.key
         this.editQuery.buildingId = n.key
-        listPropertyInfo(this.editQuery).then(
-          (response) => {
-            // this.editBuilding = response.data.building
-            console.log(response.data.building)
-            this.editBuilding = Object.assign({}, response.data.building)
-            // this.buildingId = this.editBuilding.id
-            // console.log(response.data.building)
-            // console.log(response.data)
-            // console.log(this.editBuilding)
-          }
-        )
       } else { // 编辑单元
         this.newdialog = 3
         this.editQuery.merchantId = n.parent.parent.parent.key
         this.editQuery.communityId = n.parent.parent.key
         this.editQuery.buildingId = n.parent.key
         this.editQuery.unitId = n.key
-        listPropertyInfo(this.editQuery).then(
-          (response) => {
-            console.log(response.data.unit)
-          }
-        )
       }
+      this.loading = true
+
+      await listPropertyInfo(this.editQuery).then(
+        (response) => {
+          this.editBuilding = response.data
+          this.loading = false
+        }
+      )
       this.treeDialogVisible = true
       this.treeIsEdit = true
-      // this.tree = Object.assign({}, n)
     },
     // 删除节点
     nodeDelete(s, d, n) {
+      this.delQuery.userId=this.$store.getters.id
       if (n.level === 1) { // 删除物业
         this.delQuery.merchantId = n.key
       } else if (n.level === 2) { // 删除小区
@@ -289,7 +275,7 @@ export default {
         this.delQuery.unitId = n.key
       }
       const delQuery = this.delQuery
-      this.$confirm('是否确认删除编号为"' + n.id + '"的数据项?', '警告',
+      this.$confirm('是否确认删除：' + n.label + '?', '警告',
         { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
       ).then(function() {
         return delProperty(delQuery)
@@ -318,7 +304,7 @@ export default {
       this.$confirm('是否确认删除用户编号为"' + userIds + '"的数据项?', '警告',
         { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
       ).then(function() {
-        return delUser(userIds)
+        // return delUser(userIds)
       }).then(() => {
         this.getList()
         this.msgSuccess('删除成功')
@@ -342,14 +328,7 @@ export default {
       this.$confirm('是否确认导出用户数据项?', '警告',
         { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
       ).then(function() {
-        exportUser(searchData).then(res => {
-          // console.log(res)
-          const sysDate = moment(new Date()).format('YYYY-MM-DDHHmm')
-          // console.log(sysDate)
-          fileDownload(res, sysDate + '用户信息表.xlsx')
-        }).catch(err => {
-          // console.log(err)
-        })
+
       }).catch(function() {
       })
     },
@@ -357,7 +336,8 @@ export default {
       this.treeDialogVisible = false
       // this.$emit('update:visible', this.treeDialogVisible)
       console.log('xxxxxxxxx')
-      Object.assign(this.$data.form, this.$options.data().form)
+      Object.assign(this.$data.editBuilding, this.$options.data().editBuilding)
+      Object.assign(this.$data.editQuery, this.$options.data().editQuery)
     }
   }
 }
@@ -365,7 +345,6 @@ export default {
 
 <style lang="scss" scoped>
   .expand {
-    width: 100%;
     height: 80%;
     overflow: hidden;
     float: left;
