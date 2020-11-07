@@ -235,7 +235,7 @@ export default {
             console.log(response)
           }
         )
-      } else if (n.level === 3) { // 编辑楼
+      } else if (n.level === 3) { // 编辑楼栋
         this.newdialog = 2
         this.editQuery.merchantId = n.parent.parent.key
         this.editQuery.communityId = n.parent.key
