@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import { getToken, setToken, getIDKey } from '@/utils/auth'
+import { getToken, setToken, getID_KEY } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
@@ -60,8 +60,8 @@ service.interceptors.response.use(
     if (res.code !== 2000 && res.code !== undefined) {
       // 4001: Illegal token;Token expired;
       if (res.code === 4001) {
-        if (getIDKey()) {
-          axios.get(process.env.VUE_APP_BASE_API+'/sys/user-info/' + getIDKey(), { headers: { Authorization: getToken() } }).then(res => {
+        if (getID_KEY()) {
+          axios.get(process.env.VUE_APP_BASE_API+'/sys/user-info/' + getID_KEY(), { headers: { Authorization: getToken() } }).then(res => {
             console.log(res)
             if (res.data.code === 4001) {
               // to re-login
