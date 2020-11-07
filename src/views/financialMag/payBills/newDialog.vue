@@ -148,16 +148,16 @@ export default {
     handleFileUpload(val) {
       const formData = new FormData()
       const chargeBatch = {
-        billName: this.formData.formItem[2].value,
-        chargeProjectId: this.formData.formItem[1].value,
-        chargeBeginTime: this.formData.formItem[3].value
+        billName: this.form.billName,
+        chargeProjectId: this.form.chargeProjectName,
+        chargeBeginTime: this.form.chargeBeginTime
       }
       listChargeProjectOptions(chargeBatch).then(response => {
         chargeBatch.chargeProjectId = response.data.rows[0].id
         console.log(JSON.parse(JSON.stringify(chargeBatch)))
         formData.append('chargeBatch', JSON.stringify(chargeBatch))
         formData.append('file', val.file)
-        batchAddBatchBills(0, this.formData.formItem[4].value, formData).then(res => {
+        batchAddBatchBills(this.$store.getters.id, this.form.billUpload, formData).then(res => {
           val.onSuccess()
         }).catch(res => {
           val.onError()
