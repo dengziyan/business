@@ -33,7 +33,7 @@
       <!-- 单选框 -->
       <el-radio-group
         v-if="item.type==='radio'"
-        v-model="item.value"
+        v-model="dataForm[item.prop]"
       >
         <el-radio
           v-for="item in item.options"
