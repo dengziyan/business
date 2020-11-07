@@ -18,11 +18,13 @@ export default {
   name: 'EditDialog',
   components: { FormVue },
   props: {
-    visible: { type: Boolean, required: true }
+    visible: { type: Boolean, required: true },
+    editData: { type: Object, required: true }
   },
   data() {
     return {
       editVisible: this.visible,
+      chargeProjectOptions: [], // 收费项目名称
       form: {
         communityId: undefined,
         billName: '',
@@ -46,6 +48,8 @@ export default {
   },
   created() {
     this.getChargeProject()
+    this.form = Object.assign({}, this.editData)
+    console.log(this.form)
   },
   computed: {
   },
@@ -53,6 +57,17 @@ export default {
     // 获取收费项目名称
     getChargeProject() {
       listChargeProjectOptions().then(response => {
+        const cateList = response.data.rows
+        for (let i = 0; i < cateList.length; i++) {
+          const cate = cateList[i]
+          this.chargeProjectOptions.push({ lable: cate.chargeProjectName, value: cate.chargeProjectName, isDisabled: false })
+        }
+        this.formData.formItem[1].options = this.chargeProjectOptions
+      })
+    },
+    // 获取小区
+    getCommunity() {
+      listCommunityOptions().then(response => {
         const cateList = response.data.rows
         for (let i = 0; i < cateList.length; i++) {
           const cate = cateList[i]

@@ -23,7 +23,7 @@
         <el-dialog v-if="treeDialogVisible" :title="treeIsEdit?'编辑':'添加'" :visible.sync="treeDialogVisible" @close="cancel" width="650px">
           <!--弹框子组件      -->
           <community-dialog v-if="newdialog === 1" :visible.sync="treeDialogVisible" :require-id="requireId" />
-          <building-dialog v-if="newdialog === 2" :visible.sync="treeDialogVisible" :require-id="requireId" :building-id="buildingId" :tree-is-edit="treeIsEdit"/>
+          <building-dialog v-if="newdialog === 2" :visible.sync="treeDialogVisible" :require-id="requireId" :edit-building="editBuilding" :tree-is-edit="treeIsEdit"/>
           <unit-dialog v-if="newdialog === 3" :visible.sync="treeDialogVisible" :require-id="requireId" />
           <merchant-dialog v-if="newdialog === 0" :visible.sync="treeDialogVisible" :require-id="requireId"/>
         </el-dialog>
@@ -54,6 +54,9 @@
           <!--分页    -->
           <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList"/>
         </div>
+        <el-dialog :title="isEdit?'编辑住户信息':'添加住户信息'" :visible.sync="dialogVisible" width="600px">
+            <new-dialog :visible.sync="dialogVisible"/>
+        </el-dialog>
       </div>
     </div>
   </div>
@@ -245,7 +248,7 @@ export default {
             // this.editBuilding = response.data.building
             console.log(response.data.building)
             this.editBuilding = Object.assign({}, response.data.building)
-            this.buildingId = this.editBuilding.id
+            // this.buildingId = this.editBuilding.id
             // console.log(response.data.building)
             // console.log(response.data)
             // console.log(this.editBuilding)

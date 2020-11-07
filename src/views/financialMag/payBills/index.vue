@@ -30,8 +30,8 @@
       <new-dialog :visible.sync="newVisible" />
     </el-dialog>
     <!--点击编辑后出现的弹框    -->
-    <el-dialog title="编辑账单批次" :visible.sync="editVisible" width="650px">
-      <edit-dialog :visible.sync="editVisible" />
+    <el-dialog title="编辑账单批次" v-if="editVisible" :visible.sync="editVisible" width="650px" >
+      <edit-dialog v-if="editVisible" :visible.sync="editVisible" :edit-data="editData"/>
     </el-dialog>
 
   </div>
@@ -102,7 +102,7 @@ export default {
     handleAdd() {
       this.newVisible = true
       // eslint-disable-next-line no-undef
-      this.payBills = Object.assign({}, defaultPayBills) // 默认值为空
+      // this.payBills = Object.assign({}, defaultPayBills) // 默认值为空
     },
     handleQuery() {
       this.getList()
@@ -161,7 +161,7 @@ export default {
     handleEdit(row, index) {
       this.editVisible = true
       this.editData = Object.assign({}, row)
-      console.log(row, index)
+      console.log(this.editData)
       // updatePayBills(row)
     },
     // 删除
