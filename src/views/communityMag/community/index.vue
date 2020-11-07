@@ -15,6 +15,7 @@
           node-key="id"
           highlight-current
           accordion
+          :default-expand-all="true"
           :check-strictly="true"
           auto-expand-parent
           @node-click="handleNodeClick"
@@ -372,10 +373,9 @@ export default {
   }
 
   .expand > div {
-    padding-top: 20px;
+    padding: 20px;
     max-width: 400px;
     overflow-y: auto;
-    /*text-align: center;*/
   }
 
   .expand > div::-webkit-scrollbar-track {

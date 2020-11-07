@@ -10,7 +10,7 @@
         <el-checkbox
           v-model="category.checked"
           :indeterminate="category.isIndeterminate"
-          :disabled="category.enabled===0"
+          :disabled="category.enable===0"
           @change="handleCheckAllChange($event,category)"
         >
           {{ category.name }}
@@ -150,7 +150,7 @@ export default {
       await listAllCate().then(response => {
         const resource = response.data || []
         const resources = resource.map(function(val) {
-          return { id: val.id, name: val.name, children: val.children, checked: false, isIndeterminate: false }
+          return { id: val.id, name: val.name, children: val.children, checked: false, isIndeterminate: false, enable: val.enable }
         })
         this.allResource = resources
         this.allResourceCate = resources

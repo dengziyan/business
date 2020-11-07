@@ -17,7 +17,6 @@
             :key="item.value"
             :label="item.label"
             :value="item.value"
-            :disabled="item.disable===0"
             @click.native="selectExitSelectConfig(item)"
           />
         </el-select>
@@ -35,7 +34,6 @@
             :key="item.id"
             :label="item.resourceName"
             :value="item.resourceName"
-            :disabled="item.isEnable===0"
           />
         </el-select>
       </el-form-item>

@@ -40,13 +40,11 @@
 <script>
 import newDialog from './newDialog'
 import editDialog from './editDialog'
-import { addDateRange } from '@/utils/userright'
 import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
-import { listPayBills, delBatch, updatePayBills } from '@/api/financialMag/payBills'
+import { listPayBills, delBatch } from '@/api/financialMag/payBills'
 import { listChargeProject } from '@/api/financialMag/chargeProject'
 
-const defaultPayBills = {}
 export default {
   name: 'PayBillsTable',
   components: { newDialog, editDialog, TableVue, SearchForm },
