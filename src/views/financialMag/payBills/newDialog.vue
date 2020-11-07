@@ -137,7 +137,7 @@ export default {
     },
     // 下载模板
     importTemplate() {
-      importTemplates(this.formData.formItem[0].value).then(res => {
+      importTemplates(this.form.chargeCategoryName).then(res => {
         fileDownload(res, '批量导入模板.xlsx')
       })
         .catch(err => {
