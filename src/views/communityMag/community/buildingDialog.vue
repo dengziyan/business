@@ -19,8 +19,7 @@ export default {
   components: { FormVue },
   props: {
     visible: { type: Boolean, required: true },
-    editBuilding: { type: Object, required: true },
-    requireId: { type: Number, required: true },
+    editInfo: { type: Object, required: true },
     treeIsEdit: { type: Boolean, required: true },
     refreshProperty: {
       type: Function,
@@ -31,12 +30,12 @@ export default {
     return {
       treeDialogVisible: this.visible,
       form: {
-        communityId: this.requireId,
+        communityId: undefined,
         buildingName: undefined,
         admin: undefined
       },
       isEdit: this.treeIsEdit,
-      building: this.editBuilding,
+      building: this.editInfo,
       formData: {
         labelWidth: '100px', inline: false, labelPosition: 'right', size: 'small',
         formItem: [

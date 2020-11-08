@@ -23,10 +23,10 @@
         <!--点击+新增后出现的弹框    -->
         <el-dialog v-if="treeDialogVisible" :title="treeIsEdit?'编辑':'添加'" :visible.sync="treeDialogVisible" width="650px" @close="cancel">
           <!--弹框子组件      -->
-          <community-dialog v-if="newdialog === 1" :visible.sync="treeDialogVisible" :require-id="requireId" :refresh-property="refreshProperty" />
-          <building-dialog v-if="newdialog === 2" :visible.sync="treeDialogVisible" :require-id="requireId" :refresh-property="refreshProperty" :edit-building="editBuilding" :tree-is-edit="treeIsEdit" />
-          <unit-dialog v-if="newdialog === 3" :visible.sync="treeDialogVisible" :require-id="requireId" :refresh-property="refreshProperty" />
-          <merchant-dialog v-if="newdialog === 0" :visible.sync="treeDialogVisible" :require-id="requireId" :refresh-property="refreshProperty" />
+          <community-dialog v-if="newdialog === 1" :visible.sync="treeDialogVisible"  :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit"/>
+          <building-dialog v-if="newdialog === 2" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" />
+          <unit-dialog v-if="newdialog === 3" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit"/>
+          <merchant-dialog v-if="newdialog === 0" :visible.sync="treeDialogVisible"  :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit"/>
         </el-dialog>
       </div>
     </div>
@@ -73,7 +73,7 @@ import TableVue from '@/components/TableVue'
 import SearchForm from '@/components/SearchForm'
 import { listProperty, listResident, delProperty, listPropertyInfo } from '@/api/CommunityMag/community'
 
-const id = 1000
+
 export default {
   components: { communityDialog, buildingDialog, unitDialog, merchantDialog, TableVue, SearchForm },
   data() {
@@ -82,7 +82,7 @@ export default {
       // 左边的树（maxexpandId:新增节点开始id，isLoadingTree: 是否加载节点树，defaultExpandKeys默认展开节点列表
       delQuery: { merchantId: undefined, communityId: undefined, buildingId: undefined, unitId: undefined },
       editQuery: { merchantId: undefined, communityId: undefined, buildingId: undefined, unitId: undefined },
-      editBuilding: {},
+      editInfo: {},
       treeList: [], maxexpandId: 95, non_maxexpandId: 95, isLoadingTree: false, requireId: 0,
       defaultExpandKeys: [], treeDialogVisible: false, treeIsEdit: false, newdialog: 0,
       defaultProps: { children: 'children', label: 'name', id: 'name' },
@@ -249,7 +249,8 @@ export default {
 
       await listPropertyInfo(this.editQuery).then(
         (response) => {
-          this.editBuilding = response.data
+          this.editInfo = response.data
+          this.editInfo.property = this.editQuery
           this.loading = false
         }
       )
@@ -258,7 +259,7 @@ export default {
     },
     // 删除节点
     nodeDelete(s, d, n) {
-      this.delQuery.userId=this.$store.getters.id
+      this.delQuery.userId = this.$store.getters.id
       if (n.level === 1) { // 删除物业
         this.delQuery.merchantId = n.key
       } else if (n.level === 2) { // 删除小区
@@ -336,7 +337,7 @@ export default {
       this.treeDialogVisible = false
       // this.$emit('update:visible', this.treeDialogVisible)
       console.log('xxxxxxxxx')
-      Object.assign(this.$data.editBuilding, this.$options.data().editBuilding)
+      Object.assign(this.$data.editInfo, this.$options.data().editInfo)
       Object.assign(this.$data.editQuery, this.$options.data().editQuery)
     }
   }

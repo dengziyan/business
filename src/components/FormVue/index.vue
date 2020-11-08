@@ -75,7 +75,7 @@
       <el-select
         ref="selectForm"
         v-if="item.type==='select'"
-        v-model="item.options.value"
+        v-model="dataForm[item.prop]"
         :multiple="item.multiple"
         :value="item.tip"
         collapse-tags
@@ -84,12 +84,13 @@
         :placeholder="item.placeholder"
       >
         <el-option
-          v-for="item in item.options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-          :disabled="item.isDisabled"
+          v-for="val in item.options"
+          :key="val.value"
+          :label="val.label"
+          :value="val.value"
+          :disabled="val.isDisabled"
         />
+
       </el-select>
       <!-- 联级面板 -->
       <el-cascader

@@ -52,10 +52,10 @@ export function addCommunity(data) {
   })
 }
 // 修改小区
-export function updateCommunity(id, data) {
+export function updateCommunity(data) {
   return request({
-    url: '/sys/community' + id,
-    method: 'post',
+    url: '/sys/community',
+    method: 'put',
     data: data
   })
 }

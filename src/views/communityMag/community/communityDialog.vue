@@ -3,10 +3,10 @@
   <div>
     小区信息
     <!--表格组件      -->
-    <FormVue ref="form" :form-data="formData" :form="form" class="formMain"/>
+    <FormVue v-loading="loadingCommunity"  ref="form" :form-data="formData" :form="form" class="formMain" />
     <span slot="footer" class="dialog-footer">
-      <el-button size="small" @click="cancel(false)">取 消</el-button>
-      <el-button type="primary" size="small" @click="handleDialogConfirm()">新建</el-button>
+      <el-button size="small" @click="cancel()">取 消</el-button>
+      <el-button type="primary" size="small" @click="handleDialogConfirm()">确认</el-button>
     </span>
   </div>
 </template>
@@ -18,22 +18,32 @@ import { getDictVal } from '@/api/system/logininfor'
 export default {
   name: 'NewDialog1',
   components: { FormVue },
-  props: ['visible', 'requireId'],
+  props: {
+    visible: { type: Boolean, required: true },
+    editInfo: { type: Object, required: true },
+    treeIsEdit: { type: Boolean, required: true },
+    refreshProperty: {
+      type: Function,
+      default: null
+    }},
   data() {
     return {
       treeDialogVisible: this.visible,
+      loadingCommunity:false,
       form: {
-        merchantId: this.requireId,
-        communityName: '',
-        category: '',
-        admin: '',
-        mobilePhone: '',
-        location: ''
+        merchant: undefined,
+        communityName: undefined,
+        category: undefined,
+        admin: undefined,
+        mobilePhone: undefined,
+        location: undefined
       },
+      isEdit: this.treeIsEdit,
+      community: this.editInfo,
       formData: {
         labelWidth: '100px', inline: false, labelPosition: 'right', size: 'small',
         formItem: [
-          { type: 'text', label: '商户Id', prop: 'merchantId', size: 'small', isDisabled: false, required: true },
+          { type: 'text', label: '商户名称', prop: 'merchant', size: 'small', isDisabled: false, required: true },
           { type: 'text', label: '小区名称', prop: 'communityName', size: 'small', isDisabled: false },
           { type: 'select', label: '小区类别', prop: 'category', size: 'small', tip: '', value: '', isDisabled: false, multiple: false, options: [] },
           { type: 'text', label: '联系人', prop: 'admin', size: 'small', isDisabled: false, required: true },
@@ -49,24 +59,54 @@ export default {
       }
     }
   },
-  // watch: {
-  //   dialogVisibled(val) {
-  //     console.log(this.visible)
-  //     // 设置监听，如果改变就更新
-  //     this.$emit('update:visible', val)
-  //   }
-  // },
-  created() {
-    console.log(this.requireId)
-    this.getOptionStatusDict()
-  },
   computed: {
   },
+  watch: {
+    buildingWatch: function(val) {
+      this.building = val
+    },
+    isEditWatch: function(val) {
+      this.isEdit = val
+    },
+    visibleWatch: function(val) {
+      this.treeDialogVisible = val
+    },
+    propertyWatch: function() {
+      this.refreshProperty()
+    }
+  },
+  created() {
+    this.getOptionStatusDict()
+  },
   methods: {
+
+    refresh() {
+      if (this.treeIsEdit) {
+        const property = this.community
+        const community = this.community.community
+        this.form.merchant = property.merchant
+        this.form.merchantId = property.property.merchantId
+        this.form.admin = community.admin
+        this.form.id = community.id
+        this.form.category = community.category+''
+        this.form.communityName = community.communityName
+        this.form.location=community.location
+        this.form.mobilePhone=property.phone
+        console.log(this.form)
+      }
+    },
+    propertyRefresh() {
+      if (this.refreshProperty) {
+        this.refreshProperty()
+      }
+    },
     // 获取回显字典
     getOptionStatusDict() {
+      this.loadingCommunity=true
       getDictVal('tb_community_info', 'category').then(res => {
         this.formData.formItem[2].options = this.selectDictLabels(res.data)
+        this.refresh()
+        this.loadingCommunity=false
       })
     },
     // 对话框按确定键之后的方法
@@ -75,32 +115,28 @@ export default {
         updateCommunity(this.form).then(response => {
           if (response.code === 2000) {
             this.$message({
-              message: '修改成功！',
+              message: response.message,
               type: 'success'
             })
-            this.treeDialogVisible = false
-            this.$parent.getProperty()
+            this.cancel()
+            this.propertyRefresh()
           }
         })
       } else { // 插入一条资源数据（即添加）
         addCommunity(this.form).then(response => {
           if (response.code === 2000) {
             this.$message({
-              message: '添加成功！',
+              message: response.message,
               type: 'success'
             })
-            this.treeDialogVisible = false
-            Object.assign(this.$data.form, this.$options.data().form)
-            this.$parent.getProperty()
+            this.cancel()
+            this.propertyRefresh()
           }
         })
       }
     },
-    cancel(val) {
-      this.treeDialogVisible = val
-      this.$emit('update:visible', this.treeDialogVisible)
-      // this.$refs.form.clearValidate()
-      // this.$refs.form.resetFields()
+    cancel() {
+      this.$emit('update:visible',false)
     }
   }
 }
