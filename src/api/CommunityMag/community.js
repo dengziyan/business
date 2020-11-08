@@ -24,6 +24,16 @@ export function listProperty(query) {
     params: query
   })
 }
+// 查询物业菜单
+export function listUserProperty(query) {
+  return request({
+    url: '/sys/property/multi-menu',
+    method: 'get',
+    params: {
+       userId: query.userId
+    }
+  })
+}
 // 新增商户
 export function addMerchart(data) {
   return request({
@@ -103,6 +113,22 @@ export function delProperty(data) {
   return request({
     url: '/sys/property/info',
     method: 'delete',
+    params: data
+  })
+}
+// 修改住户信息
+export function updateResident(data) {
+  return request({
+    url: '/sys/resident',
+    method: 'put',
+    params: data
+  })
+}
+// 添加住户信息
+export function addResident(data) {
+  return request({
+    url: '/sys/resident',
+    method: 'post',
     params: data
   })
 }

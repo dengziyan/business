@@ -97,7 +97,7 @@
         v-if="item.type==='cascader'"
         v-model="dataForm[item.prop]"
         :options="item.options"
-        :props="item.isMore"
+        filterable
         clearable
       />
       <!-- 开关 -->

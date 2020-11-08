@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!--小区左边的树形控件组件  -->
-    <div v-loading="loading" class="expand">
+    <div  class="expand">
       <div>
         小区信息
         <el-button @click="handleAddTop">导入</el-button>
@@ -30,7 +30,7 @@
         </el-dialog>
       </div>
     </div>
-    <div v-loading="loading" class="resident">
+    <div  class="resident">
       住户信息
       <div class="detail">
         <!--引入搜索条件子组件        -->
@@ -48,15 +48,15 @@
           <TableVue :columns="columns" :data="list" empty-text="暂无数据">
             <!-- #是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
             <template #handle="{scope: {row, $index}}">
-              <el-button type="danger" size="mini" @click="handleDelete()">删除</el-button>
-              <el-button type="primary" size="mini" @click="handleUpdate(row, $index)">编辑</el-button>
+              <el-button type="danger" size="mini" @click="handleDelete(row, $index)">删除</el-button>
+              <el-button type="primary" size="mini" @click="handleUpdate(row)">编辑</el-button>
             </template>
           </TableVue>
           <!--分页    -->
           <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
         </div>
-        <el-dialog :title="isEdit?'编辑住户信息':'添加住户信息'" :visible.sync="dialogVisible" width="600px">
-          <new-dialog :visible.sync="dialogVisible" />
+        <el-dialog :title="isEdit?'编辑住户信息':'添加住户信息'" :visible.sync="dialogVisible" :edit.sync="isEdit" width="700px">
+            <new-dialog v-if="dialogVisible" :visible.sync="dialogVisible" :edit.sync="isEdit" :edit-data="editData"/>
         </el-dialog>
       </div>
     </div>
@@ -69,21 +69,23 @@ import communityDialog from './communityDialog'
 import buildingDialog from './buildingDialog'
 import unitDialog from './unitDialog'
 import merchantDialog from './merchantDialog'
+import newDialog from './newDialog'
 import TableVue from '@/components/TableVue'
 import SearchForm from '@/components/SearchForm'
 import { listProperty, listResident, delProperty, listPropertyInfo } from '@/api/CommunityMag/community'
 
 
 export default {
-  components: { communityDialog, buildingDialog, unitDialog, merchantDialog, TableVue, SearchForm },
+  components: { communityDialog, buildingDialog, unitDialog, merchantDialog, TableVue, SearchForm, newDialog },
   data() {
     return {
+      editData: {},
       buildingId: 0,
       // 左边的树（maxexpandId:新增节点开始id，isLoadingTree: 是否加载节点树，defaultExpandKeys默认展开节点列表
       delQuery: { merchantId: undefined, communityId: undefined, buildingId: undefined, unitId: undefined },
       editQuery: { merchantId: undefined, communityId: undefined, buildingId: undefined, unitId: undefined },
       editInfo: {},
-      treeList: [], maxexpandId: 95, non_maxexpandId: 95, isLoadingTree: false, requireId: 0,
+      treeList: [], maxexpandId: 95, non_maxexpandId: 95, isLoadingTree: false, requireId: 0, fullscreenLoading: false,
       defaultExpandKeys: [], treeDialogVisible: false, treeIsEdit: false, newdialog: 0,
       defaultProps: { children: 'children', label: 'name', id: 'name' },
       queryParams: { userId: undefined },
@@ -246,7 +248,6 @@ export default {
         this.editQuery.unitId = n.key
       }
       this.loading = true
-
       await listPropertyInfo(this.editQuery).then(
         (response) => {
           this.editInfo = response.data
@@ -289,16 +290,16 @@ export default {
       }).catch(function() {
       })
     },
-    // 表格方法
-    handleUpdate(row, index) {
+    // 按编辑按钮，弹出对话框
+    handleUpdate(row) {
       this.dialogVisible = true
       this.isEdit = true
+      this.editData = Object.assign({}, row)
     },
     // 按添加按钮，弹出对话框
     handleAdd() {
       this.dialogVisible = true
       this.isEdit = false
-      this.user = Object.assign({}, row)
     },
     handleDelete(row) {
       const userIds = row.id || this.ids
