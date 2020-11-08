@@ -4,7 +4,7 @@
     <el-form v-show="showSearch" ref="queryForm" :model="queryParams" :inline="true" label-width="68px">
       <el-form-item label="账号" prop="account">
         <el-input
-          v-model="queryParams.account"
+          v-model="queryParams.data.userAccount"
           placeholder="请输入用户账号"
           clearable
           size="small"
@@ -15,7 +15,7 @@
       </el-form-item>
       <el-form-item label="用户名称" prop="realName">
         <el-input
-          v-model="queryParams.realName"
+          v-model="queryParams.data.userName"
           placeholder="请输入用户名称"
           clearable
           size="small"
@@ -26,7 +26,7 @@
       </el-form-item>
       <el-form-item label="手机号码" prop="mobilePhone">
         <el-input
-          v-model="queryParams.mobilePhone"
+          v-model="queryParams.data.mobilePhone"
           placeholder="请输入手机号码"
           clearable
           size="small"
@@ -37,7 +37,7 @@
       </el-form-item>
       <el-form-item label="状态" prop="enabled">
         <el-select
-          v-model="queryParams.enabled"
+          v-model="queryParams.data.isEnable"
           placeholder="用户状态"
           clearable
           size="small"
@@ -46,19 +46,20 @@
         >
           <el-option
             v-for="dict in statusOptions"
-            :key="dict.dictValue"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
           />
         </el-select>
       </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker
           v-model="dateRange"
+          type="datetimerange"
           size="small"
           style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
+          clearable
+          value-format="yyyy-MM-dd HH:mm:ss"
           range-separator="-"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
@@ -844,7 +845,8 @@ export default {
 .el-row button {
   float: left;
 }
-.el-checkbox{
+
+.el-checkbox {
   margin-left: 10px;
   float: left;
   margin-top: 6px;
