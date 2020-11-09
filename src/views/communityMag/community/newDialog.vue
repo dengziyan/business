@@ -27,6 +27,7 @@ export default {
       communityQuery: {
         userId: this.$store.getters.id
       },
+      property: [],
       dialogVisible: this.visible,
       isEdit: this.edit,
       loadingAdd: false,
@@ -45,10 +46,7 @@ export default {
       formData: {
         labelWidth: '100px', inline: false, labelPosition: 'right', size: 'small',
         formItem: [
-          { type: 'cascader', label: '小区名称', prop: 'communityName', size: 'small', isDisabled: false, multiple: false, tip: '', value: '', options: [] },
-          // { type: 'select', label: '栋', prop: 'buildingName', size: 'small', isDisabled: false, multiple: false, tip: '', value: '', options: [] },
-          // { type: 'select', label: '单元', prop: 'unitName', size: 'small', isDisabled: false, multiple: false, tip: '', value: '', options: [] },
-          // { type: 'select', label: '室', prop: 'roomNo', size: 'small', isDisabled: false, multiple: false, tip: '', value: '', options: [] },
+          { type: 'cascader', label: '小区名称', prop: 'propertyName', size: 'small', isDisabled: this.edit, multiple: false, tip: '', value: '', options: [] },
           { type: 'text', label: '建筑面积', prop: 'houseArea', size: 'small', isDisabled: false, required: true },
           { type: 'text', label: '业主姓名', prop: 'residentName', size: 'small', isDisabled: false, required: true },
           { type: 'text', label: '手机号', prop: 'mobilePhone', size: 'small', isDisabled: false, required: true },
@@ -59,21 +57,28 @@ export default {
     }
   },
   created() {
-    this.getCommunity()
-    if (this.isEdit) {
-      this.form = Object.assign({}, this.editData)
-    }
+    this.isEditData()
   },
   methods: {
+    isEditData() {
+      this.getCommunity()
+      if (this.isEdit) {
+        const edit = this.editData
+        this.property.push(edit.communityId)
+        this.property.push(edit.buildingId)
+        this.property.push(edit.unitId)
+        this.property.push(edit.roomId)
+        this.editData.propertyName = this.property
+        this.form = Object.assign({}, this.editData)
+      }
+    },
     // 小区选项
     getCommunity() {
       this.loadingAdd = true
-      console.log(3456789)
       listUserProperty(this.communityQuery).then(response => {
-        const mercchant = response.data || []
-        console.log(response.data)
+        const merchant = response.data || []
         const that = this
-        mercchant.map(function(val) {
+        merchant.map(function(val) {
           const children = val.children || []
           children.map(function(params) {
             that.communityOptions.push(params)
@@ -81,32 +86,36 @@ export default {
         })
         this.formData.formItem[0].options = this.casSelect(that.communityOptions || [])
         this.loadingAdd = false
-        console.log()
       })
     },
     casSelect(options) {
       const that = this
       if (options.length === 0) { return [] }
       return options.map(function(params) {
+        if (params.level === 5) {
+          return { label: params.name, value: params.id, disabled: params.disable }
+        }
         if (params.children === undefined || params.children.length === 0) {
-          const isEnable = params.level !== 5
-          console.log(isEnable)
-          return { label: params.name, value: params.id, disabled: isEnable }
+          // console.log(isEnable)
+          return { label: params.name, value: params.id, disabled: true }
         }
         return { label: params.name, value: params.id, children: that.casSelect(params.children) }
       })
     },
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
+      console.log(this.form)
       if (this.isEdit) { // 更新资源数据（即编辑修改）
-        updateResident(this.form).then(response => {
+        const resident = Object.assign({}, this.form)
+        resident.propertyName = undefined
+        updateResident(resident).then(response => {
           if (response.code === 2000) {
             this.$message({
               message: '修改成功！',
               type: 'success'
             })
-            this.dialogVisible = false
-            this.getList()
+            this.form.propertyName = this.property
+            this.cancel()
           }
         })
       } else { // 插入一条资源数据（即添加）
@@ -124,8 +133,7 @@ export default {
     },
     // 按取消键后
     cancel() {
-      this.dialogVisible = false
-      this.$emit('update:visible', this.dialogVisible)
+      this.$emit('update:visible', false)
     }
   }
 }

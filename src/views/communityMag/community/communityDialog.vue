@@ -3,7 +3,7 @@
   <div>
     小区信息
     <!--表格组件      -->
-    <FormVue v-loading="loadingCommunity"  ref="form" :form-data="formData" :form="form" class="formMain" />
+    <FormVue ref="form" v-loading="loadingCommunity" :form-data="formData" :form="form" class="formMain" />
     <span slot="footer" class="dialog-footer">
       <el-button size="small" @click="cancel()">取 消</el-button>
       <el-button type="primary" size="small" @click="handleDialogConfirm()">确认</el-button>
@@ -112,7 +112,7 @@ export default {
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
       if (this.treeIsEdit) { // 更新资源数据（即编辑修改）
-        updateCommunity(this.form).then(response => {
+        updateCommunity(this.$store.getters.id,this.form).then(response => {
           if (response.code === 2000) {
             this.$message({
               message: response.message,

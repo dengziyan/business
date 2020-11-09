@@ -62,10 +62,14 @@ export function addCommunity(data) {
   })
 }
 // 修改小区
-export function updateCommunity(data) {
+export function updateCommunity(id,data) {
   return request({
     url: '/sys/community',
     method: 'put',
+    params:{
+      user: id,
+      merchant: data.merchantId
+    },
     data: data
   })
 }
@@ -121,7 +125,7 @@ export function updateResident(data) {
   return request({
     url: '/sys/resident',
     method: 'put',
-    params: data
+    data: data
   })
 }
 // 添加住户信息

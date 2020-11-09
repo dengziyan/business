@@ -204,8 +204,8 @@ export const constantRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
+  mode: 'history', // 这一句删掉路由的#号
   routes: constantRoutes
 })
 
