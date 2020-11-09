@@ -79,8 +79,7 @@ export default {
     getList() {
       this.loading = true
       console.log(this.searchData)
-      this.searchData.userId = this.$store.getters.id
-      listIncomeDetail(addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
+      listIncomeDetail(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
         (response) => {
           this.list = response.data.rows
           this.total = response.data.total
@@ -91,6 +90,7 @@ export default {
     // 查询账单名称
     getBillList() {
       console.log(this.searchData)
+      console.log(this)
       this.searchData.userId = this.$store.getters.id
       listIncomeDetail(this.searchData).then(
         (response) => {
@@ -103,6 +103,9 @@ export default {
           this.searchForm[2].options = this.unique(this.billNames)
         }
       )
+    },
+    handleBack() {
+
     },
     // 对象数组去重
     unique(arr) {

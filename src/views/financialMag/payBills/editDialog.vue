@@ -51,8 +51,6 @@ export default {
     this.form = Object.assign({}, this.editData)
     console.log(this.form)
   },
-  computed: {
-  },
   methods: {
     // 获取收费项目名称
     getChargeProject() {
@@ -60,8 +58,9 @@ export default {
         const cateList = response.data.rows
         for (let i = 0; i < cateList.length; i++) {
           const cate = cateList[i]
-          this.chargeProjectOptions.push({ lable: cate.chargeProjectName, value: cate.chargeProjectName, isDisabled: false })
+          this.chargeProjectOptions.push({ label: cate.chargeProjectName, value: cate.id, isDisabled: false })
         }
+        console.log(this.chargeProjectOptions)
         this.formData.formItem[1].options = this.chargeProjectOptions
       })
     },
@@ -78,6 +77,9 @@ export default {
     },
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
+      console.log('handleDialogConfirm')
+      this.form.billStatus = undefined
+      console.log(this.form)
       updatePayBills(this.form).then(response => {
         if (response.code === 2000) {
           this.$message({

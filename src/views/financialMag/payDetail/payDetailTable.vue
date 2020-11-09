@@ -53,11 +53,13 @@ import { listPayDetail, exportChargeBill } from '@/api/financialMag/payDetail'
 import DetailDialog from './detailDialog'
 import moment from 'moment'
 import fileDownload from 'js-file-download'
+import { getDictVal } from '@/api/system/logininfor'
 export default {
   name: 'PayBillsTable',
   components: { DetailDialog, newDialog, TableVue, SearchForm },
   data() {
     return {
+      statusOptions: [], // 状态数据字典
       chargeBill: {
         communityId: null,
         billName: null,
@@ -68,7 +70,7 @@ export default {
       },
       query: {
         userId: undefined,
-        data:{}
+        data: {}
       },
       // 操作按钮
       single: true, // 非单个禁用
@@ -97,7 +99,7 @@ export default {
         { label: '重置', type: 'primary', handle: this.resetForm }
       ],
       // table表格数据
-      total: 0, loading: true, list: [], dialogVisible: false, detailId: 0, // 表单参数
+      total: 0, loading: true, list: [], detailId: 0, // 表单参数
       columns: Object.freeze([
         { attrs: { prop: 'approvalStatus', label: '审核状态', width: '80', align: 'center' }},
         { attrs: { prop: 'communityName', label: '小区', width: '60', 'show-overflow-tooltip': true }},
@@ -118,12 +120,30 @@ export default {
   },
   created() {
     this.getList()
+    this.getOperationStatusDict()
     this.loading = false
   },
   methods: {
     // 表格重置
     resetForm() {
       Object.assign(this.$data.searchData, this.$options.data().searchData)
+    },
+    // 获取回显字典
+    getOperationStatusDict() {
+      getDictVal('tb_charge_bill', 'payment_status').then(res => {
+        this.statusOptions = this.selectDictLabels(res.data || [])
+      })
+    },
+    // 表格方法
+    handleDetail(row) {
+      this.dialogVisible = true
+      this.detailId = row.id
+      // console.log(this.detailId)
+    },
+    handleReject(row, index) {
+      // this.dialogVisible = true
+      // this.isEdit = false
+      // this.payBills = Object.assign({}, defaultPayBills) // 默认值为空
     },
     // 查询详情列表
     getList() {
@@ -146,30 +166,18 @@ export default {
               this.list[i].approvalStatus = '缴费中'
             }
             // 判断 缴费状态
-            if (this.list[i].paymentStatus === 0) {
-              this.list[i].paymentStatus = '待审核'
-            } else if (this.list[i].paymentStatus === 1) {
-              this.list[i].paymentStatus = '已审核'
-            } else if (this.list[i].paymentStatus === 2) {
-              this.list[i].paymentStatus = '缴费中'
-            }
+            // 显示账单状态
+            this.list[i].paymentStatus = this.statusOptions.filter(
+              item => item.value - 0 === this.list[i].paymentStatus
+            ).map(function(val) {
+              return val.label
+            })[0]
           }
           console.log(this.list)
           this.total = response.data.total
-          this.loading = false
         }
       )
-    },
-    // 表格方法
-    handleDetail(row) {
-      this.dialogVisible = true
-      this.detailId = row.id
-      // console.log(this.detailId)
-    },
-    handleReject(row, index) {
-      // this.dialogVisible = true
-      // this.isEdit = false
-      // this.payBills = Object.assign({}, defaultPayBills) // 默认值为空
+      this.loading = false
     },
     handleEdit(row, index) {
 

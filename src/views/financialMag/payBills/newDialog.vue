@@ -101,7 +101,7 @@ export default {
         const cateList = response.data.rows
         for (let i = 0; i < cateList.length; i++) {
           const cate = cateList[i]
-          this.chargeProjectOptions.push({ lable: cate.chargeProjectName, value: cate.chargeProjectName, isDisabled: false })
+          this.chargeProjectOptions.push({ label: cate.chargeProjectName, value: cate.id, isDisabled: false })
         }
         this.formData.formItem[1].options = this.chargeProjectOptions
       })

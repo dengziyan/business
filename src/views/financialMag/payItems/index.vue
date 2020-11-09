@@ -85,7 +85,7 @@ export default {
         // console.log(chargeCategoryList)
         for (let i = 0; i < chargeCategoryList.length; i++) {
           const cate = chargeCategoryList[i]
-          this.chargeCategoryOptions.push({ lable: cate.chargeCategoryName, value: cate.chargeCategoryName, isDisabled: false })
+          this.chargeCategoryOptions.push({ label: cate.chargeCategoryName, value: cate.id, isDisabled: false })
         }
         // console.log(this.chargeCategoryOptions)
         this.searchForm[0].options = this.chargeCategoryOptions

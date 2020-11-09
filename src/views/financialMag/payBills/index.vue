@@ -19,7 +19,7 @@
         <template #handle="{scope: {row, $index}}">
           <el-button type="primary" size="mini" @click="handleCheck(row, $index)">审核</el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">删除</el-button>
-          <el-button type="primary" size="mini"  @click="handleEdit(row, $index)">编辑</el-button>
+          <el-button type="primary" size="mini" @click="handleEdit(row, $index)">编辑</el-button>
         </template>
       </TableVue>
       <!--  分页  -->
@@ -30,8 +30,8 @@
       <new-dialog :visible.sync="newVisible" />
     </el-dialog>
     <!--点击编辑后出现的弹框    -->
-    <el-dialog title="编辑账单批次" v-if="editVisible" :visible.sync="editVisible" width="650px" >
-      <edit-dialog v-if="editVisible" :visible.sync="editVisible" :edit-data="editData"/>
+    <el-dialog v-if="editVisible" title="编辑账单批次" :visible.sync="editVisible" width="650px">
+      <edit-dialog v-if="editVisible" :visible.sync="editVisible" :edit-data="editData" />
     </el-dialog>
 
   </div>
@@ -44,7 +44,8 @@ import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
 import { listPayBills, delBatch } from '@/api/financialMag/payBills'
 import { listChargeProject } from '@/api/financialMag/chargeProject'
-
+import { getDictVal } from '@/api/system/logininfor'
+import { getStatusVal } from '@/utils/userright'
 export default {
   name: 'PayBillsTable',
   components: { newDialog, editDialog, TableVue, SearchForm },
@@ -53,7 +54,7 @@ export default {
       editData: {},
       // 操作按钮
       single: true, multiple: true, checkAll: false, newVisible: false, editVisible: false, // single:非多个禁用 multiple:非单个禁用
-      statusOptions: [{ dictLabel: '全部', dictValue: null }, { dictLabel: '待审核', dictValue: 0 }, { dictLabel: '已审核', dictValue: 1 }], // 状态数据字典
+      statusOptions: [], // 状态数据字典
       // 查询表单
       searchData: { pageNum: 1, pageSize: 10, startTime: null, endTime: null, chargeBeginTime: null, communityId: null, billName: null, billStatus: null, userId: null }, // 查询参数
       searchForm: [
@@ -85,6 +86,7 @@ export default {
   },
   created() {
     this.getList()
+    this.getOperationStatusDict()
     // this.intervalId = setInterval(() => {
     //   console.log(this.formData.formItem[0].value)
     //   console.log(this.formData.formItem[1].value)
@@ -105,6 +107,12 @@ export default {
     handleQuery() {
       this.getList()
     },
+    // 获取回显字典
+    getOperationStatusDict() {
+      getDictVal('tb_charge_batch', 'bill_status').then(res => {
+        this.statusOptions = this.selectDictLabels(res.data || [])
+      })
+    },
     // 查询批次列表
     getList() {
       this.loading = true
@@ -122,22 +130,22 @@ export default {
           this.total = response.data.total
           this.loading = false
           for (let i = 0; i < this.list.length; i++) {
+            const query = {
+              chargeProjectId: this.list[i].chargeProjectId
+            }
+            // 根据收费项目ID 获取收费项目名称
             listChargeProject(query).then(
               response => {
                 console.log(response.data)
                 this.list[i].chargeProjectId = response.data.rows[0].chargeProjectName
               }
             )
-            if (this.list[i].billStatus === 0) {
-              this.list[i].billStatus = '待审核'
-            } else if (this.list[i].billStatus === 1) {
-              this.list[i].billStatus = '已审核'
-            } else if (this.list[i].billStatus === 2) {
-              this.list[i].billStatus = '缴费中'
-            }
-            const query = {
-              chargeProjectId: this.list[i].chargeProjectId
-            }
+            // 显示账单状态
+            this.list[i].billStatus = this.statusOptions.filter(
+              item => item.value - 0 === this.list[i].billStatus
+            ).map(function(val) {
+              return val.label
+            })[0]
           }
         }
       )

@@ -35,7 +35,7 @@ export function batchAddBatchBills(userId, modelId, data) {
 // 修改
 export function updatePayBills(data) {
   return request({
-    url: '/chargeBatch/import/bills',
+    url: '/chargeBatch/',
     method: 'put',
     data: data
   })
