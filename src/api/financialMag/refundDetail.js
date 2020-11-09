@@ -3,8 +3,9 @@ import request from '@/utils/request'
 // 查询退款明细列表
 export function listRefundDetail(query) {
   return request({
-    url: 'chargeBatch/getChargeBatchs',
+    url: '/refundDetails/getRefundDetails',
     method: 'post',
     params: query
   })
 }
+

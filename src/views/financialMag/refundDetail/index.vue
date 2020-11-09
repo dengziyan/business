@@ -47,13 +47,13 @@ export default {
       list: [],
       total: 0, // 总条数
       columns: Object.freeze([
-        { attrs: { prop: 'name', label: '小区', width: '100', align: 'center' }},
-        { attrs: { prop: 'mobliePhone', label: '手机号', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'billName', label: '退款方式', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'chargeCategoryName', label: '退款日期', width: '154', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
+        { attrs: { prop: 'mobilePhone', label: '手机号', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'refundMethod', label: '退款方式', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'refundTime', label: '退款日期', width: '154', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'id', label: '退款金额', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'mobliePhone', label: '退款状态', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'residentIdentity', label: '住户', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'refundMethod', label: '退款状态', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'residentName', label: '住户', 'show-overflow-tooltip': true }},
         { slot: 'handle2', attrs: { prop: 'amount', label: '退款详情', 'show-overflow-tooltip': true }},
         { slot: 'handle', attrs: { label: '操作', width: '', 'class-name': 'small-padding fixed-width', align: 'center' }}
       ])

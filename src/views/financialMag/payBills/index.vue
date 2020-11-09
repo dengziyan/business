@@ -136,11 +136,13 @@ export default {
       this.loading = true
       // console.log(this.searchData)
       // 根据审核状态查询
-      if (this.searchData.billStatus === '待审核') {
+      if (this.searchData.billStatus === '未审核') {
         this.searchData.billStatus = 0
       } else if (this.searchData.billStatus === '已审核') {
         this.searchData.billStatus = 1
-      } else this.searchData.billStatus = null
+      } else if (this.searchData.billStatus === '缴费中') {
+        this.searchData.billStatus = 2
+      }
       // 调用查询方法
       listPayBills(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
         async(response) => {

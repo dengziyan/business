@@ -17,10 +17,9 @@
 </template>
 
 <script>
-import { addDateRange } from '@/utils/userright'
 import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
-import { listIncomeDetail } from '@/api/financialMag/incomeDetail'
+import { listIncomeDetail, toRefund } from '@/api/financialMag/incomeDetail'
 import { exportLogininfo } from '@/api/system/logininfor'
 import moment from 'moment'
 import fileDownload from 'js-file-download'
@@ -104,8 +103,13 @@ export default {
         }
       )
     },
-    handleBack() {
-
+    handleBack(row, index) {
+      console.log('handleBack(row, index)')
+      toRefund(this.$store.getters.id, row.id).then(
+        response => {
+          console.log(response)
+        }
+      )
     },
     // 对象数组去重
     unique(arr) {

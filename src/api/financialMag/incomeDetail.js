@@ -8,12 +8,15 @@ export function listIncomeDetail(query) {
     params: query
   })
 }
-
-// 查询列表
-export function toRefund(query) {
+// 申请退款
+export function toRefund(userId, id) {
   return request({
-    url: '/paymentTurnover/getDetail',
+    url: '/refundDetails/toRefund',
     method: 'post',
-    params: query
+    params: {
+      userId: userId,
+      id: id
+    }
   })
 }
+
