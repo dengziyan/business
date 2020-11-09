@@ -22,14 +22,12 @@ export default {
     visible: { type: Boolean, required: true },
     editInfo: { type: Object, required: true },
     treeIsEdit: { type: Boolean, required: true },
-    refreshProperty: {
-      type: Function,
-      default: null
-    }},
+    refreshProperty: { type: Function, default: null }
+  },
   data() {
     return {
       treeDialogVisible: this.visible,
-      loadingCommunity:false,
+      loadingCommunity: false,
       form: {
         merchant: undefined,
         communityName: undefined,
@@ -62,18 +60,10 @@ export default {
   computed: {
   },
   watch: {
-    buildingWatch: function(val) {
-      this.building = val
-    },
-    isEditWatch: function(val) {
-      this.isEdit = val
-    },
-    visibleWatch: function(val) {
-      this.treeDialogVisible = val
-    },
-    propertyWatch: function() {
-      this.refreshProperty()
-    }
+    buildingWatch: function(val) { this.building = val },
+    isEditWatch: function(val) { this.isEdit = val },
+    visibleWatch: function(val) { this.treeDialogVisible = val },
+    propertyWatch: function() { this.refreshProperty() }
   },
   created() {
     this.getOptionStatusDict()
@@ -88,10 +78,10 @@ export default {
         this.form.merchantId = property.property.merchantId
         this.form.admin = community.admin
         this.form.id = community.id
-        this.form.category = community.category+''
+        this.form.category = community.category + ''
         this.form.communityName = community.communityName
-        this.form.location=community.location
-        this.form.mobilePhone=property.phone
+        this.form.location = community.location
+        this.form.mobilePhone = property.phone
         console.log(this.form)
       }
     },
@@ -102,17 +92,17 @@ export default {
     },
     // 获取回显字典
     getOptionStatusDict() {
-      this.loadingCommunity=true
+      this.loadingCommunity = true
       getDictVal('tb_community_info', 'category').then(res => {
         this.formData.formItem[2].options = this.selectDictLabels(res.data)
         this.refresh()
-        this.loadingCommunity=false
+        this.loadingCommunity = false
       })
     },
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
       if (this.treeIsEdit) { // 更新资源数据（即编辑修改）
-        updateCommunity(this.$store.getters.id,this.form).then(response => {
+        updateCommunity(this.$store.getters.id, this.form).then(response => {
           if (response.code === 2000) {
             this.$message({
               message: response.message,
@@ -136,7 +126,7 @@ export default {
       }
     },
     cancel() {
-      this.$emit('update:visible',false)
+      this.$emit('update:visible', false)
     }
   }
 }

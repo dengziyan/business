@@ -4,7 +4,7 @@
     <el-form class="input" :size="size" inline :label-width="labelWidth">
       <el-form-item v-for="item in searchForm" :key="item.prop" :label="item.label">
         <!-- 输入框 -->
-        <el-input v-if="item.type==='Input'" v-model="searchData[item.prop]" size="mini" clearable @clear="clearParams('searchData[item.prop]')"/>
+        <el-input v-if="item.type==='Input'" v-model="searchData[item.prop]" size="mini" filterable clearable @clear="clearParams('searchData[item.prop]')"/>
         <!-- 下拉框 -->
         <el-select v-if="item.type==='Select'" v-model="searchData[item.prop]" size="mini" @change="item.change(searchData[item.prop])">
           <el-option v-for="op in item.options" :key="op.value" :label="op.label" :value="op.value" />

@@ -6,9 +6,8 @@
     <!--引入操作子组件        -->
     <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
     <!--点击新增后出现的弹框    -->
-    <el-dialog :title="isEdit?'编辑收费项目':'添加收费项目'" :visible.sync="dialogVisible" width="30%">
-      <!--弹框子组件      -->
-      <new-dialog />
+    <el-dialog :title="isEdit?'编辑收费项目':'添加收费项目'" :visible.sync="dialogVisible" :edit.sync="isEdit" width="700px">
+      <new-dialog v-if="dialogVisible" :visible.sync="dialogVisible" :edit.sync="isEdit" :edit-info="editInfo"/>
     </el-dialog>
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
@@ -31,6 +30,7 @@ export default {
   components: { SearchForm, TableVue, newDialog },
   data() {
     return {
+      editInfo: {},
       chargeCategoryOptions: [],
       // 查询表单
       searchData: {
@@ -58,12 +58,12 @@ export default {
       list: [],
       columns: Object.freeze([
         { attrs: { prop: 'chargeCategoryName', label: '收费类型', width: '100', align: 'center' }},
-        { attrs: { prop: 'chargeProjectName', label: '收费项目名称', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'chargeProjectName', label: '收费项目名称', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'chargeStandard', label: '收费标准', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'createBy', label: '标准金额', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'createBy', label: '创建人', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'createTime', label: '创建时间', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'note', label: '备注', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'standardAmount', label: '标准金额', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'createBy', label: '创建人', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'createTime', label: '创建时间', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'note', label: '备注', 'show-overflow-tooltip': true }},
         { slot: 'handle', attrs: { label: '操作', width: '150', 'class-name': 'small-padding fixed-width', align: 'center' }}
       ])
     }
@@ -103,22 +103,20 @@ export default {
         }
       )
     },
-    // 表格方法
+    // 编辑
     handleUpdate(row, index) {
       this.dialogVisible = true
-      console.log(row)
       this.isEdit = true
-      row = this.list
-    },
-    handleDelete() {
-      this.list = []
+      this.editInfo = Object.assign({}, row)
     },
     // 按添加按钮，弹出对话框
     handleAdd() {
       this.dialogVisible = true
       this.isEdit = false
-      this.payBills = Object.assign({}, defaultPayBills) // 默认值为空
-    }
+    },
+    handleDelete() {
+      this.list = []
+    },
   }
 }
 </script>

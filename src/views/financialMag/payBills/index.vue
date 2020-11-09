@@ -112,43 +112,6 @@ export default {
         this.statusOptions = this.selectDictLabels(res.data || [])
       })
     },
-    // 查询批次列表
-    async getList() {
-      this.loading = true
-      // console.log(this.searchData)
-      // 根据审核状态查询
-      if (this.searchData.billStatus === '待审核') {
-        this.searchData.billStatus = 0
-      } else if (this.searchData.billStatus === '已审核') {
-        this.searchData.billStatus = 1
-      } else this.searchData.billStatus = null
-      // 调用查询方法
-      listPayBills(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
-        async(response) => {
-          const listData = response.data.rows || []
-          this.total = response.data.total
-          for (let i = 0; i < listData.length; i++) {
-            const query = {
-              chargeProjectId: listData[i].chargeProjectId
-            }
-            // 根据收费项目ID 获取收费项目名称
-            await listChargeProject(query).then(
-              response => {
-                listData[i].chargeProjectId = response.data.rows[0].chargeProjectName
-              }
-            )
-            // 显示账单状态
-            this.statusOptions.filter(
-              item => item.value - 0 === listData[i].billStatus
-            ).map(function(val) {
-              listData[i].billStatus = val.label
-            })
-          }
-          this.list = listData
-          this.loading = false
-        }
-      )
-    },
     // 表格方法
     handleCheck(row, index) {
       // console.log(row.id)
@@ -167,6 +130,45 @@ export default {
       this.editData = Object.assign({}, row)
       console.log(this.editData)
       // updatePayBills(row)
+    },
+    // 查询批次列表
+    async getList() {
+      this.loading = true
+      // console.log(this.searchData)
+      // 根据审核状态查询
+      if (this.searchData.billStatus === '待审核') {
+        this.searchData.billStatus = 0
+      } else if (this.searchData.billStatus === '已审核') {
+        this.searchData.billStatus = 1
+      } else this.searchData.billStatus = null
+      // 调用查询方法
+      listPayBills(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
+        async(response) => {
+          const listData = response.data.rows || []
+          this.total = response.data.total
+          this.loading = false
+          for (let i = 0; i < this.list.length; i++) {
+            const query = {
+              chargeProjectId: listData[i].chargeProjectId
+            }
+            // 根据收费项目ID 获取收费项目名称
+            await listChargeProject(query).then(
+              response => {
+                listData[i].chargeProjectId = response.data.rows[0].chargeProjectName
+              }
+            )
+            // 显示账单状态
+            this.statusOptions.filter(
+              item => item.value - 0 === listData[i].billStatus
+            ).map(function(val) {
+              listData[i].billStatus = val.label
+            })
+          }
+          this.list = listData
+          this.loading = false
+          this.loading = false
+        }
+      )
     },
     // 删除
     handleDelete(row) {

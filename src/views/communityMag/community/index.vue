@@ -27,6 +27,35 @@
           <unit-dialog v-if="newdialog === 3" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" />
           <merchant-dialog v-if="newdialog === 0" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" />
         </el-dialog>
+        <!-- 用户导入对话框 -->
+        <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
+          <el-upload
+            ref="upload"
+            :limit="1"
+            accept=".xlsx, .xls"
+            :headers="upload.headers"
+            :action="upload.url"
+            :disabled="upload.isUploading"
+            :http-request="handleFileUpload"
+            :on-success="handleFileSuccess"
+            :auto-upload="false"
+            drag
+          >
+            <i class="el-icon-upload" />
+            <div class="el-upload__text">
+              将文件拖到此处，或
+              <em>点击上传</em>
+            </div>
+            <div slot="tip" class="el-upload__tip" style="color:#ff0000">提示：仅允许导入“xls”或“xlsx”格式文件！
+              <el-link type="info" style="font-size:12px" @click="importTemplate">下载模板</el-link>
+            </div>
+          </el-upload>
+          <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="submitFileForm">确 定</el-button>
+            <el-button @click="handleFileCancel">取 消</el-button>
+          </div>
+        </el-dialog>
+
       </div>
     </div>
     <div v-show="!loading" class="resident">
@@ -55,7 +84,7 @@
           <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
         </div>
         <el-dialog :title="isEdit?'编辑住户信息':'添加住户信息'" :visible.sync="dialogVisible" :edit.sync="isEdit" width="700px">
-          <new-dialog v-if="dialogVisible" :visible.sync="dialogVisible" :edit.sync="isEdit" :edit-data="editData" />
+          <new-dialog v-if="dialogVisible" :visible.sync="dialogVisible" :edit.sync="isEdit" :edit-info="editInfo" />
         </el-dialog>
       </div>
     </div>
@@ -71,21 +100,30 @@ import merchantDialog from './merchantDialog'
 import newDialog from './newDialog'
 import TableVue from '@/components/TableVue'
 import SearchForm from '@/components/SearchForm'
-import { listProperty, listResident, delProperty, listPropertyInfo } from '@/api/CommunityMag/community'
+import { listProperty, listResident, delProperty, listPropertyInfo, delResident,
+  importCommunityTemplates, batchAddCommunity, exportResident } from '@/api/CommunityMag/community'
+import { getToken } from '@/utils/auth'
+import fileDownload from 'js-file-download'
+import moment from 'moment'
 
 export default {
   components: { communityDialog, buildingDialog, unitDialog, merchantDialog, TableVue, SearchForm, newDialog },
   data() {
     return {
-      editData: {},
       buildingId: 0,
       loadingTable: false,
-      query: { merchantId: undefined, communityId: undefined, buildingId: undefined, unitId: undefined },
+      query: { merchantId: undefined, communityId: undefined, buildingId: undefined, unitId: undefined, residentId: undefined },
       editInfo: {},
       treeList: [], maxexpandId: 95, non_maxexpandId: 95, isLoadingTree: false, requireId: 0, fullscreenLoading: false,
       defaultExpandKeys: [], treeDialogVisible: false, treeIsEdit: false, newdialog: 0,
       defaultProps: { children: 'children', label: 'name', id: 'name' },
       queryParams: { userId: undefined },
+      // 小区信息导入参数
+      upload: {
+        open: false, title: '', isUploading: false, headers: { Authorization: getToken() },
+        url: process.env.VUE_APP_BASE_API + '/sys/community/import' // 上传的地址
+      },
+      open: false, // 是否显示弹出层
       // 查询表单
       searchForm: [
         { type: 'Input', label: '室', prop: 'roomNo', width: '100px', placeholder: '请输入室...' },
@@ -208,8 +246,45 @@ export default {
         }
       })
     },
-    // 原本用来增添父节点的方法
+    // 小区信息导入
     handleAddTop() {
+      this.upload.title = '小区信息导入'
+      this.upload.open = true
+    },
+    // 下载模板操作
+    importTemplate() {
+      importCommunityTemplates().then(res => {
+        fileDownload(res, '小区信息导入模板.xlsx')
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    handleFileUpload(val) {
+      const formData = new FormData()
+      formData.append('file', val.file)
+      // console.log(val)
+      batchAddCommunity(formData).then(res => {
+        val.onSuccess()
+      }).catch(res => {
+        val.onError(res)
+      })
+    },
+    // 文件上传成功处理
+    handleFileSuccess() {
+      this.$refs.upload.clearFiles()
+      this.upload.open = false
+      this.upload.isUploading = false
+      this.getList()
+    },
+    // 提交上传文件
+    submitFileForm() {
+      this.$refs.upload.submit()
+    },
+    // 导入弹出框取消
+    handleFileCancel() {
+      this.$refs.upload.clearFiles()
+      this.upload.open = false
+      this.upload.isUploading = false
     },
     // 增加节点
     nodeAdd(s, d, n) {
@@ -294,7 +369,7 @@ export default {
     handleUpdate(row) {
       this.dialogVisible = true
       this.isEdit = true
-      this.editData = Object.assign({}, row)
+      this.editInfo = Object.assign({}, row)
     },
     // 按添加按钮，弹出对话框
     handleAdd() {
@@ -302,24 +377,32 @@ export default {
       this.isEdit = false
     },
     handleDelete(row) {
-      const userIds = row.id || this.ids
-      this.$confirm('是否确认删除用户编号为"' + userIds + '"的数据项?', '警告',
+      console.log(row)
+      this.query.communityId = row.communityId
+      this.query.buildingId = row.buildingId
+      this.query.unitId = row.unitId
+      this.query.residentId = row.id
+      const query = this.query
+      this.$confirm('是否确认删除"' + row.residentName + '"的住户信息?', '警告',
         { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
       ).then(function() {
-        // return delUser(userIds)
-      }).then(() => {
+        return delResident(query)
+      }).then((res) => {
         this.getList()
-        this.msgSuccess('删除成功')
+        this.$message({
+          message: res.message,
+          type: res.code === 2000 ? 'success' : 'error'
+        })
       }).catch(function() {
       })
     },
 
-    /** 导入按钮操作 */
+    // 导入按钮操作
     handleImport() {
-      this.upload.title = '用户导入'
+      this.upload.title = '小区信息导入'
       this.upload.open = true
     },
-    /** 导出按钮操作 */
+    // 导出按钮操作
     handleExport() {
       const searchData = this.searchData
       if (this.checkAll) {
@@ -327,10 +410,19 @@ export default {
         searchData.pageSize = undefined
         searchData.type = 'all'
       }
-      this.$confirm('是否确认导出用户数据项?', '警告',
+      this.$confirm('是否确认导出小区信息?', '警告',
         { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
       ).then(function() {
-
+        exportResident(searchData).then(res => {
+          // console.log(res)
+          const sysDate = moment(new Date()).format('YYYY-MM-DDHHmm')
+          // console.log(sysDate)
+          fileDownload(res, sysDate + '住户信息表.xlsx')
+          searchData.export = undefined
+        })
+          .catch(err => {
+            console.log(err)
+          })
       }).catch(function() {
       })
     },

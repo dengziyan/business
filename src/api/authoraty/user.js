@@ -28,7 +28,7 @@ export function addUser(data) {
   })
 }
 
-// 新增用户
+// 导入用户
 export function batchAddUser(data) {
   return request({
     url: '/sys/user/import',

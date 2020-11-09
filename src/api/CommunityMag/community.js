@@ -25,12 +25,12 @@ export function listProperty(query) {
   })
 }
 // 查询物业菜单
-export function listUserProperty(query) {
+export function listUserProperty(id) {
   return request({
     url: '/sys/property/multi-menu',
     method: 'get',
     params: {
-       userId: query.userId
+      userId: id
     }
   })
 }
@@ -62,11 +62,11 @@ export function addCommunity(data) {
   })
 }
 // 修改小区
-export function updateCommunity(id,data) {
+export function updateCommunity(id, data) {
   return request({
     url: '/sys/community',
     method: 'put',
-    params:{
+    params: {
       user: id,
       merchant: data.merchantId
     },
@@ -99,7 +99,7 @@ export function addUnit(data) {
     url: '/sys/community/unit',
     method: 'post',
     params: {
-      buildingId: data.buildingId,
+      buildingId: data.buildingId
     },
     data: data
   })
@@ -133,14 +133,42 @@ export function addResident(data) {
   return request({
     url: '/sys/resident',
     method: 'post',
-    params: data
+    data: data
   })
 }
-// 下载导入模板
-// export function importTemplates() {
-//   return request({
-//     url: '',
-//     method: 'get',
-//     responseType: 'arraybuffer'
-//   })
-// }
+// 删除住户信息
+export function delResident(data) {
+  return request({
+    url: '/sys/resident',
+    method: 'delete',
+    params: {
+      residentId: data.residentId
+    },
+    data: data
+  })
+}
+// 下载住户信息导入模板
+export function importCommunityTemplates() {
+  return request({
+    url: '/sys/community/template-import',
+    method: 'get',
+    responseType: 'arraybuffer'
+  })
+}
+// 导入住户信息
+export function batchAddCommunity(data) {
+  return request({
+    url: '/sys/community/import',
+    method: 'post',
+    data
+  })
+}
+// 导出住户信息
+export function exportResident(query) {
+  return request({
+    url: '/sys/resident/export',
+    method: 'get',
+    responseType: 'arraybuffer',
+    params: query
+  })
+}
