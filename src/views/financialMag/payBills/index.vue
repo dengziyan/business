@@ -5,7 +5,7 @@
     <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
     <!-- 各个操作按钮 -->
     <el-radio-group v-model="searchData.billStatus" @change="getList">
-      <el-radio-button v-for="dict in statusOptions" :key="dict.dictValue" :value="dict.dictValue" :label="dict.dictLabel" />
+      <el-radio-button v-for="dict in statusOptions" :key="dict.value" :value="dict.value" :label="dict.label" />
     </el-radio-group>
     <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
     <div class="table">
@@ -45,7 +45,6 @@ import TableVue from '@/components/TableVue'
 import { listPayBills, delBatch } from '@/api/financialMag/payBills'
 import { listChargeProject } from '@/api/financialMag/chargeProject'
 import { getDictVal } from '@/api/system/logininfor'
-import { getStatusVal } from '@/utils/userright'
 export default {
   name: 'PayBillsTable',
   components: { newDialog, editDialog, TableVue, SearchForm },
@@ -114,7 +113,7 @@ export default {
       })
     },
     // 查询批次列表
-    getList() {
+    async getList() {
       this.loading = true
       // console.log(this.searchData)
       // 根据审核状态查询
@@ -125,28 +124,28 @@ export default {
       } else this.searchData.billStatus = null
       // 调用查询方法
       listPayBills(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
-        (response) => {
-          this.list = response.data.rows
+        async(response) => {
+          const listData = response.data.rows || []
           this.total = response.data.total
-          this.loading = false
-          for (let i = 0; i < this.list.length; i++) {
+          for (let i = 0; i < listData.length; i++) {
             const query = {
-              chargeProjectId: this.list[i].chargeProjectId
+              chargeProjectId: listData[i].chargeProjectId
             }
             // 根据收费项目ID 获取收费项目名称
-            listChargeProject(query).then(
+            await listChargeProject(query).then(
               response => {
-                console.log(response.data)
-                this.list[i].chargeProjectId = response.data.rows[0].chargeProjectName
+                listData[i].chargeProjectId = response.data.rows[0].chargeProjectName
               }
             )
             // 显示账单状态
-            this.list[i].billStatus = this.statusOptions.filter(
-              item => item.value - 0 === this.list[i].billStatus
+            this.statusOptions.filter(
+              item => item.value - 0 === listData[i].billStatus
             ).map(function(val) {
-              return val.label
-            })[0]
+              listData[i].billStatus = val.label
+            })
           }
+          this.list = listData
+          this.loading = false
         }
       )
     },
