@@ -4,14 +4,13 @@
     <!--引入搜索条件子组件        -->
     <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
     <div class="txt">
-      <span>收入金额总计: {{sum}}<br></span>
-      <span>收入笔数: {{total}}<br></span>
+      <span>收入金额总计: {{ sum }}<br></span>
+      <span>收入笔数: {{ total }}<br></span>
       <span>收入金额总计: 0.0<br></span>
     </div>
     <!--引入操作子组件        -->
     <!--引入表格组件  -->
-    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
-    </TableVue>
+    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据" />
     <!--  分页  -->
     <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
   </div>
@@ -52,10 +51,10 @@ export default {
       columns: Object.freeze([
         { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
         { attrs: { prop: 'paymentMethod', label: '渠道', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'chargeProjectId', label: '收入金额', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'chargeBeginTime', label: '收入笔数', width: '154', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'amountPayable', label: '手续费金额统计', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'amountPayable', label: '优惠金额总计', 'show-overflow-tooltip': true }}
+        { attrs: { prop: 'incomeSum', label: '收入金额', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'incomeCount', label: '收入笔数', width: '154', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'income', label: '手续费金额统计', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'income', label: '优惠金额总计', 'show-overflow-tooltip': true }}
       ])
     }
   },
@@ -75,7 +74,12 @@ export default {
       this.loading = true
       listIncomeStatic(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
         (response) => {
-          this.list = response.data.rows
+          this.list = response.data.maps
+          // 将数据中 手续费和 优惠金额 设置为 0
+          this.list.map((item, index, list) => {
+            item.income = 0
+            return item
+          })
           this.sum = response.data.sum
           console.log(this.list)
           this.total = response.data.total

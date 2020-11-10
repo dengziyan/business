@@ -16,7 +16,6 @@
 </template>
 
 <script>
-import { addDateRange } from '@/utils/userright'
 import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
 import { listRefundDetail } from '@/api/financialMag/refundDetail'

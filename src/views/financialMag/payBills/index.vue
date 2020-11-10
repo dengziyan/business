@@ -149,7 +149,7 @@ export default {
           const listData = response.data.rows || []
           this.total = response.data.total
           this.loading = false
-          for (let i = 0; i < this.list.length; i++) {
+          for (let i = 0; i < listData.length; i++) {
             const query = {
               chargeProjectId: listData[i].chargeProjectId
             }
