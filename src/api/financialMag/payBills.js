@@ -60,15 +60,14 @@ export function listChargeProjectOptions(data) {
   return request({
     url: '/project/listProject',
     method: 'post',
-    data: data
+    params: data
   })
 }
 // 获取小区选项
-export function listCommunityOptions(data) {
+export function listCommunityOptions(userId) {
   return request({
-    url: '/project/listProject',
-    method: 'post',
-    data: data
+    url: '/sys/community/getCommunities/' + userId,
+    method: 'get'
   })
 }
 

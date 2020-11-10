@@ -39,9 +39,10 @@ export default {
         labelWidth: '100px', inline: false, labelPosition: 'right', size: 'small',
         formItem: [
           { type: 'text', label: '收费项目名称', prop: 'chargeProjectName', size: 'small', isDisabled: false, required: true },
-          { type: 'select', label: '收费类型', prop: 'chargeCategoryName', size: 'small', isDisabled: this.edit, multiple: false, tip: '', value: '', options: [] },
-          { type: 'text', label: '收费标准', prop: 'chargeStandard', size: 'small', isDisabled: false, required: true },
           { type: 'text', label: '标准金额', prop: 'standardAmount', size: 'small', isDisabled: false, required: true },
+          { type: 'select', label: '收费类型', prop: 'chargeCategoryName', size: 'small', isDisabled: this.edit, multiple: false, tip: '', value: '', options: [] },
+          { type: 'select', label: '收费标准', prop: 'chargeStandard', size: 'small', isDisabled: this.edit, multiple: false, tip: '', value: '',
+            options: [{ value: '0', label: '无' }, { value: '1', label: '按固定金额' }, { value: '2', label: '按建筑面积' }] },
           { type: 'text', label: '备注', prop: 'note', size: 'small', isDisabled: false, required: true }
         ]
       }

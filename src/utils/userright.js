@@ -63,6 +63,7 @@ export function addDateRange(params, dateRange) {
     search.beginTime = dateRange[0]
     search.endTime = dateRange[1]
     search.chargeBeginTime = undefined
+    search.refundTime = undefined
   } else {
     search.beginTime = undefined
     search.endTime = undefined

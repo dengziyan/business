@@ -34,25 +34,24 @@ export default {
       chargeCategoryOptions: [],
       // 查询表单
       searchData: {
-        pageNum: undefined,
-        pageSize: undefined,
-        userId: this.$store.getters.id,
-        interst: undefined
+        pageNum: 1,
+        pageSize: 10,
+        userId: undefined,
+        // userId: this.$store.getters.id,
+        chargeStandard: undefined,
+        chargeCategoryName: undefined
       },
       searchForm: [
-        { type: 'Select', isDisabled: false, multiple: false, label: '收费类型', prop: 'chargeCategoryName', value: '请选择收费类型', options: [], change: this.getList }, // multiple:是否开启多选
-        { type: 'Input', label: '收费标准名称', prop: 'communityId', width: '1000px', placeholder: '请输入收费名称...' }
+        { type: 'Select', label: '收费类型', prop: 'chargeCategoryName', isDisabled: false, multiple: false, value: '请选择收费类型', options: [], change: this.getList },
+        { type: 'Select', label: '收费标准名称', prop: 'chargeStandard', isDisabled: false, multiple: false, width: '1000px', placeholder: '请输入收费名称...', change: this.getList,
+          options: [{ value: '0', label: '无' }, { value: '1', label: '按固定金额' }, { value: '2', label: '按建筑面积' }] }
       ],
       searchHandle: [
         { label: '查询', type: 'primary', handle: this.getList },
         { label: '重置', type: 'primary', handle: this.resetForm }
       ],
       // 操作按钮
-      single: true, // 非单个禁用
-      multiple: true, // 非多个禁用
-      checkAll: false,
-      dialogVisible: false,
-      isEdit: false,
+      single: true, multiple: true, checkAll: false, dialogVisible: false, isEdit: false,
       // table表格数据
       loading: true,
       list: [],
@@ -74,34 +73,31 @@ export default {
     this.getChargeCategory()
   },
   methods: {
-    // 表格重置
-    resetForm() {
-      Object.assign(this.$data.searchData, this.$options.data().searchData)
-    },
-    // 获取收费类型
+    // 选项：收费类型
     getChargeCategory() {
+      this.searchData.userId = this.$store.getters.id
       listChargeCategoryOptions(this.searchData).then(response => {
         const chargeCategoryList = response.data.rows
-        // console.log(chargeCategoryList)
         for (let i = 0; i < chargeCategoryList.length; i++) {
           const cate = chargeCategoryList[i]
-          this.chargeCategoryOptions.push({ label: cate.chargeCategoryName, value: cate.id, isDisabled: false })
+          this.chargeCategoryOptions.push({ label: cate.chargeCategoryName, value: cate.chargeCategoryName, isDisabled: false })
         }
-        // console.log(this.chargeCategoryOptions)
         this.searchForm[0].options = this.chargeCategoryOptions
-        // console.log(this.searchForm[0].options)
       })
+    },
+    // 表格重置
+    resetForm() {
+      console.log('123213')
+      Object.assign(this.$data.searchData, this.$options.data().searchData)
     },
     // 查询收费项目列表
     getList() {
-      // this.loading = true
-      listChargeProject(this.queryParams).then(
-        (response) => {
-          this.list = response.data.rows
-          this.total = response.data.total
-          this.loading = false
-        }
-      )
+      this.searchData.userId = this.$store.getters.id
+      listChargeProject(this.searchData).then((response) => {
+        this.list = response.data.rows
+        this.total = response.data.total
+        this.loading = false
+      })
     },
     // 编辑
     handleUpdate(row, index) {
@@ -116,7 +112,7 @@ export default {
     },
     handleDelete() {
       this.list = []
-    },
+    }
   }
 }
 </script>

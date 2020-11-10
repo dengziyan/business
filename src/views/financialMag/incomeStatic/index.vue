@@ -30,14 +30,13 @@ export default {
   components: { TableVue, SearchForm },
   data() {
     return {
-      sum: 0,
+      sum: 0, chargeCategoryOptions: [],
       // 查询表单
-      searchData: { pageNum: 1, pageSize: 10, startTime: null, endTime: null, amountActuallyPaid: null, name: null, createTime: null, billName: null }, // 查询参数
+      searchData: { pageNum: 1, pageSize: 10, startTime: undefined, endTime: undefined, paymentCycle: undefined, chargeCategoryName: undefined, createTime: undefined },
       searchForm: [
-        { type: 'Select', isDisabled: false, multiple: false, label: '小区', prop: 'name', value: '请选择', options: [] },
-        { type: 'Select', isDisabled: false, multiple: false, label: '账单创建年份', prop: 'createTime', value: '请选择', options: [] },
-        { type: 'Select', isDisabled: false, multiple: false, label: '账单名称', prop: 'billName', value: '请选择', options: [] },
-        { type: 'datetimerange', label: '缴费日期', prop: 'amountActuallyPaid', width: '1000px' }
+        { type: 'Select', label: '小区', prop: 'communityName', isDisabled: false, multiple: false, value: '请选择', options: [], change: this.getList },
+        { type: 'Select', label: '收费类型', prop: 'chargeCategoryName', isDisabled: false, multiple: false, value: '请选择收费类型', options: [], change: this.getList },
+        { type: 'datetimerange', label: '缴费日期', prop: 'chargeBeginTime', width: '1000px', change: this.getList }
       ],
       searchHandle: [
         { label: '查询', type: 'primary', handle: this.getList },
@@ -45,7 +44,6 @@ export default {
         { label: '导出', type: 'primary', handle: this.handleExport }
       ],
       // table表格数据
-      // loading: true,
       list: [],
       total: 0, // 总条数
       columns: Object.freeze([
@@ -60,18 +58,45 @@ export default {
   },
   created() {
     this.getList()
+    this.getChargeCategory()
+    this.getCommunity()
   },
   methods: {
+    // 选项：小区
+    getCommunity() {
+      listCommunityOptions(this.$store.getters.id).then(response => {
+        this.communityOptions = response.data.map(function(val) {
+          return { label: val.communityName, value: val.id }
+        })
+        this.searchForm[0].options = this.communityOptions
+      })
+    },
+    // 选项：收费类型
+    getChargeCategory() {
+      this.searchData.userId = this.$store.getters.id
+      listChargeCategoryOptions(this.searchData).then(response => {
+        const chargeCategoryList = response.data.rows
+        for (let i = 0; i < chargeCategoryList.length; i++) {
+          const cate = chargeCategoryList[i]
+          this.chargeCategoryOptions.push({ label: cate.chargeCategoryName, value: cate.chargeCategoryName, isDisabled: false })
+        }
+        this.searchForm[1].options = this.chargeCategoryOptions
+      })
+    },
     // 表格重置
     resetForm() {
       Object.assign(this.$data.searchData, this.$options.data().searchData)
     },
-    handleQuery() {
-      this.getList()
-    },
     // 查询列表
     getList() {
       this.loading = true
+      listIncomeStatic(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then((response) => {
+        this.list = response.data.rows
+        this.sum = response.data.sum
+        console.log(this.list)
+        this.total = response.data.total
+        this.loading = false
+      })
       listIncomeStatic(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
         (response) => {
           this.list = response.data.maps
@@ -87,7 +112,7 @@ export default {
         }
       )
     },
-    /** 导出按钮操作 */
+    // 导出按钮操作
     handleExport() {
       const searchData = this.searchData
       if (this.checkAll) {
@@ -101,9 +126,7 @@ export default {
         type: 'warning'
       }).then(function() {
         exportLogininfo(searchData).then(res => {
-          console.log(res)
           const sysDate = moment(new Date()).format('YYYY-MM-DDHHmm')
-          console.log(sysDate)
           fileDownload(res, sysDate + '收入统计.xlsx')
         })
       }).catch(function() {

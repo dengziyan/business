@@ -19,6 +19,7 @@ import { listCountDetail } from '@/api/financialMag/countDetail'
 import { exportLogininfo } from '@/api/system/logininfor'
 import moment from 'moment'
 import fileDownload from 'js-file-download'
+import { listCommunityOptions } from '@/api/financialMag/payBills'
 
 export default {
   name: 'Index',
@@ -26,10 +27,10 @@ export default {
   data() {
     return {
       // 查询表单
-      searchData: { pageNum: 1, pageSize: 10, startTime: null, endTime: null, amountActuallyPaid: null, name: null, createTime: null, billName: null }, // 查询参数
+      searchData: { pageNum: 1, pageSize: 10, beginTime: undefined, endTime: undefined, amountActuallyPaid: undefined, communityName: undefined, createTime: undefined, billName: undefined }, // 查询参数
       searchForm: [
-        { type: 'Select', isDisabled: false, multiple: false, label: '小区', prop: 'name', value: '请选择', options: [] },
-        { type: 'datetimerange', label: '结算日期', prop: 'amountActuallyPaid', width: '1000px' }
+        { type: 'Select', label: '小区', prop: 'communityName', isDisabled: false, multiple: false, value: '请选择', options: [], change: this.getList },
+        { type: 'datetimerange', label: '结算日期', prop: 'amountActuallyPaid', width: '1000px', change: this.getList }
       ],
       searchHandle: [
         { label: '查询', type: 'primary', handle: this.getList },
@@ -37,11 +38,10 @@ export default {
         { label: '导出', type: 'primary', handle: this.handleExport }
       ],
       // table表格数据
-      // loading: true,
       list: [],
       total: 0, // 总条数
       columns: Object.freeze([
-        { attrs: { prop: 'name', label: '小区', width: '100', align: 'center' }},
+        { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
         { attrs: { prop: 'mobliePhone', label: '清算日期', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'billName', label: '交易日期', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'chargeCategoryName', label: '交易金额', width: '154', 'show-overflow-tooltip': true }},
@@ -54,28 +54,34 @@ export default {
     }
   },
   created() {
+    this.getCommunity()
     this.getList()
+
   },
   methods: {
+    // 选项：小区
+    getCommunity() {
+      listCommunityOptions(this.$store.getters.id).then(response => {
+        this.communityOptions = response.data.map(function(val) {
+          return { label: val.communityName, value: val.communityName }
+        })
+        this.searchForm[0].options = this.communityOptions
+      })
+    },
     // 表格重置
     resetForm() {
       Object.assign(this.$data.searchData, this.$options.data().searchData)
     },
-    handleQuery() {
-      this.getList()
-    },
     // 查询列表
     getList() {
       this.loading = true
-      listCountDetail(addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
-        (response) => {
-          this.list = response.data.rows
-          this.total = response.data.total
-          this.loading = false
-        }
-      )
+      listCountDetail(addDateRange(this.searchData, this.searchData.chargeBeginTime)).then((response) => {
+        this.list = response.data.rows
+        this.total = response.data.total
+        this.loading = false
+      })
     },
-    /** 导出按钮操作 */
+    // 导出按钮操作
     handleExport() {
       const searchData = this.searchData
       if (this.checkAll) {
@@ -89,9 +95,7 @@ export default {
         type: 'warning'
       }).then(function() {
         exportLogininfo(searchData).then(res => {
-          console.log(res)
           const sysDate = moment(new Date()).format('YYYY-MM-DDHHmm')
-          console.log(sysDate)
           fileDownload(res, sysDate + '退款明细.xlsx')
         })
       }).catch(function() {

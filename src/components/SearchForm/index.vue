@@ -4,10 +4,10 @@
     <el-form class="input" :size="size" inline :label-width="labelWidth">
       <el-form-item v-for="item in searchForm" :key="item.prop" :label="item.label">
         <!-- 输入框 -->
-        <el-input v-if="item.type==='Input'" v-model="searchData[item.prop]" size="mini" filterable clearable @clear="clearParams('searchData[item.prop]')"/>
+        <el-input v-if="item.type==='Input'" v-model="searchData[item.prop]" size="mini"  clearable @clear="clearParams('searchData[item.prop]')"/>
         <!-- 下拉框 -->
-        <el-select v-if="item.type==='Select'" v-model="searchData[item.prop]" size="mini" @change="item.change(searchData[item.prop])">
-          <el-option v-for="op in item.options" :key="op.value" :label="op.label" :value="op.value" />
+        <el-select v-if="item.type==='Select'" v-model="searchData[item.prop]" size="mini" filterable clearable @change="item.change(searchData[item.prop])">
+          <el-option v-for="(op, index) in item.options" :key="index" :label="op.label" :value="op.value" />
         </el-select>
         <!-- 单选 -->
         <el-radio-group v-if="item.type==='Radio'" v-model="searchData[item.prop]">
@@ -27,7 +27,8 @@
           v-model="searchData[item.prop]"
           value-format="yyyy-MM-dd HH:mm:ss"
           type="year"
-          placeholder="选择年">
+          placeholder="选择年"
+          @change="item.change(searchData[item.prop])">
         </el-date-picker>
         <!-- 日期 -->
         <el-date-picker v-if="item.type==='Date'" v-model="searchData[item.prop]" />
@@ -52,7 +53,9 @@
           type="datetimerange"
           range-separator="至"
           start-placeholder="开始日期"
-          end-placeholder="结束日期">
+          end-placeholder="结束日期"
+          @change="item.change(searchData[item.prop])"
+        >
         </el-date-picker>
         <!-- 滑块 -->
         <!-- <el-slider v-if="item.type==='Slider'" v-model="searchData[item.prop]"></el-slider> -->

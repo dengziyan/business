@@ -10,7 +10,7 @@
     <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
     <div class="table">
       <!--引入表格组件        -->
-      <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="No data~">
+      <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
         <!--  文字按钮    -->
         <template #handle2="{scope: { row }}">
           <el-button type="text" @click="handleCheck(row)">{{ row.billName }}</el-button>
@@ -42,7 +42,7 @@ import newDialog from './newDialog'
 import editDialog from './editDialog'
 import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
-import { listPayBills, delBatch } from '@/api/financialMag/payBills'
+import { listPayBills, delBatch, listCommunityOptions } from '@/api/financialMag/payBills'
 import { listChargeProject } from '@/api/financialMag/chargeProject'
 import { getDictVal } from '@/api/system/logininfor'
 export default {
@@ -55,10 +55,11 @@ export default {
       single: true, multiple: true, checkAll: false, newVisible: false, editVisible: false, // single:非多个禁用 multiple:非单个禁用
       statusOptions: [], // 状态数据字典
       // 查询表单
-      searchData: { pageNum: 1, pageSize: 10, startTime: null, endTime: null, chargeBeginTime: null, communityId: null, billName: null, billStatus: null, userId: null }, // 查询参数
+      searchData: { pageNum: 1, pageSize: 10, startTime: undefined, endTime: undefined, chargeBeginTime: undefined, communityId: undefined,
+        billName: undefined, billStatus: undefined, userId: undefined }, // 查询参数
       searchForm: [
-        { type: 'datetimerange', label: '账单开始日期', prop: 'chargeBeginTime', width: '1000px' },
-        { type: 'Input', label: '小区', prop: 'communityId', width: '100px', placeholder: '请输入小区...' },
+        { type: 'datetimerange', label: '账单开始日期', prop: 'chargeBeginTime', width: '1000px', change: this.getList },
+        { type: 'Select', label: '小区', prop: 'communityId', isDisabled: false, multiple: false, value: '请选择', options: [], change: this.getList },
         { type: 'Input', label: '账单名称', prop: 'billName', width: '100px', placeholder: '请输入账单名称...' }
       ],
       searchHandle: [
@@ -66,7 +67,6 @@ export default {
         { label: '重置', type: 'primary', handle: this.resetForm }
       ],
       // table表格数据
-      // loading: true,
       list: [],
       total: 0, // 总条数
       columns: Object.freeze([
@@ -86,25 +86,21 @@ export default {
   created() {
     this.getList()
     this.getOperationStatusDict()
-    // this.intervalId = setInterval(() => {
-    //   console.log(this.formData.formItem[0].value)
-    //   console.log(this.formData.formItem[1].value)
-    // }, 5000)
-    // this.loading = false
+    this.getCommunity()
   },
   methods: {
+    // 选项：小区
+    getCommunity() {
+      listCommunityOptions(this.$store.getters.id).then(response => {
+        this.communityOptions = response.data.map(function(val) {
+          return { label: val.communityName, value: val.id }
+        })
+        this.searchForm[1].options = this.communityOptions
+      })
+    },
     // 表格重置
     resetForm() {
       Object.assign(this.$data.searchData, this.$options.data().searchData)
-    },
-    // 按新增按钮，弹出对话框
-    handleAdd() {
-      this.newVisible = true
-      // eslint-disable-next-line no-undef
-      // this.payBills = Object.assign({}, defaultPayBills) // 默认值为空
-    },
-    handleQuery() {
-      this.getList()
     },
     // 获取回显字典
     getOperationStatusDict() {
@@ -112,9 +108,8 @@ export default {
         this.statusOptions = this.selectDictLabels(res.data || [])
       })
     },
-    // 表格方法
+    // 审核按钮、详情按钮
     handleCheck(row, index) {
-      // console.log(row.id)
       this.$router.push({
         name: 'payDetail',
         params: {
@@ -124,6 +119,10 @@ export default {
         }
       })
     },
+    // 按新增按钮，弹出对话框
+    handleAdd() {
+      this.newVisible = true
+    },
     // 编辑
     handleEdit(row, index) {
       this.editVisible = true
@@ -131,10 +130,22 @@ export default {
       console.log(this.editData)
       // updatePayBills(row)
     },
+    // 删除
+    handleDelete(row) {
+      const batchIds = row.id || this.ids
+      this.$confirm('是否确认删除账单批次名称为 "' + row.billName + '" 的数据项?', '警告',
+        { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
+      ).then(function() {
+        return delBatch(batchIds)
+      }).then(() => {
+        this.getList()
+        this.msgSuccess('删除成功')
+      }).catch(function() {
+      })
+    },
     // 查询批次列表
     async getList() {
       this.loading = true
-      // console.log(this.searchData)
       // 根据审核状态查询
       if (this.searchData.billStatus === '未审核') {
         this.searchData.billStatus = 0
@@ -154,11 +165,9 @@ export default {
               chargeProjectId: listData[i].chargeProjectId
             }
             // 根据收费项目ID 获取收费项目名称
-            await listChargeProject(query).then(
-              response => {
-                listData[i].chargeProjectId = response.data.rows[0].chargeProjectName
-              }
-            )
+            await listChargeProject(query).then(response => {
+              listData[i].chargeProjectId = response.data.rows[0].chargeProjectName
+            })
             // 显示账单状态
             this.statusOptions.filter(
               item => item.value - 0 === listData[i].billStatus
@@ -168,23 +177,8 @@ export default {
           }
           this.list = listData
           this.loading = false
-          this.loading = false
         }
       )
-    },
-    // 删除
-    handleDelete(row) {
-      // console.log(row.id)
-      const batchIds = row.id || this.ids
-      this.$confirm('是否确认删除账单批次名称为 "' + row.billName + '" 的数据项?', '警告',
-        { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
-      ).then(function() {
-        return delBatch(batchIds)
-      }).then(() => {
-        this.getList()
-        this.msgSuccess('删除成功')
-      }).catch(function() {
-      })
     }
   }
 }

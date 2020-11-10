@@ -656,7 +656,7 @@ export default {
         }
       })
     },
-    /** 重置密码按钮操作 */
+    // 重置密码按钮操作
     handleResetPwd(row) {
       this.$confirm('向"' + row.email + '"邮箱发邮件？', '提示', {
         confirmButtonText: '确定',
@@ -671,7 +671,7 @@ export default {
       }).catch(() => {
       })
     },
-    /** 提交按钮 */
+    // 提交按钮
     submitForm: function() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
@@ -697,7 +697,7 @@ export default {
         }
       })
     },
-    /** 删除按钮操作 */
+    // 删除按钮操作
     handleDelete(row) {
       const userIds = row.id || this.ids
       this.$confirm(
@@ -708,7 +708,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }
-      )　
+      )
         .then(function() {
           return delUser(userIds)
         })
@@ -722,7 +722,7 @@ export default {
         .catch(function() {
         })
     },
-    /** 导出按钮操作 */
+    // 导出按钮操作
     handleExport() {
       const queryParams = this.queryParams
       if (this.checkAll) {
