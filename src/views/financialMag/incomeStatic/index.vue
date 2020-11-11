@@ -24,6 +24,7 @@ import { listIncomeStatic } from '@/api/financialMag/incomeStatic'
 import { exportLogininfo } from '@/api/system/logininfor'
 import moment from 'moment'
 import fileDownload from 'js-file-download'
+import { listChargeCategoryOptions, listCommunityOptions } from '@/api/financialMag/payBills'
 
 export default {
   name: 'Index',

@@ -5,6 +5,10 @@
     <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
+      <!--  文字按钮    -->
+      <template #handle2="{scope: { row }}">
+        <el-button type="text" @click="handleDetail(row)">详情</el-button>
+      </template>
       <!-- 操作按钮 。#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
       <template #handle="{scope: {row, $index}}">
         <el-button type="primary" size="mini" @click="handleCheck(row, $index)">审核</el-button>
@@ -12,12 +16,18 @@
     </TableVue>
     <!--  分页  -->
     <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
+    <!--点击详情后出现的弹框    -->
+    <el-dialog title="周期详情" :visible.sync="dialogVisible" width="800px">
+      <!--弹框子组件      -->
+      <detail-dialog v-if="dialogVisible" :visible.sync="dialogVisible" :detail-data="detailData"/>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
+import DetailDialog from './detailDialog'
 import { listRefundDetail } from '@/api/financialMag/refundDetail'
 import { exportLogininfo } from '@/api/system/logininfor'
 import moment from 'moment'
@@ -26,9 +36,10 @@ import { listCommunityOptions } from '@/api/financialMag/payBills'
 
 export default {
   name: 'Index',
-  components: { TableVue, SearchForm },
+  components: { TableVue, SearchForm, DetailDialog },
   data() {
     return {
+      dialogVisible: false, detailData: {},
       // 查询表单
       searchData: { pageNum: 1, pageSize: 10, mobliePhone: undefined, beginTime: undefined, endTime: undefined,
         refundTime: undefined, communityName: undefined, refundMethod: undefined }, // 查询参数
@@ -81,12 +92,18 @@ export default {
     // 查询列表
     getList() {
       this.loading = true
-      console.log(this.searchData.refundTime)
       listRefundDetail(this.addDateRange(this.searchData, this.searchData.refundTime)).then((response) => {
         this.list = response.data.rows
         this.total = response.data.total
         this.loading = false
       })
+    },
+    // 详情按钮
+    handleDetail(row) {
+      console.log(row)
+      this.dialogVisible = true
+      this.detailData = row
+      console.log(this.detailData)
     },
     // 导出按钮操作
     handleExport() {

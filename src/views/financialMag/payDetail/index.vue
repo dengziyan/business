@@ -23,7 +23,7 @@
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
       <!--  文字按钮    -->
-      <template #handle2="{scope: { row }}">
+      <template #handle2="{scope: { row }}" type="expand">
         <el-button type="text" @click="handleDetail(row)">详情</el-button>
       </template>
       <!-- 下面是上面的简写，#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
@@ -39,7 +39,7 @@
     <!--点击详情后出现的弹框    -->
     <el-dialog title="周期详情" :visible.sync="dialogVisible" width="800px">
       <!--弹框子组件      -->
-      <detail-dialog :visible.sync="dialogVisible" :detail-id="detailId" />
+      <detail-dialog v-if="dialogVisible" :visible.sync="dialogVisible" :detail-id="detailId" />
     </el-dialog>
   </div>
 </template>
@@ -58,33 +58,16 @@ export default {
   data() {
     return {
       statusOptions: [], // 状态数据字典
-      chargeBill: {
-        communityId: null,
-        billName: null,
-        billStatus: null,
-        beginTime: null,
-        endTime: null,
-        batchId: null
+      chargeBill: { communityId: undefined, billName: undefined, billStatus: undefined, beginTime: undefined,
+        endTime: undefined, batchId: undefined
       },
-      query: {
-        userId: undefined,
-        data: {}
-      },
+      query: { userId: undefined, data: {}},
       // 操作按钮
-      single: true, // 非单个禁用
-      multiple: true, // 非多个禁用
-      checkAll: false,
-      dialogVisible: false,
-      isEdit: false,
+      single: true, multiple: true, checkAll: false, dialogVisible: false, isEdit: false,
       // 查询表单
       searchData: {
-        pageNum: 1, pageSize: 10,
-        communityId: null,
-        billName: null,
-        billStatus: null,
-        beginTime: null,
-        endTime: null,
-        batchId: null
+        pageNum: 1, pageSize: 10, communityId: undefined, billName: undefined, billStatus: undefined,
+        beginTime: undefined, endTime: undefined, batchId: undefined
       },
       searchForm: [// multiple:是否开启多选
         { type: 'Select', isDisabled: false, multiple: false, label: '小区', prop: 'communityId', value: '车位停车费', options: [] },
