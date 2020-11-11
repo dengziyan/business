@@ -4,7 +4,7 @@
     <!--表格组件      -->
     <FormVue :form-data="formData" :form="form" class="formMain" />
     <span slot="footer" class="dialog-footer">
-      <el-button size="small" @click="dialogVisible = false">取 消</el-button>
+      <el-button size="small" @click="cancel()">取 消</el-button>
       <el-button type="primary" size="small" @click="handleDialogConfirm()">新建</el-button>
     </span>
   </div>
@@ -58,13 +58,16 @@ export default {
   methods: {
     // 获取收费类型
     getChargeCategory() {
-      listChargeCategoryOptions(this.form).then(response => {
+      const query = {
+        userId: this.$store.getters.id
+      }
+      listChargeCategoryOptions(query).then(response => {
         const chargeCategoryList = response.data.rows || []
         for (let i = 0; i < chargeCategoryList.length; i++) {
           const cate = chargeCategoryList[i]
-          this.chargeCategoryOptions.push({ label: cate.chargeCategoryName, value: cate.id, isDisabled: false })
+          this.chargeCategoryOptions.push({ label: cate.chargeCategoryName, value: cate.chargeCategoryName, isDisabled: false })
         }
-        this.formData.formItem[1].options = this.chargeCategoryOptions
+        this.formData.formItem[2].options = this.chargeCategoryOptions
       })
     },
     // 对话框按确定键之后的方法
@@ -76,6 +79,7 @@ export default {
               message: response.message,
               type: 'success'
             })
+            this.$emit('getList')
             this.cancel()
           }
         })
@@ -86,8 +90,8 @@ export default {
               message: response.message,
               type: 'success'
             })
+            this.$emit('getList')
             this.cancel()
-            // this.getList()
           }
         })
       }
