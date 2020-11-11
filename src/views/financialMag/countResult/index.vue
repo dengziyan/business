@@ -12,25 +12,24 @@
 </template>
 
 <script>
-import { addDateRange } from '@/utils/userright'
-import SearchForm from '@/components/SearchForm'
-import TableVue from '@/components/TableVue'
-import { listCountResult } from '@/api/financialMag/countResult'
-import { exportLogininfo } from '@/api/system/logininfor'
-import moment from 'moment'
-import fileDownload from 'js-file-download'
-import {listCommunityOptions} from "@/api/financialMag/payBills";
+  import SearchForm from '@/components/SearchForm'
+  import TableVue from '@/components/TableVue'
+  import { listCountResult } from '@/api/financialMag/countResult'
+  import { exportLogininfo } from '@/api/system/logininfor'
+  import moment from 'moment'
+  import fileDownload from 'js-file-download'
+  import { listCommunityOptions } from '@/api/financialMag/payBills'
 
-export default {
+  export default {
   name: 'Index',
   components: { TableVue, SearchForm },
   data() {
     return {
       // 查询表单
-      searchData: { pageNum: 1, pageSize: 10, startTime: null, endTime: null, amountActuallyPaid: null, name: null, createTime: null, billName: null }, // 查询参数
+      searchData: { pageNum: 1, pageSize: 10, startTime: null, endTime: null, settlementDate: null, name: null, createTime: null, billName: null }, // 查询参数
       searchForm: [
         { type: 'Select', label: '小区', prop: 'communityName', isDisabled: false, multiple: false, value: '请选择', options: [], change: this.getList },
-        { type: 'datetimerange', label: '结算日期', prop: 'amountActuallyPaid', width: '1000px', change: this.getList }
+        { type: 'datetimerange', label: '结算日期', prop: 'settlementDate', width: '1000px', change: this.getList }
       ],
       searchHandle: [
         { label: '查询', type: 'primary', handle: this.getList },
@@ -42,14 +41,14 @@ export default {
       total: 0, // 总条数
       columns: Object.freeze([
         { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
-        { attrs: { prop: 'mobliePhone', label: '渠道', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'billName', label: '结算金额', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'chargeCategoryName', label: '收入金额', width: '154', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'id', label: '收入笔数', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'mobliePhone', label: '优惠金额', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'residentIdentity', label: '手续费', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'residentIdentity', label: '退款金额', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'residentIdentity', label: '退款笔数', 'show-overflow-tooltip': true }}
+        { attrs: { prop: 'paymentMethod', label: '渠道', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'settlementAmount', label: '结算金额', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'incomeSum', label: '收入金额', width: '154', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'incomeCount', label: '收入笔数', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'income', label: '优惠金额', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'income', label: '手续费', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'refundSum', label: '退款金额', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'refundCount', label: '退款笔数', 'show-overflow-tooltip': true }}
       ])
     }
   },
@@ -75,9 +74,16 @@ export default {
     // 查询列表
     getList() {
       this.loading = true
-      listCountResult(addDateRange(this.searchData, this.searchData.chargeBeginTime)).then((response) => {
-        this.list = response.data.rows
-        this.total = response.data.total
+      const searchData = Object.assign({}, this.searchData)
+      searchData.settlementDate = undefined
+      listCountResult(this.addDateRange(searchData, this.searchData.settlementDate)).then((response) => {
+        this.list = response.data.settlementDetails || []
+        // 将数据中 手续费和 优惠金额 设置为 0
+        this.list.map((item, index, list) => {
+          item.settlementAmount = item.incomeSum - item.refundSum
+          item.income = 0
+          return item
+        })
         this.loading = false
       })
     },

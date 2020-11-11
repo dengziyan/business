@@ -97,7 +97,6 @@ export default {
       this.loading = true
       listRefundDetail(this.addDateRange(this.searchData, this.searchData.refundTime)).then((response) => {
         this.list = response.data.rows
-        console.log(this.list)
         this.total = response.data.total
         this.loading = false
       })

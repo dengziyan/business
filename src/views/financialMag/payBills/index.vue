@@ -155,11 +155,12 @@ export default {
         this.searchData.billStatus = 2
       }
       // 调用查询方法
-      listPayBills(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
+      const searchData = Object.assign({}, this.searchData)
+      searchData.chargeBeginTime = undefined
+      listPayBills(this.addDateRange(searchData, this.searchData.chargeBeginTime)).then(
         async(response) => {
           const listData = response.data.rows || []
           this.total = response.data.total
-          this.loading = false
           for (let i = 0; i < listData.length; i++) {
             const query = {
               chargeProjectId: listData[i].chargeProjectId
