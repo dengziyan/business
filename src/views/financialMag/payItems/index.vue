@@ -131,10 +131,10 @@ export default {
     margin-top:10px;
   }
   /*搜索条件*/
-  .ces-search{
-    height: 50px;
-    margin-top: 10px;
-  }
+  /*.ces-search{*/
+  /*  height: 50px;*/
+  /*  margin-top: 10px;*/
+  /*}*/
   .el-form-item__label{
     width: 100px !important;
   }
