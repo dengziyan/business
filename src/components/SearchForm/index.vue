@@ -45,6 +45,15 @@
           start-placeholder="开始日期"
           end-placeholder="结束日期"
         />
+        <!--  年月      -->
+        <el-date-picker
+          v-if="item.type==='monthrange'"
+          v-model="searchData[item.prop]"
+          type="monthrange"
+          range-separator="-"
+          start-placeholder="开始月份"
+          end-placeholder="结束月份">
+        </el-date-picker>
         <!-- 日期和时间范围(最新)       -->
         <el-date-picker
           v-if="item.type==='datetimerange'"
@@ -116,11 +125,11 @@ export default {
 
 </script>
 <style scoped>
-  .input{
-    float: left;
-  }
-  .button{
-    float: left;
-  }
+  /*.input{*/
+  /*  float: left;*/
+  /*}*/
+  /*.button{*/
+  /*  float: left;*/
+  /*}*/
 
 </style>

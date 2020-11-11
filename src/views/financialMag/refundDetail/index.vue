@@ -10,9 +10,9 @@
         <el-button type="text" @click="handleDetail(row)">详情</el-button>
       </template>
       <!-- 操作按钮 。#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
-      <template #handle="{scope: {row, $index}}">
-        <el-button type="primary" class="check" size="mini" @click="handleAgree(row, 1)">同意</el-button>
-        <el-button type="primary" class="check" size="mini" @click="handleAgree(row, 2)">拒绝</el-button>
+      <template #handle="{scope: {row}}">
+        <el-button type="primary" class="check" size="mini" :disabled="row.ifShow" @click="handleAgree(row, 1)">同意</el-button>
+        <el-button type="primary" class="check" size="mini" :disabled="row.ifShow" @click="handleAgree(row, 2)">拒绝</el-button>
       </template>
     </TableVue>
     <!--  分页  -->
@@ -42,7 +42,7 @@ export default {
   components: { TableVue, SearchForm, DetailDialog },
   data() {
     return {
-      dialogVisible: false, detailData: {},
+      dialogVisible: false, detailData: {}, ifShow: true,
       // 查询表单
       searchData: { pageNum: 1, pageSize: 10, mobliePhone: undefined, beginTime: undefined, endTime: undefined,
         refundTime: undefined, communityName: undefined, refundMethod: undefined }, // 查询参数
@@ -65,12 +65,12 @@ export default {
         { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
         { attrs: { prop: 'mobilePhone', label: '手机号', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'refundMethod', label: '退款方式', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'refundTime', label: '退款日期', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'refundTime', label: '退款日期', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'id', label: '退款金额', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'refundStatus', label: '退款状态', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'residentName', label: '住户', 'show-overflow-tooltip': true }},
         { slot: 'handle2', attrs: { prop: 'amount', label: '退款详情', 'show-overflow-tooltip': true }},
-        { slot: 'handle', attrs: { label: '审核', 'class-name': 'small-padding fixed-width', align: 'center' }}
+        { slot: 'handle', attrs: { label: '审核', width: '150', 'class-name': 'small-padding fixed-width', align: 'center' }}
       ])
     }
   },
@@ -97,7 +97,12 @@ export default {
       this.loading = true
       listRefundDetail(this.addDateRange(this.searchData, this.searchData.refundTime)).then((response) => {
         this.list = response.data.rows
-        console.log(this.list)
+        this.list.map((item, index, list) => {
+          if (item.refundStatus === 0) {
+            item.ifShow = false
+          } else item.ifShow = true
+          return item
+        })
         this.total = response.data.total
         this.loading = false
       })

@@ -1,25 +1,26 @@
 <template>
   <!--收费批次管理表格及操作组件  -->
-  <div>
+  <div class="main">
     <!--引入搜索条件子组件        -->
-    <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
-    <div class="txt">
-      <span>收入金额总计: {{ sum }}<br></span>
-      <span>收入笔数: {{ total }}<br></span>
-      <span>收入金额总计: 0.0<br></span>
+    <div class="search">
+      <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
     </div>
-    <!--引入操作子组件        -->
-    <!--引入表格组件  -->
-    <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据" />
-    <!--  分页  -->
-    <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
+    <div class="txt">
+      <div class="txt-left">
+        <span>应缴金额: {{}}元<br></span>
+        <span>已缴户数: {{}}户<br></span>
+      </div>
+     <div class="txt-right">
+       <span>实缴金额: {{}}元<br></span>
+       <span>未缴户数: {{}}户<br></span>
+     </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { addDateRange } from '@/utils/userright'
 import SearchForm from '@/components/SearchForm'
-import TableVue from '@/components/TableVue'
 import { listIncomeStatic } from '@/api/financialMag/incomeStatic'
 import { exportLogininfo } from '@/api/system/logininfor'
 import moment from 'moment'
@@ -28,33 +29,24 @@ import { listChargeCategoryOptions, listCommunityOptions } from '@/api/financial
 
 export default {
   name: 'Index',
-  components: { TableVue, SearchForm },
+  components: { SearchForm },
   data() {
     return {
       sum: 0, chargeCategoryOptions: [],
       // 查询表单
-      searchData: { pageNum: 1, pageSize: 10, startTime: undefined, endTime: undefined, paymentCycle: undefined, chargeCategoryName: undefined, createTime: undefined },
+      searchData: { pageNum: 1, pageSize: 10, startTime: undefined, endTime: undefined, paymentCycle: undefined,
+        chargeCategoryName: undefined, createTime: undefined, buildingId: undefined, unitId: undefined },
       searchForm: [
         { type: 'Select', label: '小区', prop: 'communityName', isDisabled: false, multiple: false, value: '请选择', options: [], change: this.getList },
+        { type: 'Select', label: '栋', prop: 'buildingId', isDisabled: false, multiple: false, value: '请选择', options: [], change: this.getList },
+        { type: 'Select', label: '单元', prop: 'unitId', isDisabled: false, multiple: false, value: '请选择', options: [], change: this.getList },
         { type: 'Select', label: '收费类型', prop: 'chargeCategoryName', isDisabled: false, multiple: false, value: '请选择收费类型', options: [], change: this.getList },
-        { type: 'datetimerange', label: '缴费日期', prop: 'chargeBeginTime', width: '1000px', change: this.getList }
+        { type: 'monthrange', label: '账单周期', prop: 'paymentCycle', width: '1000px', change: this.getList }
       ],
       searchHandle: [
         { label: '查询', type: 'primary', handle: this.getList },
-        { label: '重置', type: 'primary', handle: this.resetForm },
-        { label: '导出', type: 'primary', handle: this.handleExport }
-      ],
-      // table表格数据
-      list: [],
-      total: 0, // 总条数
-      columns: Object.freeze([
-        { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
-        { attrs: { prop: 'paymentMethod', label: '渠道', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'incomeSum', label: '收入金额', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'incomeCount', label: '收入笔数', width: '154', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'income', label: '手续费金额统计', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'income', label: '优惠金额总计', 'show-overflow-tooltip': true }}
-      ])
+        { label: '重置', type: 'primary', handle: this.resetForm }
+      ]
     }
   },
   created() {
@@ -81,7 +73,7 @@ export default {
           const cate = chargeCategoryList[i]
           this.chargeCategoryOptions.push({ label: cate.chargeCategoryName, value: cate.chargeCategoryName, isDisabled: false })
         }
-        this.searchForm[1].options = this.chargeCategoryOptions
+        this.searchForm[3].options = this.chargeCategoryOptions
       })
     },
     // 表格重置
@@ -138,9 +130,19 @@ export default {
 </script>
 
 <style scoped>
-  /*.txt{*/
-  /*  height: 20px;*/
-  /*}*/
+  .main{
+    margin: 20px;
+  }
+  .search{
+    height: 150px;
+  }
+  .txt{
+    display: flex;
+    justify-content: flex-start
+  }
+  .txt-left{
+    margin-right: 200px;
+  }
   .el-row{
     margin-left: 10px !important;
   }

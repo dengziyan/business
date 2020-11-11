@@ -102,9 +102,17 @@ export const constantRoutes = [
         }
       },
       {
-        path: '/test',
-        name: 'test',
-        component: () => import('@/views/financialMag/test/index'),
+        path: '/incomeSituation',
+        name: 'incomeSituation',
+        component: () => import('@/views/financialMag/incomeSituation/index'),
+        meta: {
+          keepAlive: true // 需要缓存的页面
+        }
+      },
+      {
+        path: '/overview',
+        name: 'overview',
+        component: () => import('@/views/financialMag/overview/index'),
         meta: {
           keepAlive: true // 需要缓存的页面
         }
