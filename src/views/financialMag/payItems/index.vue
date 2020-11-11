@@ -1,9 +1,13 @@
 <template>
   <div class="main">
     <!--引入搜索条件子组件        -->
-    <search-form size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle"/>
-    <!--引入操作子组件        -->
-    <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
+    <div class="search">
+      <search-form size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle"/>
+    </div>
+      <!--引入操作子组件        -->
+    <div class="anyBtn">
+      <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
+    </div>
     <!--点击新增后出现的弹框    -->
     <el-dialog :title="isEdit?'编辑收费项目':'添加收费项目'" :visible.sync="dialogVisible" :edit.sync="isEdit" width="700px">
       <new-dialog v-if="dialogVisible" :visible.sync="dialogVisible" :edit.sync="isEdit" :edit-info="editInfo"/>
@@ -127,10 +131,10 @@ export default {
     margin-top:10px;
   }
   /*搜索条件*/
-  /*.ces-search{*/
-  /*  height: 50px;*/
-  /*  margin-top: 10px;*/
-  /*}*/
+  .ces-search{
+    height: 50px;
+    margin-top: 10px;
+  }
   .el-form-item__label{
     width: 100px !important;
   }
