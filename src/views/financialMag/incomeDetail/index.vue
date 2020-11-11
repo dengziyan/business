@@ -1,14 +1,16 @@
 <template>
   <!--收费批次管理表格及操作组件  -->
-  <div>
+  <div class="main">
     <!--引入搜索条件子组件        -->
-    <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
+    <div class="search">
+      <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
+    </div>
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
 
       <!-- 操作按钮 。#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
       <template #handle="{scope: {row, $index}}">
-        <el-button type="primary" size="mini" @click="handleBack(row, $index)">退款</el-button>
+        <el-button size="mini" type="text" icon="el-icon-back" @click="handleBack(row, $index)">退款</el-button>
       </template>
     </TableVue>
     <!--  分页  -->
@@ -144,6 +146,12 @@ export default {
 </script>
 
 <style scoped>
+  .main{
+    margin:20px;
+  }
+  .search{
+    height: 150px;
+  }
   .el-row{
     margin-left: 10px !important;
   }

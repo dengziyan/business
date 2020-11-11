@@ -1,8 +1,23 @@
 <template>
   <!--结算结果表格及操作组件  -->
-  <div>
+  <div class="main">
     <!--引入搜索条件子组件        -->
-    <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
+    <div class="search">
+      <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
+    </div>
+    <div class="txt">
+      <div class="txt-left">
+        <span>结算金额: {{}}<br></span>
+        <span>优惠金额: {{}}<br></span>
+      </div>
+      <div class="txt-center">
+        <span>收入金额(元)/笔数（笔）: {{}}<br></span>
+        <span>手续费（元）:{{}}<br></span>
+      </div>
+      <div class="txt-right">
+        <span>退款金额（元）/退款笔数（笔）:{{}}<br></span>
+      </div>
+    </div>
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="No data~">
     </TableVue>
@@ -12,15 +27,14 @@
 </template>
 
 <script>
-  import SearchForm from '@/components/SearchForm'
-  import TableVue from '@/components/TableVue'
-  import { listCountResult } from '@/api/financialMag/countResult'
-  import { exportLogininfo } from '@/api/system/logininfor'
-  import moment from 'moment'
-  import fileDownload from 'js-file-download'
-  import { listCommunityOptions } from '@/api/financialMag/payBills'
-
-  export default {
+import SearchForm from '@/components/SearchForm'
+import TableVue from '@/components/TableVue'
+import { listCountResult } from '@/api/financialMag/countResult'
+import { exportLogininfo } from '@/api/system/logininfor'
+import moment from 'moment'
+import fileDownload from 'js-file-download'
+import { listCommunityOptions } from '@/api/financialMag/payBills'
+export default {
   name: 'Index',
   components: { TableVue, SearchForm },
   data() {
@@ -110,6 +124,18 @@
 </script>
 
 <style scoped>
+  .main{
+    margin:20px;
+  }
+  .search{
+    height: 100px;
+  }
+  .txt{
+    display: flex;
+  }
+  .txt-left,.txt-center{
+    margin-right: 150px;
+  }
   .el-row{
     margin-left: 10px !important;
   }

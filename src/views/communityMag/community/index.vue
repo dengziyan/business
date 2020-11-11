@@ -76,8 +76,8 @@
           <TableVue v-loading="loadingTable" :columns="columns" :data="list" empty-text="暂无数据">
             <!-- #是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
             <template #handle="{scope: {row, $index}}">
-              <el-button type="danger" size="mini" @click="handleDelete(row, $index)">删除</el-button>
-              <el-button type="primary" size="mini" @click="handleUpdate(row)">编辑</el-button>
+              <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(row, $index)">删除</el-button>
+              <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(row)">编辑</el-button>
             </template>
           </TableVue>
           <!--分页    -->
@@ -147,15 +147,15 @@ export default {
       columns: Object.freeze([
         { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
         { attrs: { prop: 'buildingName', label: '栋', width: '100', align: 'center', 'show-overflow-tooltip': false }},
-        { attrs: { prop: 'unitName', label: '单元', width: '100', align: 'center', 'show-overflow-tooltip': false }},
-        { attrs: { prop: 'roomNo', label: '室', width: '100', align: 'center', 'show-overflow-tooltip': false }},
+        { attrs: { prop: 'unitName', label: '单元', width: '90', align: 'center', 'show-overflow-tooltip': false }},
+        { attrs: { prop: 'roomNo', label: '室', width: '90', align: 'center', 'show-overflow-tooltip': false }},
         { attrs: { prop: 'houseArea', label: '建筑面积(m²)', width: '120', align: 'center', 'show-overflow-tooltip': false }},
         { attrs: { prop: 'residentName', label: '姓名', width: '70', align: 'center', 'show-overflow-tooltip': false }},
-        { attrs: { prop: 'mobilePhone', label: '手机号', width: '120', align: 'center', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'certificateNo', label: '证件号', width: '180', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'mobilePhone', label: '手机号', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'certificateNo', label: '证件号', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'residentIdentity', label: '住户身份', width: '100', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'createTime', label: '创建时间', align: 'center', 'show-overflow-tooltip': true }},
-        { slot: 'handle', attrs: { label: '操作', width: '180', 'class-name': 'small-padding fixed-width', align: 'center' }}
+        { slot: 'handle', attrs: { label: '操作', width: '150', 'class-name': 'small-padding fixed-width', align: 'center' }}
       ])
     }
   },
@@ -445,6 +445,7 @@ export default {
 
   .expand > div {
     padding: 20px;
+    padding-right: 0px;
     max-width: 400px;
     overflow-y: auto;
   }
@@ -486,7 +487,7 @@ export default {
   }
 
   .el-button {
-    padding: 5px 10px;
+    /*padding: 5px 10px;*/
   }
 
   /* 右边的住户信息 */
@@ -516,7 +517,7 @@ export default {
   }
 
   .el-table {
-    width: 98% !important;
+    width: 100% !important;
     border-right: none !important;
   }
 
@@ -531,7 +532,7 @@ export default {
   }
 
   .el-button + .el-button[data-v-b649ad9e] {
-    margin-left: 10px;
+    /*margin-left: 10px;*/
     float: right;
   }
 
@@ -544,7 +545,9 @@ export default {
   .searchMain {
     height: 100px;
   }
-
+  .el-button [class*=el-icon-]+span {
+     /*margin-left: 0px;*/
+  }
 </style>
 <style>
   .expand-tree .is-current > .el-tree-node__content .tree-btn,

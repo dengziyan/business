@@ -1,10 +1,13 @@
 <template>
-  <div>
-    收费项目管理
+  <div class="main">
     <!--引入搜索条件子组件        -->
-    <search-form size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle"/>
-    <!--引入操作子组件        -->
-    <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
+    <div class="search">
+      <search-form size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle"/>
+    </div>
+      <!--引入操作子组件        -->
+    <div class="anyBtn">
+      <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
+    </div>
     <!--点击新增后出现的弹框    -->
     <el-dialog :title="isEdit?'编辑收费项目':'添加收费项目'" :visible.sync="dialogVisible" :edit.sync="isEdit" width="700px">
       <new-dialog v-if="dialogVisible" :visible.sync="dialogVisible" :edit.sync="isEdit" :edit-info="editInfo"/>
@@ -13,8 +16,8 @@
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
       <!-- #是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
       <template #handle="{scope: {row, $index}}">
-        <el-button type="danger" size="mini" @click="handleDelete()">删除</el-button>
-        <el-button type="primary" size="mini" @click="handleUpdate(row, $index)">编辑</el-button>
+        <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete()">删除</el-button>
+        <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(row, $index)">编辑</el-button>
       </template>
     </TableVue>
   </div>
@@ -118,6 +121,15 @@ export default {
 </script>
 
 <style scoped>
+  .main{
+    margin:20px;
+  }
+  .search{
+    height: 100px;
+  }
+  .anyBtn{
+    margin-top:10px;
+  }
   /*搜索条件*/
   .ces-search{
     height: 50px;

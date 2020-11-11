@@ -1,15 +1,19 @@
 <template>
   <!--收费批次管理表格及操作组件  -->
-  <div>
+  <div class="main">
     <!--引入搜索条件子组件        -->
-    <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
+    <div class="search">
+      <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
+    </div>
     <!-- 各个操作按钮 -->
-    <el-radio-group v-model="searchData.billStatus" @change="getList">
-      <el-radio-button v-for="dict in statusOptions" :key="dict.value" :value="dict.value" :label="dict.label" />
-    </el-radio-group>
-    <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
+    <div class="anyButton">
+      <el-radio-group class="anyButton-left" v-model="searchData.billStatus" @change="getList">
+        <el-radio-button v-for="dict in statusOptions" :key="dict.value" :value="dict.value" :label="dict.label" />
+      </el-radio-group>
+      <el-button class="anyButton-right" type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
+    </div>
+    <!--引入表格组件        -->
     <div class="table">
-      <!--引入表格组件        -->
       <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
         <!--  文字按钮    -->
         <template #handle2="{scope: { row }}">
@@ -17,9 +21,9 @@
         </template>
         <!-- 操作按钮 。#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
         <template #handle="{scope: {row, $index}}">
-          <el-button type="primary" size="mini" @click="handleCheck(row, $index)">审核</el-button>
-          <el-button type="danger" size="mini" @click="handleDelete(row)">删除</el-button>
-          <el-button type="primary" size="mini" @click="handleEdit(row, $index)">编辑</el-button>
+          <el-button size="mini" type="text" icon="el-icon-circle-check" @click="handleCheck(row, $index)">审核</el-button>
+          <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(row)">删除</el-button>
+          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleEdit(row, $index)">编辑</el-button>
         </template>
       </TableVue>
       <!--  分页  -->
@@ -71,15 +75,15 @@ export default {
       total: 0, // 总条数
       columns: Object.freeze([
         { attrs: { prop: 'billStatus', label: '账单状态', width: '100', align: 'center' }},
-        { attrs: { prop: 'communityId', label: '小区', width: '100', 'show-overflow-tooltip': true }},
-        { slot: 'handle2', attrs: { type: 'button', prop: 'billName', label: '账单名称', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'chargeProjectId', label: '收费项目', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'chargeBeginTime', label: '收费开始日期', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'amountPayable', label: '应缴金额', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'amountActuallyPaid', label: '实缴金额', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'reviewer', label: '审核人', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'reviewTime', label: '审核时间', 'show-overflow-tooltip': true }},
-        { slot: 'handle', attrs: { label: '操作', width: '250', 'class-name': 'small-padding fixed-width', align: 'center' }}
+        { attrs: { prop: 'communityId', label: '小区', width: '100', align: 'center', 'show-overflow-tooltip': true }},
+        { slot: 'handle2', attrs: { type: 'button', prop: 'billName', label: '账单名称', width: '100', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'chargeProjectId', label: '收费项目', width: '100', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'chargeBeginTime', label: '收费开始日期', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'amountPayable', label: '应缴金额', width: '100', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'amountActuallyPaid', label: '实缴金额', width: '100', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'reviewer', label: '审核人', width: '100', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'reviewTime', label: '审核时间', align: 'center', 'show-overflow-tooltip': true }},
+        { slot: 'handle', attrs: { label: '操作', width: '200', 'class-name': 'small-padding fixed-width', align: 'center' }}
       ])
     }
   },
@@ -186,11 +190,28 @@ export default {
 </script>
 
 <style scoped>
-  .el-row{
-    margin-left: 10px !important;
+  .main{
+    margin:20px;
   }
+  .search{
+    height: 100px;
+  }
+  .anyButton{
+    /*display: flex;*/
+    /*justify-content:space-around;*/
+    /*margin-left: -30px;*/
+  }
+  .anyButton-left{
+    float: left;
+  }
+  .anyButton-right{
+    float: right;
+  }
+  /*.el-row{*/
+  /*  margin-left: 10px !important;*/
+  /*}*/
   .el-table{
-    width: 98% !important;
+    width: 100% !important;
     border-right: none !important;
   }
   /*搜索条件*/

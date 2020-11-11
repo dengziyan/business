@@ -1,8 +1,10 @@
 <template>
   <!--收费批次管理表格及操作组件  -->
-  <div>
+  <div class="main">
     <!--引入搜索条件子组件        -->
-    <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
+    <div class="search">
+      <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
+    </div>
     <div class="txt">
       <span>收入金额总计: {{ sum }}<br></span>
       <span>收入笔数: {{ total }}<br></span>
@@ -138,9 +140,19 @@ export default {
 </script>
 
 <style scoped>
-  /*.txt{*/
-  /*  height: 20px;*/
-  /*}*/
+  .main{
+    margin:20px;
+  }
+  .search{
+    height: 100px;
+  }
+  .txt{
+    display: flex;
+    height: 20px;
+  }
+  .txt span{
+    margin-right: 40px;
+  }
   .el-row{
     margin-left: 10px !important;
   }

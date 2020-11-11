@@ -1,8 +1,10 @@
 <template>
   <!--结算结果表格及操作组件  -->
-  <div>
+  <div class="main">
     <!--引入搜索条件子组件        -->
-    <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
+    <div class="search">
+      <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
+    </div>
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
     </TableVue>
@@ -106,6 +108,12 @@ export default {
 </script>
 
 <style scoped>
+  .main{
+    margin:20px;
+  }
+  .search{
+    height: 100px;
+  }
   .el-row{
     margin-left: 10px !important;
   }

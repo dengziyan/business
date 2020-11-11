@@ -46,6 +46,6 @@ export default {
 
 <style scoped>
   .el-table{
-    margin: 10px;
+    margin-top: 10px;
   }
 </style>

@@ -1,8 +1,13 @@
 <template>
   <!--退款明细表格及操作组件  -->
-  <div>
+  <div class="main">
     <!--引入搜索条件子组件        -->
-    <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
+    <div class="search">
+      <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
+    </div>
+    <div class="txt">
+      <span>退款金额总计{{}}元</span>
+    </div>
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
       <!--  文字按钮    -->
@@ -11,8 +16,8 @@
       </template>
       <!-- 操作按钮 。#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
       <template #handle="{scope: {row}}">
-        <el-button type="primary" class="check" size="mini" :disabled="row.ifShow" @click="handleAgree(row, 1)">同意</el-button>
-        <el-button type="primary" class="check" size="mini" :disabled="row.ifShow" @click="handleAgree(row, 2)">拒绝</el-button>
+        <el-button size="mini" type="text" icon="el-icon-circle-check" :disabled="row.ifShow" @click="handleAgree(row, 1)">同意</el-button>
+        <el-button size="mini" type="text" icon="el-icon-circle-close" :disabled="row.ifShow" @click="handleAgree(row, 2)">拒绝</el-button>
       </template>
     </TableVue>
     <!--  分页  -->
@@ -151,6 +156,12 @@ export default {
 </script>
 
 <style scoped>
+  .main{
+    margin:20px;
+  }
+  .search{
+    height: 100px;
+  }
   .el-row{
     margin-left: 10px !important;
   }
