@@ -8,4 +8,15 @@ export function listRefundDetail(query) {
     params: query
   })
 }
-
+// 审核按钮
+export function refundDetailToReview(userId, status, id) {
+  return request({
+    url: '/refundDetails/toReview',
+    method: 'post',
+    params: {
+      userId: userId,
+      status: status,
+      id: id
+    }
+  })
+}

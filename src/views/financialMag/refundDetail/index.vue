@@ -11,7 +11,8 @@
       </template>
       <!-- 操作按钮 。#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
       <template #handle="{scope: {row, $index}}">
-        <el-button type="primary" size="mini" @click="handleCheck(row, $index)">审核</el-button>
+        <el-button type="primary" class="check" size="mini" @click="handleAgree(row, 1)">同意</el-button>
+        <el-button type="primary" class="check" size="mini" @click="handleAgree(row, 2)">拒绝</el-button>
       </template>
     </TableVue>
     <!--  分页  -->
@@ -21,6 +22,8 @@
       <!--弹框子组件      -->
       <detail-dialog v-if="dialogVisible" :visible.sync="dialogVisible" :detail-data="detailData"/>
     </el-dialog>
+    <!-- 审核   -->
+
   </div>
 </template>
 
@@ -28,7 +31,7 @@
 import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
 import DetailDialog from './detailDialog'
-import { listRefundDetail } from '@/api/financialMag/refundDetail'
+import { listRefundDetail, refundDetailToReview } from '@/api/financialMag/refundDetail'
 import { exportLogininfo } from '@/api/system/logininfor'
 import moment from 'moment'
 import fileDownload from 'js-file-download'
@@ -62,12 +65,12 @@ export default {
         { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
         { attrs: { prop: 'mobilePhone', label: '手机号', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'refundMethod', label: '退款方式', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'refundTime', label: '退款日期', width: '154', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'refundTime', label: '退款日期', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'id', label: '退款金额', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'refundMethod', label: '退款状态', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'refundStatus', label: '退款状态', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'residentName', label: '住户', 'show-overflow-tooltip': true }},
         { slot: 'handle2', attrs: { prop: 'amount', label: '退款详情', 'show-overflow-tooltip': true }},
-        { slot: 'handle', attrs: { label: '操作', width: '', 'class-name': 'small-padding fixed-width', align: 'center' }}
+        { slot: 'handle', attrs: { label: '审核', 'class-name': 'small-padding fixed-width', align: 'center' }}
       ])
     }
   },
@@ -94,6 +97,7 @@ export default {
       this.loading = true
       listRefundDetail(this.addDateRange(this.searchData, this.searchData.refundTime)).then((response) => {
         this.list = response.data.rows
+        console.log(this.list)
         this.total = response.data.total
         this.loading = false
       })
@@ -104,6 +108,18 @@ export default {
       this.dialogVisible = true
       this.detailData = row
       console.log(this.detailData)
+    },
+    // 同意按钮
+    handleAgree(row, status) {
+      refundDetailToReview(this.$store.getters.id, status, row.id).then((response) => {
+        if (response.code === 2000) {
+          this.$message({
+            message: response.message,
+            type: 'success'
+          })
+        }
+      })
+      this.getList()
     },
     // 导出按钮操作
     handleExport() {
@@ -147,6 +163,13 @@ export default {
   }
   .el-form-item__label{
     width: auto !important;
+  }
+  .check{
+    position: relative;
+  }
+  .showBtn{
+    position: absolute;
+    top: 0px;
   }
 </style>
 
