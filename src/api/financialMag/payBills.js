@@ -71,6 +71,26 @@ export function listCommunityOptions(userId) {
   })
 }
 
+// 根据小区ID获取小区信息
+export function listCommunity(id) {
+  return request({
+    url: '/sys/community/getCommunityById/' + id,
+    method: 'get'
+  })
+}
+// 审核
+export function toReview(userId, billIds, billStatus) {
+  return request({
+    url: '/chargeBill/toReview',
+    method: 'post',
+    params: {
+      userId: userId,
+      billIds: billIds,
+      billStatus: billStatus
+    }
+  })
+}
+
 // 下载模板
 export function importTemplates(data) {
   return request({

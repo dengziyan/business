@@ -56,7 +56,32 @@ export function addCommunity(data) {
     url: '/sys/community',
     method: 'post',
     params: {
+      user: data.userId,
       merchantId: data.merchantId
+    },
+    data: data
+  })
+}
+// 新增楼栋
+export function addBuilding(data) {
+  return request({
+    url: '/sys/community/building',
+    method: 'post',
+    params: {
+      user: data.userId,
+      communityId: data.communityId
+    },
+    data: data
+  })
+}
+// 新增单元
+export function addUnit(data) {
+  return request({
+    url: '/sys/community/unit',
+    method: 'post',
+    params: {
+      user: data.userId,
+      buildingId: data.buildingId
     },
     data: data
   })
@@ -73,33 +98,15 @@ export function updateCommunity(id, data) {
     data: data
   })
 }
-// 新增楼栋
-export function addBuilding(data) {
-  return request({
-    url: '/sys/community/building',
-    method: 'post',
-    params: {
-      communityId: data.communityId,
-      admin: data.admin
-    },
-    data: data
-  })
-}
+
 // 修改楼栋
-export function updateBuilding(data) {
+export function updateBuilding(id, data) {
   return request({
     url: '/sys/community/building',
     method: 'put',
-    data: data
-  })
-}
-// 新增单元
-export function addUnit(data) {
-  return request({
-    url: '/sys/community/unit',
-    method: 'post',
     params: {
-      buildingId: data.buildingId
+      user: id,
+      community: data.communityId
     },
     data: data
   })
@@ -107,8 +114,12 @@ export function addUnit(data) {
 // 修改单元
 export function updateUnit(id, data) {
   return request({
-    url: '/sys/community/unit' + id,
-    method: 'post',
+    url: '/sys/community/unit',
+    method: 'put',
+    params: {
+      user: id,
+      building: data.buildingId
+    },
     data: data
   })
 }
@@ -147,7 +158,7 @@ export function delResident(data) {
     data: data
   })
 }
-// 下载住户信息导入模板
+// 下载小区信息导入模板
 export function importCommunityTemplates() {
   return request({
     url: '/sys/community/template-import',
@@ -155,12 +166,35 @@ export function importCommunityTemplates() {
     responseType: 'arraybuffer'
   })
 }
-// 导入住户信息
-export function batchAddCommunity(data) {
+// 下载住户信息导入模板
+export function importResidentTemplates() {
+  return request({
+    url: '/sys/resident/template-import',
+    method: 'get',
+    responseType: 'arraybuffer'
+  })
+}
+// 导入小区信息
+export function batchAddCommunity(id, merchantId, data) {
   return request({
     url: '/sys/community/import',
     method: 'post',
-    data
+    params: {
+      id: id,
+      merchantId: merchantId
+    },
+    data: data
+  })
+}
+// 导入住户信息
+export function batchAddResident(id, data) {
+  return request({
+    url: '/sys/resident/import',
+    method: 'post',
+    params: {
+      userId: id
+    },
+    data: data
   })
 }
 // 导出住户信息

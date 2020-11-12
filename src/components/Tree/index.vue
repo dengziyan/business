@@ -16,7 +16,7 @@
       <span>{{ DATA.name }}</span>
     </span>
     <span v-show="!DATA.treeIsEdit" class="tree-btn">
-      <i class="el-icon-plus" @click.stop="nodeAdd(STORE,DATA,NODE)" />
+      <i v-if="NODE.level !== 4"  class="el-icon-plus" @click.stop="nodeAdd(STORE,DATA,NODE)" />
       <i class="el-icon-edit" @click.stop="nodeEdit(STORE,DATA,NODE)" />
       <i class="el-icon-delete" @click.stop="nodeDel(STORE,DATA,NODE)" />
     </span>

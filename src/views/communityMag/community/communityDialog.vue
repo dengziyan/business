@@ -19,6 +19,7 @@ export default {
   name: 'NewDialog1',
   components: { FormVue },
   props: {
+    requireId: { type: Number, required: true },
     visible: { type: Boolean, required: true },
     editInfo: { type: Object, required: true },
     treeIsEdit: { type: Boolean, required: true },
@@ -29,7 +30,8 @@ export default {
       treeDialogVisible: this.visible,
       loadingCommunity: false,
       form: {
-        merchant: undefined,
+        userId: undefined,
+        merchantId: this.requireId,
         communityName: undefined,
         category: undefined,
         admin: undefined,
@@ -41,7 +43,7 @@ export default {
       formData: {
         labelWidth: '100px', inline: false, labelPosition: 'right', size: 'small',
         formItem: [
-          { type: 'text', label: '商户名称', prop: 'merchant', size: 'small', isDisabled: false, required: true },
+          { type: 'text', label: '商户编号', prop: 'merchantId', size: 'small', isDisabled: true, required: true },
           { type: 'text', label: '小区名称', prop: 'communityName', size: 'small', isDisabled: false },
           { type: 'select', label: '小区类别', prop: 'category', size: 'small', tip: '', value: '', isDisabled: false, multiple: false, options: [] },
           { type: 'text', label: '联系人', prop: 'admin', size: 'small', isDisabled: false, required: true },
@@ -51,8 +53,8 @@ export default {
         rules: {
           communityName: [{ required: true, message: '请输入小区名称', trigger: 'blur' }],
           category: [{ required: true, message: '请选择小区类别', trigger: 'blur' }],
-          admin: [{ required: true, message: '请输入联系人编号', trigger: 'blur' }],
-          mobilePhone: [{ required: true, message: '请输入联系方式', trigger: 'blur' }]
+          admin: [{ required: true, message: '请输入联系人编号', trigger: 'blur' }, { pattern: /\d/, message: '必须为数字值' }],
+          mobilePhone: [{ required: true, message: '请输入联系方式', trigger: 'blur' }, { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: '请输入正确格式' }]
         }
       }
     }
@@ -113,6 +115,9 @@ export default {
           }
         })
       } else { // 插入一条资源数据（即添加）
+        this.form.userId = this.$store.getters.id
+        // this.form.merchantId = this.requireId
+        console.log(this.form)
         addCommunity(this.form).then(response => {
           if (response.code === 2000) {
             this.$message({

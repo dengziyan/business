@@ -21,6 +21,13 @@ export function listChargeCategoryOptions(query) {
   return request({
     url: '/chargeCategory/listChargeCategory',
     method: 'post',
-    data: query
+    params: query
+  })
+}
+// 删除收费项目
+export function deletePayItems(data) {
+  return request({
+    url: '/project' + data,
+    method: 'delete'
   })
 }

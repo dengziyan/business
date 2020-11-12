@@ -18,19 +18,18 @@ export default {
   name: 'BuildingDialog',
   components: { FormVue },
   props: {
+    requireId: { type: Number, required: true },
     visible: { type: Boolean, required: true },
     editInfo: { type: Object, required: true },
     treeIsEdit: { type: Boolean, required: true },
-    refreshProperty: {
-      type: Function,
-      default: null
-    }
+    refreshProperty: { type: Function, default: null }
   },
   data() {
     return {
       treeDialogVisible: this.visible,
       form: {
-        communityId: undefined,
+        userId: undefined,
+        communityId: this.requireId,
         buildingName: undefined,
         admin: undefined
       },
@@ -39,7 +38,7 @@ export default {
       formData: {
         labelWidth: '100px', inline: false, labelPosition: 'right', size: 'small',
         formItem: [
-          { type: 'text', label: '小区编号', prop: 'communityId', size: 'small', isDisabled: false, required: true },
+          { type: 'text', label: '小区编号', prop: 'communityId', size: 'small', isDisabled: true, required: true },
           { type: 'text', label: '楼栋名称', prop: 'buildingName', size: 'small', isDisabled: false, required: true },
           { type: 'text', label: '楼栋管理员', prop: 'admin', size: 'small', isDisabled: false, required: true }
         ],
@@ -70,14 +69,14 @@ export default {
     }
   },
   created() {
+    this.formData.formItem[2].isDisabled = true
     this.refresh()
   },
   methods: {
     refresh() {
       if (this.treeIsEdit) {
+        console.log(this.editInfo)
         const building = this.building.building
-        const community = this.building.community
-        this.form.communityId = community.id
         this.form.admin = building.admin
         this.form.id = building.id
         this.form.buildingName = building.buildingName
@@ -90,10 +89,8 @@ export default {
     },
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
-      console.log(this.isEdit)
-      if (this.isEdit) { // 更新资源数据（即编辑修改）
-        const building = this.form
-        updateBuilding(building).then(response => {
+      if (this.treeIsEdit) { // 更新资源数据（即编辑修改）
+        updateBuilding(this.$store.getters.id, this.form).then(response => {
           if (response.code === 2000) {
             this.$message({
               message: response.message,
@@ -104,10 +101,11 @@ export default {
           }
         })
       } else { // 插入一条资源数据（即添加）
+        this.form.userId = this.$store.getters.id
         addBuilding(this.form).then(response => {
           if (response.code === 2000) {
             this.$message({
-              message: response.message,
+              message: '操作成功',
               type: 'success'
             })
             this.cancel()

@@ -16,24 +16,26 @@
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
       <!-- #是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
       <template #handle="{scope: {row, $index}}">
-        <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete()">删除</el-button>
+        <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(row)">删除</el-button>
         <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(row, $index)">编辑</el-button>
       </template>
     </TableVue>
   </div>
 </template>
 <script>
-import { listChargeProject } from '@/api/financialMag/chargeProject'
+import { listChargeProject, deletePayItems } from '@/api/financialMag/chargeProject'
 import TableVue from '@/components/TableVue'
 import SearchForm from '@/components/SearchForm'
 import newDialog from './newDialog'
 import { listChargeCategoryOptions } from '@/api/financialMag/payBills'
+import { getDictVal } from '@/api/system/logininfor'
 export default {
   name: 'Index',
   components: { SearchForm, TableVue, newDialog },
   data() {
     return {
-      editInfo: {},
+      statusOptions: [], // 状态数据字典
+      editInfo: {}, // 编辑相关数据
       chargeCategoryOptions: [],
       // 查询表单
       searchData: {
@@ -76,6 +78,12 @@ export default {
     this.getChargeCategory()
   },
   methods: {
+    // 获取回显字典
+    getOperationStatusDict() {
+      getDictVal('tb_charge_project', 'charge_standard').then(res => {
+        this.statusOptions = this.selectDictLabels(res.data || [])
+      })
+    },
     // 选项：收费类型
     getChargeCategory() {
       this.searchData.userId = this.$store.getters.id
@@ -97,8 +105,17 @@ export default {
     getList() {
       this.searchData.userId = this.$store.getters.id
       listChargeProject(this.searchData).then((response) => {
-        this.list = response.data.rows
+        const listData = response.data.rows || []
         this.total = response.data.total
+        for (let i = 0; i < this.list.length; i++) {
+          // 显示账单状态
+          this.statusOptions.filter(
+            item => item.value - 0 === listData[i].chargeStandard
+          ).map(function(val) {
+            listData[i].chargeStandard = val.label
+          })
+        }
+        this.list = listData
         this.loading = false
       })
     },
@@ -113,8 +130,18 @@ export default {
       this.dialogVisible = true
       this.isEdit = false
     },
-    handleDelete() {
-      this.list = []
+    handleDelete(row) {
+      deletePayItems(row.id).then(
+        response => {
+          if (response.code === 2000) {
+            this.$message({
+              message: '删除收费项目成功',
+              type: 'success'
+            })
+            this.getList()
+          }
+        }
+      )
     }
   }
 }

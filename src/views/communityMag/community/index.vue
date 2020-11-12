@@ -22,30 +22,16 @@
         <!--点击+新增后出现的弹框    -->
         <el-dialog v-if="treeDialogVisible" :title="treeIsEdit?'编辑':'添加'" :visible.sync="treeDialogVisible" width="650px" @close="cancel">
           <!--弹框子组件      -->
-          <community-dialog v-if="newdialog === 1" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" />
-          <building-dialog v-if="newdialog === 2" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" />
-          <unit-dialog v-if="newdialog === 3" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" />
-          <merchant-dialog v-if="newdialog === 0" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" />
+          <community-dialog v-if="newdialog === 1" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" :require-id="requireId"/>
+          <building-dialog v-if="newdialog === 2" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" :require-id="requireId"/>
+          <unit-dialog v-if="newdialog === 3" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" :require-id="requireId"/>
+          <merchant-dialog v-if="newdialog === 0" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" :require-id="requireId"/>
         </el-dialog>
-        <!-- 用户导入对话框 -->
+        <!-- 小区信息导入对话框 -->
         <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
-          <el-upload
-            ref="upload"
-            :limit="1"
-            accept=".xlsx, .xls"
-            :headers="upload.headers"
-            :action="upload.url"
-            :disabled="upload.isUploading"
-            :http-request="handleFileUpload"
-            :on-success="handleFileSuccess"
-            :auto-upload="false"
-            drag
-          >
+          <el-upload ref="upload" :limit="1" accept=".xlsx, .xls" :headers="upload.headers" :action="upload.url" :disabled="upload.isUploading" :http-request="handleFileUpload" :on-success="handleFileSuccess" :auto-upload="false" drag>
             <i class="el-icon-upload" />
-            <div class="el-upload__text">
-              将文件拖到此处，或
-              <em>点击上传</em>
-            </div>
+            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             <div slot="tip" class="el-upload__tip" style="color:#ff0000">提示：仅允许导入“xls”或“xlsx”格式文件！
               <el-link type="info" style="font-size:12px" @click="importTemplate">下载模板</el-link>
             </div>
@@ -53,6 +39,20 @@
           <div slot="footer" class="dialog-footer">
             <el-button type="primary" @click="submitFileForm">确 定</el-button>
             <el-button @click="handleFileCancel">取 消</el-button>
+          </div>
+        </el-dialog>
+        <!-- 住户信息导入对话框 -->
+        <el-dialog :title="uploadResident.title" :visible.sync="uploadResident.open" width="400px" append-to-body>
+          <el-upload ref="uploadResident" :limit="1" accept=".xlsx, .xls" :headers="uploadResident.headers" :action="uploadResident.url" :disabled="uploadResident.isUploading" :http-request="handleResidentFileUpload" :on-success="handleResidentFileSuccess" :auto-upload="false" drag>
+            <i class="el-icon-upload" />
+            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+            <div slot="tip" class="el-upload__tip" style="color:#ff0000">提示：仅允许导入“xls”或“xlsx”格式文件！
+              <el-link type="info" style="font-size:12px" @click="importResidentTemplate">下载模板</el-link>
+            </div>
+          </el-upload>
+          <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="submitResidentFileForm">确 定</el-button>
+            <el-button @click="handleResidentFileCancel">取 消</el-button>
           </div>
         </el-dialog>
 
@@ -65,7 +65,7 @@
         <search-form class="searchMain" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
         <el-row :gutter="10">
           <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
-          <el-button type="info" icon="el-icon-upload2" size="mini" :disabled="!multiple" @click="handleImport">导入</el-button>
+          <el-button type="info" icon="el-icon-upload2" size="mini" :disabled="!multiple" @click="handleImportResident">导入</el-button>
           <el-button type="warning" icon="el-icon-download" size="mini" :disabled="!multiple" @click="handleExport">导出</el-button>
           <el-checkbox v-model="checkAll">导出所有数据</el-checkbox>
         </el-row>
@@ -100,8 +100,8 @@ import merchantDialog from './merchantDialog'
 import newDialog from './newDialog'
 import TableVue from '@/components/TableVue'
 import SearchForm from '@/components/SearchForm'
-import { listProperty, listResident, delProperty, listPropertyInfo, delResident,
-  importCommunityTemplates, batchAddCommunity, exportResident } from '@/api/CommunityMag/community'
+import { listProperty, listResident, delProperty, listPropertyInfo, delResident, importCommunityTemplates,
+  batchAddCommunity, exportResident, importResidentTemplates, batchAddResident } from '@/api/CommunityMag/community'
 import { getToken } from '@/utils/auth'
 import fileDownload from 'js-file-download'
 import moment from 'moment'
@@ -122,6 +122,10 @@ export default {
       upload: {
         open: false, title: '', isUploading: false, headers: { Authorization: getToken() },
         url: process.env.VUE_APP_BASE_API + '/sys/community/import' // 上传的地址
+      },
+      uploadResident: {
+        open: false, title: '', isUploading: false, headers: { Authorization: getToken() },
+        url: process.env.VUE_APP_BASE_API + '/sys/resident/import' // 上传的地址
       },
       open: false, // 是否显示弹出层
       // 查询表单
@@ -251,6 +255,10 @@ export default {
       this.upload.title = '小区信息导入'
       this.upload.open = true
     },
+    handleImportResident() {
+      this.uploadResident.title = '住户信息导入'
+      this.uploadResident.open = true
+    },
     // 下载模板操作
     importTemplate() {
       importCommunityTemplates().then(res => {
@@ -259,32 +267,62 @@ export default {
         console.log(err)
       })
     },
+    importResidentTemplate() {
+      importResidentTemplates().then(res => {
+        fileDownload(res, '住户信息导入模板.xlsx')
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    // http-request(请求)
     handleFileUpload(val) {
       const formData = new FormData()
       formData.append('file', val.file)
-      // console.log(val)
-      batchAddCommunity(formData).then(res => {
+      batchAddCommunity(this.$store.getters.id, 2, formData).then(res => {
         val.onSuccess()
       }).catch(res => {
         val.onError(res)
       })
     },
-    // 文件上传成功处理
+    handleResidentFileUpload(val) {
+      const formData = new FormData()
+      formData.append('file', val.file)
+      batchAddResident(this.$store.getters.id,formData).then(res => {
+        val.onSuccess()
+      }).catch(res => {
+        val.onError(res)
+      })
+    },
+    // on-success（文件上传成功处理）
     handleFileSuccess() {
       this.$refs.upload.clearFiles()
       this.upload.open = false
       this.upload.isUploading = false
       this.getList()
     },
+    handleResidentFileSuccess() {
+      this.$refs.uploadResident.clearFiles()
+      this.uploadResident.open = false
+      this.uploadResident.isUploading = false
+      this.getList()
+    },
     // 提交上传文件
     submitFileForm() {
       this.$refs.upload.submit()
+    },
+    submitResidentFileForm() {
+      this.$refs.uploadResident.submit()
     },
     // 导入弹出框取消
     handleFileCancel() {
       this.$refs.upload.clearFiles()
       this.upload.open = false
       this.upload.isUploading = false
+    },
+    handleResidentFileCancel() {
+      this.$refs.uploadResident.clearFiles()
+      this.uploadResident.open = false
+      this.uploadResident.isUploading = false
     },
     // 增加节点
     nodeAdd(s, d, n) {
@@ -298,6 +336,7 @@ export default {
         this.newdialog = 4
       }
       this.requireId = n.key
+      console.log(n)
       this.treeDialogVisible = true
       this.treeIsEdit = false
     },
@@ -324,9 +363,11 @@ export default {
         this.query.buildingId = n.parent.key
         this.query.unitId = n.key
       }
+      this.requireId = n.parent.key
       await listPropertyInfo(this.query).then(
         (response) => {
-          this.editInfo = response.data
+          console.log(response)
+          this.editInfo = response.data || []
           this.editInfo.property = this.query
         }
       )
@@ -359,7 +400,7 @@ export default {
       }).then((res) => {
         this.getProperty()
         this.$message({
-          message: res.message,
+          message: '删除成功',
           type: res.code === 2000 ? 'success' : 'error'
         })
       }).catch(function() {
