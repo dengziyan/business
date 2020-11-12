@@ -70,6 +70,10 @@ export default {
     }
   },
   methods: {
+    // 按取消键后
+    cancel() {
+      this.$emit('update:visible', false)
+    },
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
       if (this.isEdit) { // 更新资源数据（即编辑修改）
@@ -79,8 +83,8 @@ export default {
               message: '修改成功！',
               type: 'success'
             })
-            this.dialogVisible = false
-            this.getList()
+            this.cancel()
+            this.$emit('getList')
           }
         })
       } else { // 插入一条资源数据（即添加）
@@ -90,8 +94,8 @@ export default {
               message: '添加成功！',
               type: 'success'
             })
-            this.dialogVisible = false
-            this.getList()
+            this.cancel()
+            this.$emit('getList')
           }
         })
       }

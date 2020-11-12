@@ -5,7 +5,7 @@
     <FormVue :form-data="formData" :form="form" class="formMain" />
     <span slot="footer" class="dialog-footer">
       <el-button size="small" @click="cancel()">取 消</el-button>
-      <el-button type="primary" size="small" @click="handleDialogConfirm()">新建</el-button>
+      <el-button type="primary" size="small" @click="handleDialogConfirm()">确认</el-button>
     </span>
   </div>
 </template>

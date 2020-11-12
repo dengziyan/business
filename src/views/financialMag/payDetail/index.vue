@@ -6,13 +6,13 @@
     <el-button-group>
       <el-row :gutter="10" class="mb8">
         <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新建</el-button>
-        <el-button type="success" icon="el-icon-edit" size="mini" :disabled="single" @click="handleAnyCheck">批量审核
-        </el-button>
-        <el-button type="info" icon="el-icon-upload2" size="mini" :disabled="!multiple" @click="handleImport">导入
-        </el-button>
+<!--        <el-button type="success" icon="el-icon-edit" size="mini" :disabled="single" @click="handleAnyCheck">批量审核-->
+<!--        </el-button>-->
+<!--        <el-button type="info" icon="el-icon-upload2" size="mini" :disabled="!multiple" @click="handleImport">导入-->
+<!--        </el-button>-->
         <el-button type="warning" icon="el-icon-download" size="mini" :disabled="!multiple" @click="handleExport">导出
         </el-button>
-        <el-checkbox v-model="checkAll">导出所有数据</el-checkbox>
+<!--        <el-checkbox v-model="checkAll">导出所有数据</el-checkbox>-->
       </el-row>
     </el-button-group>
     <!--点击新增后出现的弹框    -->
@@ -28,10 +28,10 @@
       </template>
       <!-- 下面是上面的简写，#是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
       <template #handle="{scope: {row, $index}}">
-        <el-button type="primary" size="mini" @click="handleReject(row, 0)">同意</el-button>
-        <el-button type="primary" size="mini" @click="handleReject(row, 1)">拒绝</el-button>
-        <el-button type="danger" size="mini" @click="handleDelete()">删除</el-button>
-        <el-button type="primary" size="mini" @click="handleEdit(row, $index)">编辑</el-button>
+        <el-button v-if="!row.isShow" type="primary" size="mini" @click="handleReject(row, 1)">同意</el-button>
+        <el-button v-if="!row.isShow" type="primary" size="mini" @click="handleReject(row, 2)">拒绝</el-button>
+        <el-button type="danger" size="mini" :disabled="row.isShow" @click="handleDelete(row)">删除</el-button>
+        <el-button type="primary" size="mini" :disabled="row.isShow" @click="handleEdit(row, $index)">编辑</el-button>
       </template>
     </TableVue>
     <!--  分页  -->
@@ -48,11 +48,13 @@
 import newDialog from './newDialog'
 import TableVue from '@/components/TableVue'
 import SearchForm from '@/components/SearchForm'
-import { listPayDetail, exportChargeBill } from '@/api/financialMag/payDetail'
+import { listPayDetail, exportChargeBill, deleteById } from '@/api/financialMag/payDetail'
 import DetailDialog from './detailDialog'
 import moment from 'moment'
 import fileDownload from 'js-file-download'
 import { getDictVal } from '@/api/system/logininfor'
+import { listCommunityOptions, toReview } from '@/api/financialMag/payBills'
+import { exportUser } from '@/api/authoraty/user'
 export default {
   components: { DetailDialog, newDialog, TableVue, SearchForm },
   data() {
@@ -70,17 +72,17 @@ export default {
         beginTime: undefined, endTime: undefined, batchId: undefined
       },
       searchForm: [// multiple:是否开启多选
-        { type: 'Select', isDisabled: false, multiple: false, label: '小区', prop: 'communityId', value: '车位停车费', options: [] },
-        { type: 'Select', isDisabled: false, multiple: false, label: '账单名称', prop: 'billName', value: '车位停车费', options: [] },
-        { type: 'Input', label: '房屋（栋-单元-室/车位号/车牌号）', prop: 'buildingName', width: '100px', placeholder: '请输入账单名称...' },
-        { type: 'Input', label: '审核状态', prop: 'approvalStatus', width: '100px', placeholder: '请输入账单名称...' }
+        { type: 'Select', isDisabled: false, multiple: false, label: '小区', prop: 'communityId', value: '车位停车费', options: [], change: this.getList },
+        { type: 'Select', isDisabled: false, multiple: false, label: '账单名称', prop: 'billName', value: '车位停车费', options: [], change: this.getList },
+        { type: 'Input', label: '房屋（栋-单元-室/车位号/车牌号）', prop: 'buildingName', width: '100px', placeholder: '' },
+        { type: 'Input', label: '审核状态', prop: 'approvalStatus', width: '100px', placeholder: '' }
       ],
       searchHandle: [
         { label: '查询', type: 'primary', handle: this.getList },
         { label: '重置', type: 'primary', handle: this.resetForm }
       ],
       // table表格数据
-      total: 0, loading: true, list: [], detailId: 0, // 表单参数
+      total: 0, list: [], detailId: 0, // 表单参数
       columns: Object.freeze([
         { attrs: { prop: 'approvalStatus', label: '审核状态', width: '80', align: 'center' }},
         { attrs: { prop: 'communityName', label: '小区', width: '60', 'show-overflow-tooltip': true }},
@@ -100,11 +102,21 @@ export default {
     }
   },
   created() {
-    this.getList()
     this.getOperationStatusDict()
+    this.getList()
+    this.getCommunity()
     this.loading = false
   },
   methods: {
+    // 选项：小区
+    getCommunity() {
+      listCommunityOptions(this.$store.getters.id).then(response => {
+        this.communityOptions = response.data.map(function(val) {
+          return { label: val.communityName, value: val.id }
+        })
+        this.searchForm[0].options = this.communityOptions
+      })
+    },
     // 表格重置
     resetForm() {
       Object.assign(this.$data.searchData, this.$options.data().searchData)
@@ -121,30 +133,36 @@ export default {
       this.detailId = row.id
       // console.log(this.detailId)
     },
-    handleReject(row, index) {
-      // this.dialogVisible = true
-      // this.isEdit = false
-      // this.payBills = Object.assign({}, defaultPayBills) // 默认值为空
+    handleReject(row, status) {
+      toReview(this.$store.getters.id, row.id, status).then(
+        res => {
+          if (res.code === 2000) {
+            this.$message({
+              message: '审核成功',
+              type: 'success'
+            })
+            this.getList()
+          }
+        }
+      )
     },
     // 查询详情列表
-    getList() {
-      this.loading = true
+    async getList() {
       this.searchData.batchId = this.$route.params.id
-      listPayDetail(this.searchData).then(
+      await listPayDetail(this.searchData).then(
         (response) => {
           this.list = response.data.rows
-          console.log(response.data)
           for (let i = 0; i < this.list.length; i++) {
             this.list[i].billName = this.$route.params.billName
             this.list[i].projectName = this.$route.params.projectName
             this.list[i].amountActuallyPaid = response.data.amountActuallyPaid[i]
             // 判断 审核状态
             if (this.list[i].approvalStatus === 0) {
+              this.list[i].isShow = false
               this.list[i].approvalStatus = '待审核'
             } else if (this.list[i].approvalStatus === 1) {
+              this.list[i].isShow = true
               this.list[i].approvalStatus = '已审核'
-            } else if (this.list[i].approvalStatus === 2) {
-              this.list[i].approvalStatus = '缴费中'
             }
             // 判断 缴费状态
             // 显示账单状态
@@ -154,17 +172,36 @@ export default {
               return val.label
             })[0]
           }
-          console.log(this.list)
           this.total = response.data.total
         }
       )
-      this.loading = false
     },
     handleEdit(row, index) {
 
     },
-    handleDelete() {
-      this.list = []
+    handleDelete(row) {
+      const that = this
+      this.$confirm('是否确认删除这一条账单详情?', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(function() {
+          deleteById(row.id).then(res => {
+            if (res.code === 2000) {
+              that.$message({
+                message: '删除成功',
+                type: 'success'
+              })
+            }
+            that.getList()
+          })
+            .catch(err => {
+              console.log(err)
+            })
+        })
+        .catch(function() {
+        })
     },
     // 按添加按钮，弹出对话框
     handleAdd() {

@@ -4,7 +4,7 @@
     <!--表格组件      -->
     <FormVue ref="form" :form-data="formData" :form="form"/>
     <span slot="footer" class="dialog-footer">
-      <el-button size="small" @click="cancel(false)">取 消</el-button>
+      <el-button size="small" @click="cancel()">取 消</el-button>
       <el-button type="primary" size="small" @click="submitFileForm()">新建</el-button>
     </span>
   </div>
@@ -131,14 +131,21 @@ export default {
         console.log(this.form)
         batchAddBatchBills(this.$store.getters.id, this.form.modle, formData).then(res => {
           val.onSuccess()
+          if (response.code === 2000) {
+            this.$message({
+              message: response.message,
+              type: 'success'
+            })
+            this.$emit('getList')
+            this.cancel()
+          }
         }).catch(res => {
           val.onError()
         })
       })
     },
-    cancel(val) {
-      this.dialogVisibled = val
-      this.$emit('update:visible', this.dialogVisibled)
+    cancel() {
+      this.$emit('update:visible', false)
     },
     // 对话框按确定键之后提交上传文件
     submitFileForm() {

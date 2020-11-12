@@ -30,7 +30,7 @@
       <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
     </div>
     <!--点击新增后出现的弹框    -->
-    <el-dialog title="新增账单批次" :visible.sync="newVisible" width="650px">
+    <el-dialog title="新增账单批次" :visible.sync="newVisible" width="650px" @getList="getList">
       <new-dialog :visible.sync="newVisible" />
     </el-dialog>
     <!--点击编辑后出现的弹框    -->
@@ -46,7 +46,7 @@ import newDialog from './newDialog'
 import editDialog from './editDialog'
 import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
-import { listPayBills, delBatch, listCommunityOptions } from '@/api/financialMag/payBills'
+import { listPayBills, delBatch, listCommunityOptions, listCommunity } from '@/api/financialMag/payBills'
 import { listChargeProject } from '@/api/financialMag/chargeProject'
 import { getDictVal } from '@/api/system/logininfor'
 export default {
@@ -172,6 +172,10 @@ export default {
             // 根据收费项目ID 获取收费项目名称
             await listChargeProject(query).then(response => {
               listData[i].chargeProjectId = response.data.rows[0].chargeProjectName
+            })
+            // 根据小区id查询小区名称
+            listCommunity(listData[i].communityId).then(response => {
+              listData[i].communityId = response.data.communityName
             })
             // 显示账单状态
             this.statusOptions.filter(

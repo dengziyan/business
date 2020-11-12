@@ -39,3 +39,10 @@ export function listChargeProjectOptions(data) {
     data: data
   })
 }
+// 删除收费项目
+export function deletePayItems(data) {
+  return request({
+    url: '/project/' + data,
+    method: 'delete'
+  })
+}

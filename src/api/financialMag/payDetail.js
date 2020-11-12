@@ -35,3 +35,18 @@ export function exportChargeBill(data) {
     params: data
   })
 }
+// 删除收费详情
+export function deleteById(billId) {
+  return request({
+    url: '/chargeBill/' + billId,
+    method: 'delete'
+  })
+}
+// 新增单条收费账单
+export function insertBill(data) {
+  return request({
+    url: '/chargeBill/insert',
+    method: 'post',
+    data: data
+  })
+}
