@@ -3,8 +3,10 @@
     <!--小区左边的树形控件组件  -->
     <div v-show="!loading" class="expand">
       <div v-loading="isLoadingTree">
-        小区信息
-        <el-button @click="handleAddTop">导入</el-button>
+        <div class="title">
+          <span class="communityTitle">小区信息</span>
+          <el-button class="importBtn" @click="handleAddTop">导入</el-button>
+        </div>
         <el-tree
           ref="expandMenuList"
           class="expand-tree"
@@ -55,7 +57,6 @@
             <el-button @click="handleResidentFileCancel">取 消</el-button>
           </div>
         </el-dialog>
-
       </div>
     </div>
     <div v-show="!loading" class="resident">
@@ -144,7 +145,7 @@ export default {
       total: 0, loading: true, list: [],
       levels: [-1, -1, -1, -1],
       searchData: { // 查询参数
-        pageNum: 1, pageSize: 10, userId: undefined, buildingId: undefined, communityId: undefined,
+        pageNum: 1, pageSize: 5, userId: undefined, buildingId: undefined, communityId: undefined,
         merchantId: undefined, roomNo: undefined, unitId: undefined,
         data: { mobilePhone: undefined, residentName: undefined }
       },
@@ -159,7 +160,7 @@ export default {
         { attrs: { prop: 'certificateNo', label: '证件号', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'residentIdentity', label: '住户身份', width: '100', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'createTime', label: '创建时间', align: 'center', 'show-overflow-tooltip': true }},
-        { slot: 'handle', attrs: { label: '操作', width: '150', 'class-name': 'small-padding fixed-width', align: 'center' }}
+        { slot: 'handle', attrs: { label: '操作', width: '120', 'class-name': 'small-padding fixed-width', align: 'center' }}
       ])
     }
   },
@@ -364,13 +365,11 @@ export default {
         this.query.unitId = n.key
       }
       this.requireId = n.parent.key
-      await listPropertyInfo(this.query).then(
-        (response) => {
-          console.log(response)
-          this.editInfo = response.data || []
-          this.editInfo.property = this.query
-        }
-      )
+      await listPropertyInfo(this.query).then((response) => {
+        console.log(response)
+        this.editInfo = response.data || []
+        this.editInfo.property = this.query
+      })
       this.treeDialogVisible = true
       this.treeIsEdit = true
     },
@@ -551,7 +550,13 @@ export default {
     font-size: 14px;
     padding-right: 8px;
   }
-
+  .title{
+    display: flex;
+  }
+  .importBtn{
+    margin-left: 10px;
+    padding: 5px 10px;
+  }
   /*  表格*/
   .el-row {
     margin-left: 10px !important;

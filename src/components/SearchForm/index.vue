@@ -125,11 +125,11 @@ export default {
 
 </script>
 <style scoped>
-  /*.input{*/
-  /*  float: left;*/
-  /*}*/
-  /*.button{*/
-  /*  float: left;*/
-  /*}*/
+  .input{
+    float: left;
+  }
+  .button{
+    float: left;
+  }
 
 </style>
