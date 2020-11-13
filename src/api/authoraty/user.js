@@ -11,6 +11,17 @@ export function listUser(query) {
   })
 }
 
+// 查询用户列表
+export function getUserName(id) {
+  return request({
+    url: '/sys/user/user-link',
+    method: 'get',
+    params: {
+      id: id
+    }
+  })
+}
+
 // 查询用户详细
 export function getUser(id) {
   return request({

@@ -11,7 +11,7 @@
         <span>已缴户数: {{}}户<br></span>
       </div>
      <div class="txt-right">
-       <span>实缴金额: {{}}元<br></span>
+       <span>实缴金额: {{sum}}元<br></span>
        <span>未缴户数: {{}}户<br></span>
      </div>
     </div>
@@ -32,7 +32,8 @@ export default {
   components: { SearchForm },
   data() {
     return {
-      sum: 0, chargeCategoryOptions: [],
+      sum: 0,
+      chargeCategoryOptions: [],
       // 查询表单
       searchData: { pageNum: 1, pageSize: 10, startTime: undefined, endTime: undefined, paymentCycle: undefined,
         chargeCategoryName: undefined, createTime: undefined, buildingId: undefined, unitId: undefined },

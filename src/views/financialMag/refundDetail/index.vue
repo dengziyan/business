@@ -6,7 +6,7 @@
       <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
     </div>
     <div class="txt">
-      <span>退款金额总计{{}}元</span>
+      <span>退款金额总计：{{count}}元</span>
     </div>
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
@@ -65,13 +65,14 @@ export default {
       ],
       // table表格数据
       list: [],
+      count: 0.0,
       total: 0, // 总条数
       columns: Object.freeze([
         { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
         { attrs: { prop: 'mobilePhone', label: '手机号', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'refundMethod', label: '退款方式', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'refundTime', label: '退款日期', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'id', label: '退款金额', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'refundAmount', label: '退款金额', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'refundStatus', label: '退款状态', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'residentName', label: '住户', 'show-overflow-tooltip': true }},
         { slot: 'handle2', attrs: { prop: 'amount', label: '退款详情', align: 'center', 'show-overflow-tooltip': true }},
@@ -101,13 +102,17 @@ export default {
     getList() {
       this.loading = true
       listRefundDetail(this.addDateRange(this.searchData, this.searchData.refundTime)).then((response) => {
-        this.list = response.data.rows
+        this.list = response.data.rows || []
         this.list.map((item, index, list) => {
           if (item.refundStatus === 0) {
             item.ifShow = false
           } else item.ifShow = true
           return item
         })
+        for (let i = 0; i < this.list.length; i++) {
+          this.count += this.list[i].refundAmount
+          console.log(this.count)
+        }
         this.total = response.data.total
         this.loading = false
       })

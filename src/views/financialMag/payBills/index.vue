@@ -49,6 +49,7 @@ import TableVue from '@/components/TableVue'
 import { listPayBills, delBatch, listCommunityOptions, listCommunity } from '@/api/financialMag/payBills'
 import { listChargeProject } from '@/api/financialMag/chargeProject'
 import { getDictVal } from '@/api/system/logininfor'
+import { getUserName } from '@/api/authoraty/user'
 export default {
   name: 'PayBillsTable',
   components: { newDialog, editDialog, TableVue, SearchForm },
@@ -174,9 +175,17 @@ export default {
               listData[i].chargeProjectId = response.data.rows[0].chargeProjectName
             })
             // 根据小区id查询小区名称
-            listCommunity(listData[i].communityId).then(response => {
+            await listCommunity(listData[i].communityId).then(response => {
               listData[i].communityId = response.data.communityName
             })
+            // 根据 审核者ID查询 审核者账号
+            console.log(listData[i].reviewer)
+            getUserName(listData[i].reviewer).then(
+              response => {
+                console.log(response.data)
+                listData[i].reviewer = response.data[0].userAccount
+              }
+            )
             // 显示账单状态
             this.statusOptions.filter(
               item => item.value - 0 === listData[i].billStatus

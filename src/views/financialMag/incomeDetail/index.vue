@@ -119,7 +119,8 @@ export default {
     // 对象数组去重
     unique(arr) {
       const res = new Map()
-      return arr.filter((arr) => !res.has(arr.id) && res.set(arr.id, 1))
+      // 根据 arr 对象数组中 需要去从的字段进行过滤
+      return arr.filter((arr) => !res.has(arr.value) && res.set(arr.value, 1))
     },
     // 导出按钮操作
     handleExport() {

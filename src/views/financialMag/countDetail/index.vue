@@ -58,7 +58,6 @@ export default {
   created() {
     this.getCommunity()
     this.getList()
-
   },
   methods: {
     // 选项：小区

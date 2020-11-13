@@ -6,9 +6,9 @@
       <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
     </div>
     <div class="txt">
-      <span>收入金额总计: {{ sum }}<br></span>
-      <span>收入笔数: {{ total }}<br></span>
-      <span>收入金额总计: 0.0<br></span>
+      <span>收入金额总计: {{ sum }}元<br></span>
+      <span>收入笔数: {{ total }}元<br></span>
+      <span>优惠金额金额总计: 0.0元<br></span>
     </div>
     <!--引入操作子组件        -->
     <!--引入表格组件  -->
@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import { addDateRange } from '@/utils/userright'
 import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
 import { listIncomeStatic } from '@/api/financialMag/incomeStatic'
