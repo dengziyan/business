@@ -23,7 +23,7 @@
       </template>
     </TableVue>
     <!--  分页  -->
-    <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[5,25,50]" @pagination="getList" />
   </div>
 </template>
 
@@ -43,7 +43,7 @@ export default {
     return {
       billNames: [],
       // 查询表单
-      searchData: { pageNum: 1, pageSize: 10, startTime: undefined, endTime: undefined, amountActuallyPaid: undefined,
+      searchData: { pageNum: 1, pageSize: 5, startTime: undefined, endTime: undefined, amountActuallyPaid: undefined,
         name: undefined, year: undefined, billName: undefined, userId: undefined, communityName: undefined }, // 查询参数
       searchForm: [
         { type: 'Select', label: '小区', prop: 'communityName', isDisabled: false, multiple: false, value: '请选择', options: [], change: this.getList },
@@ -54,7 +54,7 @@ export default {
       searchHandle: [
         { label: '查询', type: 'primary', handle: this.getList },
         { label: '重置', type: 'primary', handle: this.resetForm },
-        { label: '导出', type: 'primary', handle: this.handleExport }
+        { label: '导出', type: 'warning', handle: this.handleExport }
       ],
       // table表格数据
       list: [],

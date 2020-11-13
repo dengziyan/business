@@ -27,11 +27,11 @@
         </template>
       </TableVue>
       <!--  分页  -->
-      <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
+      <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[5,25,50]" @pagination="getList" />
     </div>
     <!--点击新增后出现的弹框    -->
-    <el-dialog title="新增账单批次" :visible.sync="newVisible" width="650px" @getList="getList">
-      <new-dialog :visible.sync="newVisible" />
+    <el-dialog title="新增账单批次" :visible.sync="newVisible" width="650px">
+      <new-dialog :visible.sync="newVisible"  @getList="getList" />
     </el-dialog>
     <!--点击编辑后出现的弹框    -->
     <el-dialog v-if="editVisible" title="编辑账单批次" :visible.sync="editVisible" width="650px">
@@ -59,7 +59,7 @@ export default {
       single: true, multiple: true, checkAll: false, newVisible: false, editVisible: false, // single:非多个禁用 multiple:非单个禁用
       statusOptions: [], // 状态数据字典
       // 查询表单
-      searchData: { pageNum: 1, pageSize: 10, startTime: undefined, endTime: undefined, chargeBeginTime: undefined, communityId: undefined,
+      searchData: { pageNum: 1, pageSize: 5, startTime: undefined, endTime: undefined, chargeBeginTime: undefined, communityId: undefined,
         billName: undefined, billStatus: undefined, userId: undefined }, // 查询参数
       searchForm: [
         { type: 'datetimerange', label: '账单开始日期', prop: 'chargeBeginTime', width: '1000px', change: this.getList },
@@ -74,7 +74,7 @@ export default {
       list: [],
       total: 0, // 总条数
       columns: Object.freeze([
-        { attrs: { prop: 'billStatus', label: '账单状态', width: '100', align: 'center' }},
+        { attrs: { prop: 'billStatus', label: '账单状态', width: '100', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'communityId', label: '小区', width: '100', align: 'center', 'show-overflow-tooltip': true }},
         { slot: 'handle2', attrs: { type: 'button', prop: 'billName', label: '账单名称', width: '100', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'chargeProjectId', label: '收费项目', width: '100', align: 'center', 'show-overflow-tooltip': true }},
@@ -83,7 +83,7 @@ export default {
         { attrs: { prop: 'amountActuallyPaid', label: '实缴金额', width: '100', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'reviewer', label: '审核人', width: '100', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'reviewTime', label: '审核时间', align: 'center', 'show-overflow-tooltip': true }},
-        { slot: 'handle', attrs: { label: '操作', width: '200', 'class-name': 'small-padding fixed-width', align: 'center' }}
+        { slot: 'handle', attrs: { label: '操作', width: '180', 'class-name': 'small-padding fixed-width', align: 'center' }}
       ])
     }
   },

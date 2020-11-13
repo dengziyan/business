@@ -1,6 +1,6 @@
 <template>
   <!--收费详情管理表格及操作组件  -->
-  <div>
+  <div class="main">
     <search-form size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
     <!--引入操作子组件        -->
     <el-button-group>
@@ -35,7 +35,7 @@
       </template>
     </TableVue>
     <!--  分页  -->
-    <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[5,25,50]" @pagination="getList" />
     <!--点击详情后出现的弹框    -->
     <el-dialog title="周期详情" :visible.sync="dialogVisible" width="800px">
       <!--弹框子组件      -->
@@ -71,7 +71,7 @@ export default {
       newdialogVisible: false, newdialoEdit: false,
       // 查询表单
       searchData: {
-        pageNum: 1, pageSize: 10, communityId: undefined, billName: undefined, billStatus: undefined,
+        pageNum: 1, pageSize: 5, communityId: undefined, billName: undefined, billStatus: undefined,
         beginTime: undefined, endTime: undefined, batchId: undefined
       },
       searchForm: [// multiple:是否开启多选
@@ -237,6 +237,9 @@ export default {
 </script>
 
 <style scoped>
+  .main{
+    margin: 20px;
+  }
   .el-row{
     margin-left: 10px !important;
   }

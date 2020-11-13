@@ -20,6 +20,8 @@
         <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(row, $index)">编辑</el-button>
       </template>
     </TableVue>
+    <!--分页    -->
+    <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[5,25,50]" @pagination="getList" />
   </div>
 </template>
 <script>
@@ -34,13 +36,14 @@ export default {
   components: { SearchForm, TableVue, newDialog },
   data() {
     return {
+      total: 0,
       statusOptions: [], // 状态数据字典
       editInfo: {}, // 编辑相关数据
       chargeCategoryOptions: [],
-      // 查询表单
+      // 查询表单3
       searchData: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 5,
         userId: undefined,
         // userId: this.$store.getters.id,
         chargeStandard: undefined,
@@ -68,7 +71,7 @@ export default {
         { attrs: { prop: 'createBy', label: '创建人', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'createTime', label: '创建时间', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'note', label: '备注', 'show-overflow-tooltip': true }},
-        { slot: 'handle', attrs: { label: '操作', width: '150', 'class-name': 'small-padding fixed-width', align: 'center' }}
+        { slot: 'handle', attrs: { label: '操作', width: '120', 'class-name': 'small-padding fixed-width', align: 'center' }}
       ])
     }
   },

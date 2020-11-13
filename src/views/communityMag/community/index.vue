@@ -68,7 +68,7 @@
           <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
           <el-button type="info" icon="el-icon-upload2" size="mini" :disabled="!multiple" @click="handleImportResident">导入</el-button>
           <el-button type="warning" icon="el-icon-download" size="mini" :disabled="!multiple" @click="handleExport">导出</el-button>
-          <el-checkbox v-model="checkAll">导出所有数据</el-checkbox>
+          <el-checkbox v-model="checkAll" class="importPut">导出所有数据</el-checkbox>
         </el-row>
         <!--小区表格及操作组件  -->
         <div class="table">
@@ -150,12 +150,12 @@ export default {
         data: { mobilePhone: undefined, residentName: undefined }
       },
       columns: Object.freeze([
-        { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
-        { attrs: { prop: 'buildingName', label: '栋', width: '100', align: 'center', 'show-overflow-tooltip': false }},
-        { attrs: { prop: 'unitName', label: '单元', width: '90', align: 'center', 'show-overflow-tooltip': false }},
-        { attrs: { prop: 'roomNo', label: '室', width: '90', align: 'center', 'show-overflow-tooltip': false }},
-        { attrs: { prop: 'houseArea', label: '建筑面积(m²)', width: '120', align: 'center', 'show-overflow-tooltip': false }},
-        { attrs: { prop: 'residentName', label: '姓名', width: '70', align: 'center', 'show-overflow-tooltip': false }},
+        { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'buildingName', label: '栋', width: '100', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'unitName', label: '单元', width: '90', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'roomNo', label: '室', width: '90', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'houseArea', label: '建筑面积(m²)', width: '120', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'residentName', label: '姓名', width: '70', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'mobilePhone', label: '手机号', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'certificateNo', label: '证件号', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'residentIdentity', label: '住户身份', width: '100', align: 'center', 'show-overflow-tooltip': true }},
@@ -529,7 +529,9 @@ export default {
   .el-button {
     /*padding: 5px 10px;*/
   }
-
+  .importPut{
+    margin-top: 5px;
+  }
   /* 右边的住户信息 */
   .resident {
     float: left;
@@ -594,10 +596,14 @@ export default {
   .el-button [class*=el-icon-]+span {
      /*margin-left: 0px;*/
   }
+
 </style>
 <style>
   .expand-tree .is-current > .el-tree-node__content .tree-btn,
   .expand-tree .el-tree-node__content:hover .tree-btn {
     display: inline-block;
+  }
+  .el-form-item__content {
+    line-height: 28px;
   }
 </style>

@@ -14,5 +14,4 @@ export default {
     min-width: 210px !important;
      background-color: none;
   }
-
 </style>

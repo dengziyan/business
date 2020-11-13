@@ -6,7 +6,7 @@
     <FormVue ref="form" :form-data="formData" class="formMain"/>
     <span slot="footer" class="dialog-footer">
       <el-button size="small" @click="cancel(false)">取 消</el-button>
-      <el-button type="primary" size="small" @click="submitFileForm()">新建</el-button>
+      <el-button type="primary" size="small" @click="submitFileForm()">确认</el-button>
     </span>
   </div>
 </template>
@@ -157,6 +157,11 @@ export default {
 
 <style scoped>
 .formMain{
-  height: 400px;
+  height: 230px;
+}
+.dialog-footer{
+  display: flex;
+  justify-content: space-between;
+  /*height: 30px;*/
 }
 </style>

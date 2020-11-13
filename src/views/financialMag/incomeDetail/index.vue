@@ -14,7 +14,7 @@
       </template>
     </TableVue>
     <!--  分页  -->
-    <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[5,25,50]" @pagination="getList" />
   </div>
 </template>
 
@@ -34,7 +34,7 @@ export default {
     return {
       billNames: [],
       // 查询表单
-      searchData: { pageNum: 1, pageSize: 10, startTime: undefined, endTime: undefined, amountActuallyPaid: undefined,
+      searchData: { pageNum: 1, pageSize: 5, startTime: undefined, endTime: undefined, amountActuallyPaid: undefined,
         name: undefined, year: undefined, billName: undefined, userId: undefined, communityName: undefined }, // 查询参数
       searchForm: [
         { type: 'Select', label: '小区', prop: 'communityName', isDisabled: false, multiple: false, value: '请选择', options: [], change: this.getList },
@@ -45,13 +45,13 @@ export default {
       searchHandle: [
         { label: '查询', type: 'primary', handle: this.getList },
         { label: '重置', type: 'primary', handle: this.resetForm },
-        { label: '导出', type: 'primary', handle: this.handleExport }
+        { label: '导出', type: 'warning', handle: this.handleExport }
       ],
       // table表格数据
       list: [],
       total: 0, // 总条数
       columns: Object.freeze([
-        { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
+        { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'buildingName', label: '房屋（栋-单元-室/车位号/车牌号）', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'billName', label: '账单名称', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'chargeCategory', label: '收费类型', width: '154', 'show-overflow-tooltip': true }},
@@ -61,7 +61,7 @@ export default {
         { attrs: { prop: 'createTime', label: '缴费时间', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'amountPaid', label: '缴费金额', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'paymentMethod', label: '缴费方式', 'show-overflow-tooltip': true }},
-        { slot: 'handle', attrs: { label: '操作', width: '', 'class-name': 'small-padding fixed-width', align: 'center' }}
+        { slot: 'handle', attrs: { label: '操作', width: '70px', 'class-name': 'small-padding fixed-width', align: 'center' }}
       ])
     }
   },

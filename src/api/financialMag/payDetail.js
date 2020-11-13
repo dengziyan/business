@@ -15,14 +15,14 @@ export function getPaymentCycle(query) {
   })
 }
 // 现金支付
-export function updateByAmountPaid(query) {
+export function updateByAmountPaid(userId, AmountPaid, id) {
   return request({
     url: '/paymentCycle/updateByAmountPaid',
     method: 'post',
     params: {
-      userId: query.userId,
-      AmountPaid: query.AmountPaid,
-      id: query.id
+      userId: userId,
+      AmountPaid: AmountPaid,
+      id: id
     }
   })
 }

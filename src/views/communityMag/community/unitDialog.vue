@@ -108,7 +108,12 @@ export default {
 </script>
 
 <style scoped>
-.formMain{
-  height: 400px;
-}
+  .formMain{
+    height: 230px;
+  }
+  .dialog-footer{
+    display: flex;
+    justify-content: space-between;
+    /*height: 30px;*/
+  }
 </style>

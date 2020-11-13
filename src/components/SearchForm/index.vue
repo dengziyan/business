@@ -131,5 +131,7 @@ export default {
   .button{
     float: left;
   }
-
+  .el-form-item__content {
+    line-height: 28px;
+  }
 </style>

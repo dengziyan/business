@@ -14,7 +14,7 @@
     <!--引入表格组件  -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据" />
     <!--  分页  -->
-    <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[5,25,50]" @pagination="getList" />
   </div>
 </template>
 
@@ -35,7 +35,7 @@ export default {
     return {
       sum: 0, chargeCategoryOptions: [],
       // 查询表单
-      searchData: { pageNum: 1, pageSize: 10, startTime: undefined, endTime: undefined, paymentCycle: undefined, chargeCategoryName: undefined, createTime: undefined },
+      searchData: { pageNum: 1, pageSize: 5, startTime: undefined, endTime: undefined, paymentCycle: undefined, chargeCategoryName: undefined, createTime: undefined },
       searchForm: [
         { type: 'Select', label: '小区', prop: 'communityName', isDisabled: false, multiple: false, value: '请选择', options: [], change: this.getList },
         { type: 'Select', label: '收费类型', prop: 'chargeCategoryName', isDisabled: false, multiple: false, value: '请选择收费类型', options: [], change: this.getList },
@@ -44,13 +44,13 @@ export default {
       searchHandle: [
         { label: '查询', type: 'primary', handle: this.getList },
         { label: '重置', type: 'primary', handle: this.resetForm },
-        { label: '导出', type: 'primary', handle: this.handleExport }
+        { label: '导出', type: 'warning', handle: this.handleExport }
       ],
       // table表格数据
       list: [],
       total: 0, // 总条数
       columns: Object.freeze([
-        { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
+        { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'paymentMethod', label: '渠道', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'incomeSum', label: '收入金额', width: '100', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'incomeCount', label: '收入笔数', width: '154', 'show-overflow-tooltip': true }},

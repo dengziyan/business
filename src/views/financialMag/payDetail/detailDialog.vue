@@ -32,11 +32,6 @@ export default {
   // components: { TableVue },
   data() {
     return {
-      query: {
-        userId: '',
-        id: 0,
-        AmountPaid: ''
-      },
       ids: [], // 多选时选中数组
       dialogVisibled: this.visible,
       // table表格数据
@@ -59,11 +54,7 @@ export default {
       // console.log(row, event, column, event.currentTarget)
     },
     handleEdit(index, row) {
-      this.query.id = row.id
-      this.query.AmountPaid = row.amountActuallyPaid
-      this.query.userId = this.$store.getters.id
-      console.log(this.query)
-      updateByAmountPaid(this.query).then(response => {
+      updateByAmountPaid(this.$store.getters.id, row.amountActuallyPaid, row.id).then(response => {
         if (response.code === 2000) {
           this.$message({
             message: '支付成功！',
@@ -76,7 +67,7 @@ export default {
       console.log(index, row)
     },
     handleDelete(index, row) {
-      console.log(index, row);
+      console.log(index, row)
     },
     // 按取消按钮
     cancel(val) {
@@ -106,7 +97,7 @@ export default {
       this.loading = true
       // console.log(this.detailId)
       getPaymentCycle(this.billId).then((response) => {
-        this.list = response.data
+        this.list = response.data || []
         this.total = response.data.total
         this.loading = false
         for (let i = 0; i < this.list.length; i++) {

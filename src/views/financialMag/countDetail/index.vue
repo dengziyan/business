@@ -37,7 +37,7 @@ export default {
       searchHandle: [
         { label: '查询', type: 'primary', handle: this.getList },
         { label: '重置', type: 'primary', handle: this.resetForm },
-        { label: '导出', type: 'primary', handle: this.handleExport }
+        { label: '导出', type: 'warning', handle: this.handleExport }
       ],
       // table表格数据
       list: [],
