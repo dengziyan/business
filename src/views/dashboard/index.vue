@@ -1,5 +1,5 @@
 <template>
-  <div id="myChart" :style="{width: '60%', height: '360px'}" />
+  <div id="myChart" :style="{width: '90%', height: '360px'}" />
 </template>
 <script>
 
@@ -28,13 +28,21 @@ export default {
           name: '西峡',
           value: 98
         }
-      ] }}
+      ] },
+      lastMonth: []
+    }
   },
   mounted() {
     this.drawLine()
   },
   methods: {
     drawLine() {
+      for (var i = 0; i < 7; i++) {
+        this.lastMonth.unshift(new Date(new Date()
+          .setDate(new Date().getDate() - i))
+          .toLocaleDateString())
+      }
+      console.log(this.lastMonth)
       // 基于准备好的dom，初始化echarts实例
       const myChart = this.$echarts.init(document.getElementById('myChart'))
       // 绘制图表
@@ -64,7 +72,7 @@ export default {
         xAxis: {
           type: 'category',
           boundaryGap: false,
-          data: ['2019-02-25', '2019-03-04', '2019-03-18', '2019-03-26', '2019-04-16', '2019-04-26', '2019-05-04']
+          data: this.lastMonth
         },
         yAxis: {
           type: 'value',

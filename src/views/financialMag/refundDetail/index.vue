@@ -6,7 +6,7 @@
       <search-form :model="searchData" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
     </div>
     <div class="txt">
-      <span>退款金额总计：{{count}}元</span>
+      <span>退款金额总计：{{ count }}元</span>
     </div>
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
@@ -37,7 +37,7 @@ import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
 import DetailDialog from './detailDialog'
 import { listRefundDetail, refundDetailToReview } from '@/api/financialMag/refundDetail'
-import { exportLogininfo } from '@/api/system/logininfor'
+import { exportLogininfo, getDictVal } from '@/api/system/logininfor'
 import moment from 'moment'
 import fileDownload from 'js-file-download'
 import { listCommunityOptions } from '@/api/financialMag/payBills'
@@ -47,6 +47,7 @@ export default {
   components: { TableVue, SearchForm, DetailDialog },
   data() {
     return {
+      statusOptions: [], // 状态数据字典
       dialogVisible: false, detailData: {}, ifShow: true,
       // 查询表单
       searchData: { pageNum: 1, pageSize: 5, mobliePhone: undefined, beginTime: undefined, endTime: undefined,
@@ -83,6 +84,7 @@ export default {
   created() {
     this.getList()
     this.getCommunity()
+    this.getOperationStatusDict()
   },
   methods: {
     // 选项：小区
@@ -98,22 +100,35 @@ export default {
     resetForm() {
       Object.assign(this.$data.searchData, this.$options.data().searchData)
     },
+    // 获取回显字典
+    getOperationStatusDict() {
+      getDictVal('tb_refund_details', 'refund_status').then(res => {
+        this.statusOptions = this.selectDictLabels(res.data || [])
+      })
+    },
     // 查询列表
     getList() {
       this.loading = true
       listRefundDetail(this.addDateRange(this.searchData, this.searchData.refundTime)).then((response) => {
-        this.list = response.data.rows || []
-        this.list.map((item, index, list) => {
+        const listData = response.data.rows || []
+        listData.map((item, index, list) => {
           if (item.refundStatus === 0) {
             item.ifShow = false
           } else item.ifShow = true
           return item
         })
-        for (let i = 0; i < this.list.length; i++) {
-          this.count += this.list[i].refundAmount
-          console.log(this.count)
+        for (let i = 0; i < listData.length; i++) {
+          this.count += listData[i].refundAmount
+          // 显示退款审核的状态
+          this.statusOptions.filter(
+            item => item.value - 0 === listData[i].refundStatus
+          ).map(function(val) {
+            listData[i].refundStatus = val.label
+          })
+          console.log(listData[i])
         }
         this.total = response.data.total
+        this.list = listData
         this.loading = false
       })
     },

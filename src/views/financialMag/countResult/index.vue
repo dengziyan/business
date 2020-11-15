@@ -7,15 +7,15 @@
     </div>
     <div class="txt">
       <div class="txt-left">
-        <span>结算金额: {{}}<br></span>
-        <span>优惠金额: {{}}<br></span>
+        <span>结算金额: {{ settlementAmount }}<br></span>
+        <span>优惠金额: 0.0<br></span>
       </div>
       <div class="txt-center">
-        <span>收入金额(元)/笔数（笔）: {{}}<br></span>
-        <span>手续费（元）:{{}}<br></span>
+        <span>收入金额(元)/笔数（笔）: {{ incomeAmounts }} / {{ incomeCounts }}<br></span>
+        <span>手续费（元）:0.0<br></span>
       </div>
       <div class="txt-right">
-        <span>退款金额（元）/退款笔数（笔）:{{}}<br></span>
+        <span>退款金额（元）/退款笔数（笔）:{{ refundAmounts }} / {{ refundCounts }}<br></span>
       </div>
     </div>
     <!--引入表格组件        -->
@@ -39,6 +39,16 @@ export default {
   components: { TableVue, SearchForm },
   data() {
     return {
+      // 收入金额
+      incomeAmounts: 0.0,
+      // 收入笔数
+      incomeCounts: 0,
+      // 退款金额
+      refundAmounts: 0.0,
+      // 退款笔数
+      refundCounts: 0,
+      // 结算金额
+      settlementAmount: 0.0,
       // 查询表单
       searchData: { pageNum: 1, pageSize: 10, startTime: null, endTime: null, settlementDate: null, name: null, createTime: null, billName: null }, // 查询参数
       searchForm: [
@@ -92,6 +102,11 @@ export default {
       searchData.settlementDate = undefined
       listCountResult(this.addDateRange(searchData, this.searchData.settlementDate)).then((response) => {
         this.list = response.data.settlementDetails || []
+        this.incomeAmounts = response.data.incomeAmounts
+        this.incomeCounts = response.data.incomeCounts
+        this.refundAmounts = response.data.refundAmounts
+        this.refundCounts = response.data.refundCounts
+        this.settlementAmount = this.incomeAmounts - this.refundAmounts
         // 将数据中 手续费和 优惠金额 设置为 0
         this.list.map((item, index, list) => {
           item.settlementAmount = item.incomeSum - item.refundSum
