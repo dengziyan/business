@@ -448,4 +448,9 @@ export default {
 .el-card {
   border: 0px;
 }
+.dialog-footer{
+  display: flex;
+  justify-content: center;
+  /*height: 30px;*/
+}
 </style>

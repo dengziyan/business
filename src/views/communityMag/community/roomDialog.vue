@@ -1,7 +1,7 @@
 <template>
   <!--新增按钮的弹框  -->
   <div>
-    单元信息
+    室信息
     <!--表格组件      -->
     <FormVue ref="form" :form-data="formData" :form="form" class="formMain" />
     <span slot="footer" class="dialog-footer">
@@ -13,9 +13,9 @@
 
 <script>
 import FormVue from '@/components/FormVue'
-import { updateUnit, addUnit } from '@/api/CommunityMag/community'
+import { addRoom } from '@/api/CommunityMag/community'
 export default {
-  name: 'NewDialog3',
+  name: 'NewDialog4',
   components: { FormVue },
   props: {
     requireId: { type: Number, required: true },
@@ -34,15 +34,17 @@ export default {
         createTime: undefined
       },
       isEdit: this.treeIsEdit,
-      unit: this.editInfo,
+      room: this.editInfo,
       formData: {
         labelWidth: '100px', inline: false, labelPosition: 'right', size: 'small',
         formItem: [
-          { type: 'text', label: '楼栋名称', prop: 'buildingName', size: 'small', isDisabled: true, required: true },
-          { type: 'text', label: '单元名称', prop: 'unitName', size: 'small', isDisabled: false, required: true }
+          { type: 'text', label: '单元', prop: 'unit', size: 'small', isDisabled: true, required: true },
+          { type: 'text', label: '室号', prop: 'roomNo', size: 'small', isDisabled: false, required: true },
+          { type: 'text', label: '房屋面积', prop: 'houseArea', size: 'small', isDisabled: false, required: true }
         ],
         rules: {
-          unitName: [{ required: true, message: '请输入单元名称', trigger: 'blur' }]
+          roomNo: [{ required: true, message: '请输入室号', trigger: 'blur' }],
+          houseArea: [{ required: true, message: '请输入房屋面积', trigger: 'blur' }]
         }
       }
     }
@@ -54,11 +56,9 @@ export default {
   },
   methods: {
     refresh() {
-      console.log(this.editInfo)
-      const unit = this.unit.unit
-      this.form.id = unit.id
-      this.form.unitName = unit.unitName
-      this.form.buildingName = this.unit.building || unit.building
+      const room = this.room.room
+      this.form.unitId = room.property.unit
+      this.form.unit = room.unit
     },
     propertyRefresh() {
       if (this.refreshProperty) {
@@ -66,32 +66,22 @@ export default {
       }
     },
     // 对话框按确定键之后的方法
-    handleDialogConfirm() {
-      if (this.treeIsEdit) { // 更新资源数据（即编辑修改）
-        updateUnit(this.$store.getters.id, this.form).then(response => {
-          if (response.code === 2000) {
-            this.$message({
-              message: '修改成功！',
-              type: 'success'
-            })
-            this.cancel()
-            this.propertyRefresh()
-          }
-        })
-      } else { // 插入一条资源数据（即添加）
-        this.form.userId = this.$store.getters.id
-        addUnit(this.form).then(response => {
-          console.log(this.form)
-          if (response.code === 2000) {
-            this.$message({
-              message: '添加成功！',
-              type: 'success'
-            })
-            this.cancel()
-            this.propertyRefresh()
-          }
-        })
-      }
+    handleDialogConfirm() { // 插入一条资源数据（即添加）
+      this.$refs.form.$refs.ruleForm.validate((valid) => {
+        if (valid) {
+          this.form.userId = this.$store.getters.id
+          addRoom(this.form).then(response => {
+            if (response.code === 2000) {
+              this.$message({
+                message: response.message,
+                type: 'success'
+              })
+              this.cancel()
+              this.propertyRefresh()
+            }
+          })
+        }
+      })
     },
     // 按取消键后
     cancel() {
@@ -104,7 +94,7 @@ export default {
 
 <style scoped>
   .formMain{
-    height: 100px;
+    height: 130px;
   }
   .dialog-footer{
     display: flex;

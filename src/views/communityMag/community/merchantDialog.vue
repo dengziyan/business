@@ -3,7 +3,7 @@
   <div>
     4
     <!--表格组件      -->
-    <FormVue ref="form" :form-data="formData" class="formMain"/>
+    <FormVue ref="form" :form-data="formData" class="formMain" />
     <span slot="footer" class="dialog-footer">
       <el-button size="small" @click="cancel(false)">取 消</el-button>
       <el-button type="primary" size="small" @click="submitFileForm()">确认</el-button>
@@ -13,8 +13,8 @@
 
 <script>
 import FormVue from '@/components/FormVue'
-import { updatePayBills, listChargeCategoryOptions, listChargeProjectOptions, importTemplates, batchAddChargeBatch } from '@/api/financialMag/payBills'
 import fileDownload from 'js-file-download'
+import { addMerchant } from '@/api/CommunityMag/community'
 export default {
   name: 'NewDialog1',
   components: {
@@ -50,38 +50,20 @@ export default {
       }
     }
   },
-  // watch: {
-  //   dialogVisibled(val) {
-  //     console.log(this.visible)
-  //     // 设置监听，如果改变就更新
-  //     this.$emit('update:visible', val)
-  //   }
-  // },
-  created() {
-    this.getChargeCategory()
-    this.getChargeProject()
-  },
   computed: {
     listCategories() {
       return []
     }
   },
+  created() {
+  },
   methods: {
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
       if (this.isEdit) { // 更新资源数据（即编辑修改）
-        updatePayBills(this.user).then(response => {
-          if (response.code === 2000) {
-            this.$message({
-              message: '修改成功！',
-              type: 'success'
-            })
-            this.dialogVisible = false
-            this.getList()
-          }
-        })
+
       } else { // 插入一条资源数据（即添加）
-        addPayBills(this.user).then(response => {
+        addMerchant(this.user).then(response => {
           if (response.code === 2000) {
             this.$message({
               message: '添加成功！',
@@ -93,48 +75,6 @@ export default {
         })
       }
     },
-    // 获取收费类型
-    getChargeCategory() {
-      listChargeCategoryOptions().then(response => {
-        const chargeCategoryList = response.data
-        for (let i = 0; i < chargeCategoryList.length; i++) {
-          const cate = chargeCategoryList[i]
-          this.chargeCategoryOptions.push({ lable: cate.chargeCategoryName, value: cate.chargeCategoryName, isDisabled: false })
-        }
-        this.formData.formItem[0].options = this.chargeCategoryOptions
-      })
-    },
-    // 获取收费项目名称
-    getChargeProject() {
-      listChargeProjectOptions().then(response => {
-        const cateList = response.data.rows
-        for (let i = 0; i < cateList.length; i++) {
-          const cate = cateList[i]
-          this.chargeProjectOptions.push({ lable: cate.chargeProjectName, value: cate.chargeProjectName, isDisabled: false })
-        }
-        this.formData.formItem[1].options = this.chargeProjectOptions
-      })
-    },
-    // 下载模板
-    importTemplate() {
-      importTemplates(2).then(res => {
-        fileDownload(res, '批量导入模板.xlsx')
-      })
-        .catch(err => {
-          console.log(err)
-        })
-    },
-    // 上传
-    handleFileUpload(val) {
-      const formData = new FormData()
-      formData.append('file', val.file)
-      console.log(val)
-      batchAddChargeBatch(0, formData).then(res => {
-        val.onSuccess()
-      }).catch(res => {
-        val.onError()
-      })
-    },
     cancel(val) {
       this.dialogVisibled = val
       this.$emit('update:visible', this.dialogVisibled)
@@ -145,9 +85,6 @@ export default {
     },
     handleRemove(file, fileList) {
       console.log(file, fileList)
-    },
-    handlePreview(file) {
-      console.log(file)
     },
     handleChange() {
     }

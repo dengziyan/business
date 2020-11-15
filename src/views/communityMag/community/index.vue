@@ -1,94 +1,98 @@
 <template>
-  <div v-loading="loading" class="app-container">
-    <!--小区左边的树形控件组件  -->
-    <div v-show="!loading" class="expand">
-      <div v-loading="isLoadingTree">
-        <div class="title">
-          <span class="communityTitle">小区信息</span>
-          <el-button class="importBtn" @click="handleAddTop">导入</el-button>
+  <div class="app-container" style="padding: 0">
+    <div>
+      <!--小区左边的树形控件组件  -->
+      <div v-show="!loading" class="expand">
+        <div v-loading="isLoadingTree">
+          <div class="title">
+            <span class="communityTitle">小区信息</span>
+            <el-button class="importBtn" @click="handleAddTop">导入</el-button>
+          </div>
+          <el-tree
+            ref="expandMenuList"
+            class="expand-tree"
+            :data="treeList"
+            :render-content="renderContent"
+            :props="defaultProps"
+            node-key="id"
+            highlight-current
+            accordion
+            :default-expand-all="true"
+            :check-strictly="true"
+            auto-expand-parent
+            @node-click="handleNodeClick"
+          />
+          <!--点击+新增后出现的弹框    -->
+          <el-dialog v-if="treeDialogVisible" :title="treeIsEdit?'编辑':'添加'" :visible.sync="treeDialogVisible" width="650px" @close="cancel">
+            <!--弹框子组件      -->
+            <community-dialog v-if="newdialog === 1" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" :require-id="requireId" />
+            <building-dialog v-if="newdialog === 2" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" :require-id="requireId" />
+            <unit-dialog v-if="newdialog === 3" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" :require-id="requireId" />
+            <room-dialog v-if="newdialog === 4" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" :require-id="requireId" />
+            <merchant-dialog v-if="newdialog === 0" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" :require-id="requireId" />
+          </el-dialog>
+          <!-- 小区信息导入对话框 -->
+          <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
+            <el-upload ref="upload" :limit="1" accept=".xlsx, .xls" :headers="upload.headers" :action="upload.url" :disabled="upload.isUploading" :http-request="handleFileUpload" :on-success="handleFileSuccess" :auto-upload="false" drag>
+              <i class="el-icon-upload" />
+              <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+              <div slot="tip" class="el-upload__tip" style="color:#ff0000">提示：仅允许导入“xls”或“xlsx”格式文件！
+                <el-link type="info" style="font-size:12px" @click="importTemplate">下载模板</el-link>
+              </div>
+            </el-upload>
+            <div slot="footer" class="dialog-footer">
+              <el-button type="primary" @click="submitFileForm">确 定</el-button>
+              <el-button @click="handleFileCancel">取 消</el-button>
+            </div>
+          </el-dialog>
+          <!-- 住户信息导入对话框 -->
+          <el-dialog :title="uploadResident.title" :visible.sync="uploadResident.open" width="400px" append-to-body>
+            <el-upload ref="uploadResident" :limit="1" accept=".xlsx, .xls" :headers="uploadResident.headers" :action="uploadResident.url" :disabled="uploadResident.isUploading" :http-request="handleResidentFileUpload" :on-success="handleResidentFileSuccess" :auto-upload="false" drag>
+              <i class="el-icon-upload" />
+              <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+              <div slot="tip" class="el-upload__tip" style="color:#ff0000">提示：仅允许导入“xls”或“xlsx”格式文件！
+                <el-link type="info" style="font-size:12px" @click="importResidentTemplate">下载模板</el-link>
+              </div>
+            </el-upload>
+            <div slot="footer" class="dialog-footer">
+              <el-button type="primary" @click="submitResidentFileForm">确 定</el-button>
+              <el-button @click="handleResidentFileCancel">取 消</el-button>
+            </div>
+          </el-dialog>
         </div>
-        <el-tree
-          ref="expandMenuList"
-          class="expand-tree"
-          :data="treeList"
-          :render-content="renderContent"
-          :props="defaultProps"
-          node-key="id"
-          highlight-current
-          accordion
-          :default-expand-all="true"
-          :check-strictly="true"
-          auto-expand-parent
-          @node-click="handleNodeClick"
-        />
-        <!--点击+新增后出现的弹框    -->
-        <el-dialog v-if="treeDialogVisible" :title="treeIsEdit?'编辑':'添加'" :visible.sync="treeDialogVisible" width="650px" @close="cancel">
-          <!--弹框子组件      -->
-          <community-dialog v-if="newdialog === 1" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" :require-id="requireId"/>
-          <building-dialog v-if="newdialog === 2" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" :require-id="requireId"/>
-          <unit-dialog v-if="newdialog === 3" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" :require-id="requireId"/>
-          <merchant-dialog v-if="newdialog === 0" :visible.sync="treeDialogVisible" :refresh-property="refreshProperty" :edit-info="editInfo" :tree-is-edit="treeIsEdit" :require-id="requireId"/>
-        </el-dialog>
-        <!-- 小区信息导入对话框 -->
-        <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
-          <el-upload ref="upload" :limit="1" accept=".xlsx, .xls" :headers="upload.headers" :action="upload.url" :disabled="upload.isUploading" :http-request="handleFileUpload" :on-success="handleFileSuccess" :auto-upload="false" drag>
-            <i class="el-icon-upload" />
-            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-            <div slot="tip" class="el-upload__tip" style="color:#ff0000">提示：仅允许导入“xls”或“xlsx”格式文件！
-              <el-link type="info" style="font-size:12px" @click="importTemplate">下载模板</el-link>
-            </div>
-          </el-upload>
-          <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="submitFileForm">确 定</el-button>
-            <el-button @click="handleFileCancel">取 消</el-button>
+      </div>
+      <div v-loading="loading" class="resident">
+        住户信息
+        <div class="detail">
+          <!--引入搜索条件子组件        -->
+          <search-form class="searchMain" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
+          <el-row :gutter="10">
+            <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
+            <el-button type="info" icon="el-icon-upload2" size="mini" :disabled="!multiple" @click="handleImportResident">导入</el-button>
+            <el-button type="warning" icon="el-icon-download" size="mini" :disabled="!multiple" @click="handleExport">导出</el-button>
+            <el-checkbox v-model="checkAll" class="importPut">导出所有数据</el-checkbox>
+          </el-row>
+          <!--小区表格及操作组件  -->
+          <div class="table">
+            <!-- 各个操作按钮 -->
+            <!--引入表格组件        -->
+            <TableVue v-loading="loadingTable" :columns="columns" :data="list" empty-text="暂无数据">
+              <!-- #是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
+              <template #handle="{scope: {row, $index}}">
+                <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(row)">编辑</el-button>
+                <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(row, $index)">删除</el-button>
+              </template>
+            </TableVue>
+            <!--分页    -->
+            <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[5,15,25]" @pagination="getList" />
           </div>
-        </el-dialog>
-        <!-- 住户信息导入对话框 -->
-        <el-dialog :title="uploadResident.title" :visible.sync="uploadResident.open" width="400px" append-to-body>
-          <el-upload ref="uploadResident" :limit="1" accept=".xlsx, .xls" :headers="uploadResident.headers" :action="uploadResident.url" :disabled="uploadResident.isUploading" :http-request="handleResidentFileUpload" :on-success="handleResidentFileSuccess" :auto-upload="false" drag>
-            <i class="el-icon-upload" />
-            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-            <div slot="tip" class="el-upload__tip" style="color:#ff0000">提示：仅允许导入“xls”或“xlsx”格式文件！
-              <el-link type="info" style="font-size:12px" @click="importResidentTemplate">下载模板</el-link>
-            </div>
-          </el-upload>
-          <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="submitResidentFileForm">确 定</el-button>
-            <el-button @click="handleResidentFileCancel">取 消</el-button>
-          </div>
-        </el-dialog>
+          <el-dialog :title="isEdit?'编辑住户信息':'添加住户信息'" :visible.sync="dialogVisible" :edit.sync="isEdit" width="700px">
+            <new-dialog v-if="dialogVisible" :visible.sync="dialogVisible" :edit.sync="isEdit" :edit-info="editInfo" />
+          </el-dialog>
+        </div>
       </div>
     </div>
-    <div v-show="!loading" class="resident">
-      住户信息
-      <div class="detail">
-        <!--引入搜索条件子组件        -->
-        <search-form class="searchMain" size="mini" label-width="80px" :search-data="searchData" :search-form="searchForm" :search-handle="searchHandle" />
-        <el-row :gutter="10">
-          <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
-          <el-button type="info" icon="el-icon-upload2" size="mini" :disabled="!multiple" @click="handleImportResident">导入</el-button>
-          <el-button type="warning" icon="el-icon-download" size="mini" :disabled="!multiple" @click="handleExport">导出</el-button>
-          <el-checkbox v-model="checkAll" class="importPut">导出所有数据</el-checkbox>
-        </el-row>
-        <!--小区表格及操作组件  -->
-        <div class="table">
-          <!-- 各个操作按钮 -->
-          <!--引入表格组件        -->
-          <TableVue v-loading="loadingTable" :columns="columns" :data="list" empty-text="暂无数据">
-            <!-- #是v-slot的简写，{scope: {row, $index}}是属性对象slot双重解构，注意这里的scope要与子组件插槽绑定的属性名对应 -->
-            <template #handle="{scope: {row, $index}}">
-              <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(row, $index)">删除</el-button>
-              <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(row)">编辑</el-button>
-            </template>
-          </TableVue>
-          <!--分页    -->
-          <pagination v-show="total>0" :total="total" :page.sync="searchData.pageNum" :limit.sync="searchData.pageSize" :page-sizes="[10,25,50]" @pagination="getList" />
-        </div>
-        <el-dialog :title="isEdit?'编辑住户信息':'添加住户信息'" :visible.sync="dialogVisible" :edit.sync="isEdit" width="700px">
-          <new-dialog v-if="dialogVisible" :visible.sync="dialogVisible" :edit.sync="isEdit" :edit-info="editInfo" />
-        </el-dialog>
-      </div>
-    </div>
+
   </div>
 </template>
 
@@ -97,6 +101,7 @@ import TreeRender from '@/components/Tree/index'
 import communityDialog from './communityDialog'
 import buildingDialog from './buildingDialog'
 import unitDialog from './unitDialog'
+import roomDialog from './roomDialog'
 import merchantDialog from './merchantDialog'
 import newDialog from './newDialog'
 import TableVue from '@/components/TableVue'
@@ -108,12 +113,12 @@ import fileDownload from 'js-file-download'
 import moment from 'moment'
 
 export default {
-  components: { communityDialog, buildingDialog, unitDialog, merchantDialog, TableVue, SearchForm, newDialog },
+  components: { communityDialog, buildingDialog, unitDialog,roomDialog, merchantDialog, TableVue, SearchForm, newDialog },
   data() {
     return {
       buildingId: 0,
       loadingTable: false,
-      query: { merchantId: undefined, communityId: undefined, buildingId: undefined, unitId: undefined, residentId: undefined },
+      query: { merchantId: undefined, communityId: undefined, buildingId: undefined, unitId: undefined, residentId: undefined, data: {}},
       editInfo: {},
       treeList: [], maxexpandId: 95, non_maxexpandId: 95, isLoadingTree: false, requireId: 0, fullscreenLoading: false,
       defaultExpandKeys: [], treeDialogVisible: false, treeIsEdit: false, newdialog: 0,
@@ -150,14 +155,14 @@ export default {
         data: { mobilePhone: undefined, residentName: undefined }
       },
       columns: Object.freeze([
-        { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'communityName', label: '小区', width: '140', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'buildingName', label: '栋', width: '100', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'unitName', label: '单元', width: '90', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'roomNo', label: '室', width: '90', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'houseArea', label: '建筑面积(m²)', width: '120', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'residentName', label: '姓名', width: '70', align: 'center', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'mobilePhone', label: '手机号', align: 'center', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'certificateNo', label: '证件号', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'mobilePhone', label: '手机号', width: '140', align: 'center', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'certificateNo', label: '证件号', width: '180', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'residentIdentity', label: '住户身份', width: '100', align: 'center', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'createTime', label: '创建时间', align: 'center', 'show-overflow-tooltip': true }},
         { slot: 'handle', attrs: { label: '操作', width: '120', 'class-name': 'small-padding fixed-width', align: 'center' }}
@@ -169,7 +174,6 @@ export default {
     this.getList()
   },
   methods: {
-
     // 表格重置
     resetForm() {
       Object.assign(this.$data.searchData, this.$options.data().searchData)
@@ -194,12 +198,20 @@ export default {
     },
     // 获取小区列表、表格信息
     getList() {
+      this.loadingTable = true
       this.searchData.userId = this.$store.getters.id
       this.searchData.data.mobilePhone = this.searchData.mobilePhone
       this.searchData.data.residentName = this.searchData.residentName
 
       listResident(this.searchData).then((response) => {
-        this.list = response.data.rows
+        const row = response.data.rows || []
+        this.list = row.map(function(val) {
+          val.identity = val.residentIdentity
+          if (val.residentIdentity !== undefined) {
+            val.residentIdentity = val.residentIdentity + 0 === 1 ? '住户' : '租户'
+          }
+          return val
+        })
         this.total = response.data.total
         this.loadingTable = false
         this.loading = false
@@ -288,7 +300,11 @@ export default {
     handleResidentFileUpload(val) {
       const formData = new FormData()
       formData.append('file', val.file)
-      batchAddResident(this.$store.getters.id,formData).then(res => {
+      const resident = Object.assign({}, this.searchData)
+      resident.pageSize = undefined
+      resident.pageNum = undefined
+      resident.data = undefined
+      batchAddResident(resident, formData).then(res => {
         val.onSuccess()
       }).catch(res => {
         val.onError(res)
@@ -327,14 +343,31 @@ export default {
     },
     // 增加节点
     nodeAdd(s, d, n) {
+      this.editInfo = {}
       if (n.level === 1) {
         this.newdialog = 1
+        this.editInfo.community = { }
+        this.editInfo.community.merchant = n.label
+        this.editInfo.community.property = {}
+        this.editInfo.community.property.merchantId = n.key
       } else if (n.level === 2) {
         this.newdialog = 2
+        this.editInfo.building = {}
+        this.editInfo.building.community = n.label
+        this.editInfo.building.property = {}
+        this.editInfo.building.property.communityId = n.key
       } else if (n.level === 3) {
+        this.editInfo.unit = {}
+        this.editInfo.unit.building = n.label
+        this.editInfo.unit.property = {}
+        this.editInfo.unit.property.buildingId = n.key
         this.newdialog = 3
       } else {
         this.newdialog = 4
+        this.editInfo.room = {}
+        this.editInfo.room.unit = n.label
+        this.editInfo.room.property = {}
+        this.editInfo.room.property.unit = n.key
       }
       this.requireId = n.key
       console.log(n)

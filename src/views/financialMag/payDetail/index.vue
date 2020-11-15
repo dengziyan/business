@@ -6,19 +6,19 @@
     <el-button-group>
       <el-row :gutter="10" class="mb8">
         <el-button type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新建</el-button>
-<!--        <el-button type="success" icon="el-icon-edit" size="mini" :disabled="single" @click="handleAnyCheck">批量审核-->
-<!--        </el-button>-->
-<!--        <el-button type="info" icon="el-icon-upload2" size="mini" :disabled="!multiple" @click="handleImport">导入-->
-<!--        </el-button>-->
+        <!--        <el-button type="success" icon="el-icon-edit" size="mini" :disabled="single" @click="handleAnyCheck">批量审核-->
+        <!--        </el-button>-->
+        <!--        <el-button type="info" icon="el-icon-upload2" size="mini" :disabled="!multiple" @click="handleImport">导入-->
+        <!--        </el-button>-->
         <el-button type="warning" icon="el-icon-download" size="mini" :disabled="!multiple" @click="handleExport">导出
         </el-button>
-<!--        <el-checkbox v-model="checkAll">导出所有数据</el-checkbox>-->
+        <!--        <el-checkbox v-model="checkAll">导出所有数据</el-checkbox>-->
       </el-row>
     </el-button-group>
     <!--点击新增后出现的弹框    -->
     <el-dialog :title="newdialoEdit?'编辑收费详情':'添加收费详情'" :visible.sync="newdialogVisible" :edit.sync="newdialoEdit" width="700px">
       <!--弹框子组件      -->
-      <new-dialog v-if="newdialogVisible" :visible.sync="newdialogVisible" :edit.sync="newdialoEdit" :edit-info="editInfo" :new-dialog-batchId="newDialogBatchId"/>
+      <new-dialog v-if="newdialogVisible" :visible.sync="newdialogVisible" :edit.sync="newdialoEdit" :edit-info="editInfo" :new-dialog-batch-id="newDialogBatchId" />
     </el-dialog>
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
@@ -54,7 +54,6 @@ import moment from 'moment'
 import fileDownload from 'js-file-download'
 import { getDictVal } from '@/api/system/logininfor'
 import { listCommunityOptions, toReview } from '@/api/financialMag/payBills'
-import { exportUser } from '@/api/authoraty/user'
 export default {
   components: { DetailDialog, newDialog, TableVue, SearchForm },
   data() {
@@ -62,6 +61,7 @@ export default {
       statusOptions: [], // 状态数据字典
       editInfo: {}, // 编辑相关数据
       newDialogBatchId: undefined,
+      loading: false,
       chargeBill: { communityId: undefined, billName: undefined, billStatus: undefined, beginTime: undefined,
         endTime: undefined, batchId: undefined
       },
@@ -107,20 +107,32 @@ export default {
   created() {
     this.newDialogBatchId = this.$route.params.id
     this.getOperationStatusDict()
-    this.getList()
     this.getCommunity()
-    this.loading = false
     console.log(this.newDialogBatchId)
+  },
+  mounted() {
+    // 第一种方法
+    if (window.name === 'isReload' || this.$route.params.id === undefined) {
+      this.$router.replace('/payBills')
+    } else if (window.name === '') {
+      window.name = 'isReload' // 在首次进入页面时我们可以给window.name设置一个固定值
+    }
+  },
+  destroyed() {
+    window.name = ''
+    console.log('销毁')
   },
   methods: {
     // 选项：小区
     getCommunity() {
+      this.loading = true
       listCommunityOptions(this.$store.getters.id).then(response => {
         this.communityOptions = response.data.map(function(val) {
           return { label: val.communityName, value: val.id }
         })
         this.searchForm[0].options = this.communityOptions
       })
+      this.getList()
     },
     // 表格重置
     resetForm() {
@@ -181,6 +193,7 @@ export default {
           this.total = response.data.total
         }
       )
+      this.loading = false
     },
     // 编辑按钮
     handleEdit(row, index) {

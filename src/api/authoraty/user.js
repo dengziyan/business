@@ -12,11 +12,12 @@ export function listUser(query) {
 }
 
 // 查询用户列表
-export function getUserName(id) {
+export function getUserName(user,id) {
   return request({
     url: '/sys/user/user-link',
     method: 'get',
     params: {
+      user: user,
       id: id
     }
   })
@@ -176,7 +177,7 @@ export function listUserRole(id) {
     method: 'get'
   })
 }
-export function updateUserRole(user,data) {
+export function updateUserRole(user, data) {
   return request({
     url: '/sys/user/assign-role',
     method: 'post',
@@ -193,3 +194,14 @@ export function updateUserRole(user,data) {
     data
   })
 }
+export function listUserLink(user, id) {
+  return request({
+    url: '/sys/user/user-link',
+    method: 'get',
+    params: {
+      user: user,
+      id: id
+    }
+  })
+}
+listUserLink

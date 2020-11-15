@@ -13,6 +13,7 @@
 <script>
 import FormVue from '@/components/FormVue'
 import { updateResident, addResident, listUserProperty } from '@/api/CommunityMag/community'
+import { getDictVal } from '@/api/system/logininfor'
 
 export default {
   name: 'NewDialog',
@@ -29,6 +30,7 @@ export default {
       dialogVisible: this.visible,
       isEdit: this.edit,
       loadingAdd: false,
+      statusOptions: [],
       form: {
         community: undefined,
         buildingId: undefined,
@@ -48,7 +50,7 @@ export default {
           { type: 'text', label: '业主姓名', prop: 'residentName', size: 'small', isDisabled: false, required: true },
           { type: 'text', label: '手机号', prop: 'mobilePhone', size: 'small', isDisabled: false, required: true },
           { type: 'text', label: '证件号', prop: 'certificateNo', size: 'small', isDisabled: false, required: true },
-          { type: 'text', label: '住户身份', prop: 'residentIdentity', size: 'small', isDisabled: false, required: true }
+          { type: 'select', label: '住户身份', prop: 'residentIdentity', size: 'small', isDisabled: false, multiple: false, tip: '', value: '', options: [], required: true }
         ]
       }
     }
@@ -58,6 +60,7 @@ export default {
   },
   methods: {
     isEditData() {
+      this.getOperationStatusDict()
       this.getCommunity()
       if (this.isEdit) {
         const edit = this.editInfo
@@ -66,8 +69,15 @@ export default {
         this.property.push(edit.unitId)
         this.property.push(edit.roomId)
         this.editInfo.propertyName = this.property
+        this.editInfo.residentIdentity = this.editInfo.identity + ''
         this.form = Object.assign({}, this.editInfo)
       }
+    },
+    // 获取回显字典
+    getOperationStatusDict() {
+      getDictVal('tb_resident_info', 'resident_identity').then(res => {
+        this.statusOptions = this.selectDictLabels(res.data || [])
+      })
     },
     // 小区选项
     getCommunity() {
@@ -82,6 +92,7 @@ export default {
           })
         })
         this.formData.formItem[0].options = this.casSelect(that.communityOptions || [])
+        this.formData.formItem[4].options = that.statusOptions
         this.loadingAdd = false
       })
     },
@@ -143,11 +154,11 @@ export default {
 
 <style scoped>
   .formMain{
-    height: 230px;
+    height: 200px;
   }
   .dialog-footer{
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     /*height: 30px;*/
   }
 </style>

@@ -15,6 +15,7 @@
 import FormVue from '@/components/FormVue'
 import { updateCommunity, addCommunity } from '@/api/CommunityMag/community'
 import { getDictVal } from '@/api/system/logininfor'
+import { listUserLink } from '@/api/authoraty/user'
 export default {
   name: 'NewDialog1',
   components: { FormVue },
@@ -43,10 +44,10 @@ export default {
       formData: {
         labelWidth: '100px', inline: false, labelPosition: 'right', size: 'small',
         formItem: [
-          { type: 'text', label: '商户编号', prop: 'merchantId', size: 'small', isDisabled: true, required: true },
+          { type: 'text', label: '商户编号', prop: 'merchant', size: 'small', isDisabled: true, required: true },
           { type: 'text', label: '小区名称', prop: 'communityName', size: 'small', isDisabled: false },
           { type: 'select', label: '小区类别', prop: 'category', size: 'small', tip: '', value: '', isDisabled: false, multiple: false, options: [] },
-          { type: 'text', label: '联系人', prop: 'admin', size: 'small', isDisabled: false, required: true },
+          { type: 'select', label: '联系人', prop: 'admin', size: 'small', tip: '', value: '', isDisabled: false, multiple: false, options: [] },
           { type: 'text', label: '联系电话', prop: 'mobilePhone', size: 'small', isDisabled: false, required: true },
           { type: 'text', label: '位置信息', prop: 'location', size: 'small', isDisabled: false, required: true }
         ],
@@ -71,21 +72,31 @@ export default {
     this.getOptionStatusDict()
   },
   methods: {
-
-    refresh() {
+    async refresh() {
+      this.loadingCommunity = true
+      const community = this.community.community
+      await listUserLink(this.$store.getters.id, community.admin || undefined).then(res => {
+        const option = res.data || []
+        this.formData.formItem[3].options = option.map(function(val) {
+          return { value: val.id, label: val.userAccount }
+        })
+      })
       if (this.treeIsEdit) {
         const property = this.community
-        const community = this.community.community
         this.form.merchant = property.merchant
         this.form.merchantId = property.property.merchantId
-        this.form.admin = community.admin
-        this.form.id = community.id
-        this.form.category = community.category + ''
-        this.form.communityName = community.communityName
-        this.form.location = community.location
         this.form.mobilePhone = property.phone
         console.log(this.form)
+      } else {
+        this.form.merchant = community.merchant
+        this.form.merchantId = community.property.merchantId
       }
+      this.form.id = community.id
+      this.form.category = '' + (community.category || 3)
+      this.form.communityName = community.communityName
+      this.form.location = community.location
+      this.form.admin = community.admin || ''
+      this.loadingBuilding = false
     },
     propertyRefresh() {
       if (this.refreshProperty) {
@@ -139,11 +150,11 @@ export default {
 
 <style scoped>
 .formMain{
-  height: 230px;
+  height: 180px;
 }
 .dialog-footer{
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   /*height: 30px;*/
 }
 </style>

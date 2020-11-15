@@ -35,7 +35,7 @@ export function listUserProperty(id) {
   })
 }
 // 新增商户
-export function addMerchart(data) {
+export function addMerchant(data) {
   return request({
     url: '/sys/merchant',
     method: 'post',
@@ -191,9 +191,7 @@ export function batchAddResident(id, data) {
   return request({
     url: '/sys/resident/import',
     method: 'post',
-    params: {
-      userId: id
-    },
+    params: id,
     data: data
   })
 }
@@ -204,5 +202,17 @@ export function exportResident(query) {
     method: 'get',
     responseType: 'arraybuffer',
     params: query
+  })
+}
+// 导入室信息
+export function addRoom(data) {
+  return request({
+    url: '/sys/community/room',
+    method: 'post',
+    params: {
+      user: data.userId,
+      unitId: data.unitId
+    },
+    data: data
   })
 }

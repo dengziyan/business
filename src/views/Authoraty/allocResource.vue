@@ -31,7 +31,7 @@
         </el-checkbox-group>
       </el-row>
     </div>
-    <div v-show="!loadingResource" style="margin-top: 20px" align="center">
+    <div v-show="!loadingResource" style="margin-top: 20px; display: flex;justify-content: center;" align="center">
       <el-button type="success" @click="handleSave()">保存</el-button>
       <el-button type="primary"  @click="restResourceMenu">还原</el-button>
       <el-button @click="clearResourceMenu">清空</el-button>

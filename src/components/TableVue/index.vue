@@ -7,15 +7,6 @@
     <!-- :scope是绑定的动态属性，可以起任意喜欢的名字，但要注意在父组件中获取数据时key要对应 -->
     <el-table-column v-for="(item, index) in columns" :key="index" v-bind="item.attrs">
       <el-table-column type="selection" v-if="item.type==='selection'" width="55" />
-<!--      <template slot-scope="scope" v-if="item.type==='edit'">-->
-<!--        <slot :scope="scope" :name="item.slot" v-if="item.slot"></slot>-->
-<!--        <template v-else>-->
-<!--          <el-input v-model="scope.row.name" placeholder="请输入内容" @change="handleEdit(scope.$index, scope.row)"></el-input>-->
-<!--        </template>-->
-<!--      </template>-->
-<!--      <el-table-column v-if="item.type==='expand'" type="expand">-->
-<!--        <slot :scope="scope" :name="item.slot" v-if="item.slot"></slot>-->
-<!--      </el-table-column>-->
       <template slot-scope="scope" >
         <slot :scope="scope" :name="item.slot" v-if="item.slot"></slot>
         <template v-else>

@@ -91,16 +91,16 @@
       <el-table-column label="编号" align="center" min-width="30">
         <template slot-scope="scope">{{ scope.row.id }}</template>
       </el-table-column>
-      <el-table-column label="资源名称" align="center">
+      <el-table-column label="资源名称" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">{{ scope.row.resourceName }}</template>
       </el-table-column>
       <el-table-column label="资源路径" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">{{ scope.row.path }}</template>
       </el-table-column>
-      <el-table-column label="资源标识" align="center">
+      <el-table-column label="资源标识" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">{{ scope.row.tag }}</template>
       </el-table-column>
-      <el-table-column label="权限标志" align="center">
+      <el-table-column label="权限标志" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">{{ scope.row.permissionTag }}</template>
       </el-table-column>
       <el-table-column label="是否启用" align="center">
@@ -453,6 +453,10 @@ export default {
 .el-main {
   padding: 0px;
 }
-
+.dialog-footer{
+  display: flex;
+  justify-content: center;
+  /*height: 30px;*/
+}
 </style>
 

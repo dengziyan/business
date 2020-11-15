@@ -851,4 +851,9 @@ export default {
   float: left;
   margin-top: 6px;
 }
+.dialog-footer{
+  display: flex;
+  justify-content: center;
+  /*height: 30px;*/
+}
 </style>

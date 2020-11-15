@@ -9,6 +9,10 @@ import Pagination from '@/components/Pagination'
 // 自定义表格工具扩展
 import RightToolbar from '@/components/RightToolbar'
 
+// 将自动注册所有组件为全局组件
+import dataV from '@jiaminghi/data-view'
+
+
 // 全局配置
 import 'normalize.css/normalize.css'
 import '@/styles/index.scss'
@@ -16,13 +20,15 @@ import 'element-ui/lib/theme-chalk/index.css'
 import request from '@/utils/request'
 
 import { getConfigKey } from '@/api/opeConfig'
-import { getStatusVal, parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, download, handleTree,getSelectVal } from '@/utils/userright'
+import { getStatusVal, parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, download, handleTree, getSelectVal } from '@/utils/userright'
 
 // 第三方包
 import ElementUI from 'element-ui'
 import locale from 'element-ui/lib/locale/lang/zh-CN'
 import VueI18n from 'vue-i18n'
+
 // 全局方法挂载
+Vue.use(dataV)
 Vue.prototype.getSelectVal = getSelectVal
 Vue.prototype.getStatusVal = getStatusVal
 Vue.prototype.getConfigKey = getConfigKey

@@ -180,7 +180,7 @@ export default {
             })
             // 根据 审核者ID查询 审核者账号
             console.log(listData[i].reviewer)
-            getUserName(listData[i].reviewer).then(
+            getUserName(this.$store.getters.id, listData[i].reviewer).then(
               response => {
                 console.log(response.data)
                 listData[i].reviewer = response.data[0].userAccount
