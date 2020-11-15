@@ -116,11 +116,11 @@ export default {
     // 审核按钮、详情按钮
     handleCheck(row, index) {
       this.$router.push({
-        name: 'payDetail',
-        params: {
+        path: 'payDetail',
+        query: {
           id: row.id,
           billName: row.billName,
-          projectName: row.chargeProjectId,
+          projectName: row.chargeProjectId
         }
       })
     },

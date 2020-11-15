@@ -13,7 +13,6 @@
 
 <script>
 import FormVue from '@/components/FormVue'
-import fileDownload from 'js-file-download'
 import { addMerchant } from '@/api/CommunityMag/community'
 export default {
   name: 'NewDialog1',

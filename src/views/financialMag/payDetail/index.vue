@@ -105,14 +105,14 @@ export default {
     }
   },
   created() {
-    this.newDialogBatchId = this.$route.params.id
+    this.newDialogBatchId = this.$route.query.id
     this.getOperationStatusDict()
     this.getCommunity()
     console.log(this.newDialogBatchId)
   },
   mounted() {
     // 第一种方法
-    if (window.name === 'isReload' || this.$route.params.id === undefined) {
+    if (window.name === 'isReload' || this.$route.query.id === undefined) {
       this.$router.replace('/payBills')
     } else if (window.name === '') {
       window.name = 'isReload' // 在首次进入页面时我们可以给window.name设置一个固定值
@@ -165,14 +165,14 @@ export default {
     },
     // 查询详情列表
     async getList() {
-      this.searchData.batchId = this.$route.params.id
+      this.searchData.batchId = this.$route.query.id
       console.log(this.searchData.batchId)
       await listPayDetail(this.searchData).then(
         (response) => {
           this.list = response.data.rows
           for (let i = 0; i < this.list.length; i++) {
-            this.list[i].billName = this.$route.params.billName
-            this.list[i].projectName = this.$route.params.projectName
+            this.list[i].billName = this.$route.query.billName
+            this.list[i].projectName = this.$route.query.projectName
             this.list[i].amountActuallyPaid = response.data.amountActuallyPaid[i]
             // 判断 审核状态
             if (this.list[i].approvalStatus === 0) {
