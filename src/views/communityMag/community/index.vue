@@ -171,7 +171,7 @@ export default {
   },
   mounted() {
     this.loadingMain()
-    this.getList()
+    // this.getList()
   },
   methods: {
     // 表格重置

@@ -41,7 +41,7 @@ export default {
       await listDataByDate(query).then(
         res => {
           const dataMap = res.data.dataList || []
-          console.log(dataMap)
+          // console.log(dataMap)
           this.cdata.rateData = dataMap.map(function(val) {
             return val.total
           })

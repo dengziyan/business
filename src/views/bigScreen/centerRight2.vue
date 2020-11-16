@@ -3,7 +3,7 @@
     <div class="bg-color-black">
       <div class="d-flex pt-2 pl-2">
         <span style="color:#5cd9e8">
-          <icon name="align-left"></icon>
+          <icon name="align-left" />
         </span>
         <span class="fs-xl text mx-2">产品销售渠道分析</span>
       </div>
@@ -17,41 +17,41 @@
 </template>
 
 <script>
-// import centreRight2Chart1 from "@/components/echart/centerRight/centerRightChart";
+// import centreRight2Chart1 from '@/components/echart/centerRight/centerRightChart'
 
 export default {
+  // components: { centreRight2Chart1 },
   data() {
     return {
       config: {
         data: [
           {
-            name: "南阳",
+            name: '南阳',
             value: 167
           },
           {
-            name: "周口",
+            name: '周口',
             value: 67
           },
           {
-            name: "漯河",
+            name: '漯河',
             value: 123
           },
           {
-            name: "郑州",
+            name: '郑州',
             value: 55
           },
           {
-            name: "西峡",
+            name: '西峡',
             value: 98
           }
         ]
       }
-    };
+    }
   },
-  // components: { centreRight2Chart1 },
   mounted() {},
   methods: {}
-};
+}
 </script>
 
 <style lang="scss">

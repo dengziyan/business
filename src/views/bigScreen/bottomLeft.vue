@@ -3,7 +3,7 @@
     <div class="bg-color-black" style="height: 500px">
       <div class="d-flex pt-2 pl-2">
         <span style="color:#5cd9e8">
-          <icon name="chart-bar"></icon>
+<!--          <icon name="chart-bar"></icon>-->
         </span>
         <div class="d-flex chart-title">
           <span class="fs-xl text mx-2">近30天支付趋势</span>
@@ -41,7 +41,7 @@ export default {
     border-radius: 0.125rem;
   }
   .text {
-    color: #c3cbde;
+    color: #00C2FF;
   }
   .chart-box {
     margin-top: 0.2rem;
