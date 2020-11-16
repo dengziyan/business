@@ -38,6 +38,14 @@ export const constantRoutes = [
         }
       },
       {
+        path: '/bigScreen',
+        name: 'bigScreen',
+        component: () => import('@/views/bigScreen/index'),
+        meta: {
+          keepAlive: true // 需要缓存的页面
+        }
+      },
+      {
         path: '/payItems',
         name: 'payItems',
         component: () => import('@/views/financialMag/payItems/index'),

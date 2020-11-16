@@ -14,14 +14,14 @@
 </template>
 
 <script>
-import { addDateRange } from '@/utils/userright'
 import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
-import { listCountDetail } from '@/api/financialMag/countDetail'
-import { exportLogininfo } from '@/api/system/logininfor'
 import moment from 'moment'
 import fileDownload from 'js-file-download'
 import { listCommunityOptions } from '@/api/financialMag/payBills'
+import { listCountDetail } from '@/api/financialMag/countDetail'
+import { exportLogininfo } from '@/api/system/logininfor'
+import { listCountResult } from '@/api/financialMag/countResult'
 
 export default {
   name: 'Index',
@@ -44,13 +44,13 @@ export default {
       total: 0, // 总条数
       columns: Object.freeze([
         { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
-        { attrs: { prop: 'mobliePhone', label: '清算日期', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'billName', label: '交易日期', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'chargeCategoryName', label: '交易金额', width: '154', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'id', label: '结账金额', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'mobliePhone', label: '手续费', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'residentIdentity', label: '优惠金额', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'residentIdentity', label: '支付方式', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'liquidationDate', label: '清算日期', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'transactionHour', label: '交易日期', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'incomeSum', label: '交易金额', width: '154', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'checkoutAmount', label: '结账金额', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'fee', label: '手续费', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'fee', label: '优惠金额', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'paymentMethod', label: '支付方式', 'show-overflow-tooltip': true }},
         { attrs: { prop: 'residentIdentity', label: '交易类型', 'show-overflow-tooltip': true }}
       ])
     }
@@ -76,10 +76,14 @@ export default {
     // 查询列表
     getList() {
       this.loading = true
-      listCountDetail(addDateRange(this.searchData, this.searchData.chargeBeginTime)).then((response) => {
-        this.list = response.data.rows
-        this.total = response.data.total
+      listCountResult(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then((response) => {
+        this.list = response.data.settlementDetails || []
+        for (let i = 0; i < this.list.length; i++) {
+          this.list[i].fee = 0
+          this.list[i].checkoutAmount = this.list[i].incomeSum - this.list[i].refundSum
+        }
         this.loading = false
+        console.log(this.list)
       })
     },
     // 导出按钮操作

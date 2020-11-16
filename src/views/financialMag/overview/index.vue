@@ -7,13 +7,14 @@
     </div>
     <div class="txt">
       <div class="txt-left">
-        <span>收入金额总计: {{}}元<br></span>
-        <span>现金金额总计: {{}}元<br></span>
+        <span>收入金额总计: {{ incomeAmounts }}元<br></span>
+        <span>现金金额总计: {{ incomeAmounts }}元<br></span>
       </div>
       <div class="txt-right">
-        <span>收入笔数: {{}}笔<br></span>
-        <span>现金笔数: {{}}笔<br></span>
+        <span>收入笔数: {{ incomeCounts }}笔<br></span>
+        <span>现金笔数: {{ incomeCounts }}笔<br></span>
       </div>
+      <div class="txt-right"><span> 缴费总户数: {{ numberOfHouseholds }} 户<br></span></div>
     </div>
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">
@@ -35,12 +36,16 @@ import { exportLogininfo } from '@/api/system/logininfor'
 import moment from 'moment'
 import fileDownload from 'js-file-download'
 import { listCommunityOptions } from '@/api/financialMag/payBills'
+import { listCountResult } from '@/api/financialMag/countResult'
 
 export default {
   name: 'Index',
   components: { TableVue, SearchForm },
   data() {
     return {
+      incomeCounts: 0,
+      incomeAmounts: 0.0,
+      numberOfHouseholds: 0,
       billNames: [],
       // 查询表单
       searchData: { pageNum: 1, pageSize: 5, startTime: undefined, endTime: undefined, amountActuallyPaid: undefined,
@@ -61,11 +66,11 @@ export default {
       total: 0, // 总条数
       columns: Object.freeze([
         { attrs: { prop: 'communityName', label: '小区', width: '100', align: 'center' }},
-        { attrs: { prop: 'buildingName', label: '收入金额', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'billName', label: '收入笔数', width: '100', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'chargeCategory', label: '退款金额', width: '154', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'orderUmber', label: '退款笔数', 'show-overflow-tooltip': true }},
-        { attrs: { prop: 'mobilePhone', label: '缴费户数', 'show-overflow-tooltip': true }}
+        { attrs: { prop: 'incomeSum', label: '收入金额', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'incomeCount', label: '收入笔数', width: '100', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'refundSum', label: '退款金额', width: '154', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'refundCount', label: '退款笔数', 'show-overflow-tooltip': true }},
+        { attrs: { prop: 'numberOfHousehold', label: '缴费户数', 'show-overflow-tooltip': true }}
       ])
     }
   },
@@ -104,9 +109,11 @@ export default {
     // 查询列表
     getList() {
       this.loading = true
-      listIncomeDetail(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then((response) => {
-        this.list = response.data.rows
-        this.total = response.data.total
+      listCountResult(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then((response) => {
+        this.list = response.data.settlementDetails || []
+        this.incomeAmounts = response.data.incomeAmounts
+        this.incomeCounts = response.data.incomeCounts
+        this.numberOfHouseholds = response.data.numberOfHouseholds
         this.loading = false
       })
     },
