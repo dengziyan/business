@@ -25,7 +25,7 @@
 </template>
 <script>
 import TableVue from '@/components/TableVue'
-import { getPaymentCycle, updateByAmountPaid } from '@/api/financialMag/payDetail'
+import { getPaymentCycle, updateByAmountPaid, updateByIds } from '@/api/financialMag/payDetail'
 export default {
   name: 'DetailDialog',
   props: ['detailId', 'visible'],
@@ -74,9 +74,9 @@ export default {
       this.dialogVisibled = val
       this.$emit('update:visible', this.dialogVisibled)
     },
-    // 现金支付
+    // 批量 现金支付
     cashPay() {
-      updateByAmountPaid(this.quary).then(response => {
+      updateByIds(this.$store.getters.id, this.ids).then(response => {
         if (response.code === 2000) {
           this.$message({
             message: '支付成功！',

@@ -34,10 +34,15 @@
 </template>
 
 <script>
-import CenterChart from "@/components/echart/center/centerChartRate";
+import CenterChart from '@/components/echart/center/centerChartRate';
 
 export default {
-  data () {
+  components: {
+    CenterChart
+    // centerChart1,
+    // centerChart2
+  },
+  data() {
     return {
       titleItem: [
         {
@@ -158,7 +163,7 @@ export default {
           }
         },
         {
-          id: "centerRate2",
+          id: 'centerRate2',
           tips: 40,
           colorData: {
             textStyle: "#67e0e3",
@@ -173,11 +178,6 @@ export default {
         }
       ]
     };
-  },
-  components: {
-    CenterChart
-    // centerChart1,
-    // centerChart2
   }
 };
 </script>

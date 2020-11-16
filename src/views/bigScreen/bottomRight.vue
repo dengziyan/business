@@ -1,26 +1,26 @@
 <template>
-  <div id="bottomLeft" style="height: 500px; width: 600px">
+  <div id="bottomRight" style="height: 500px; width: 600px">
     <div class="bg-color-black" style="height: 500px">
       <div class="d-flex pt-2 pl-2">
         <span style="color:#5cd9e8">
           <icon name="chart-bar"></icon>
         </span>
         <div class="d-flex chart-title">
-          <span class="fs-xl text mx-2">近30天支付趋势</span>
+          <span class="fs-xl text mx-2">各小区收入概况</span>
         </div>
       </div>
       <div>
-        <BottomLeftChart />
+        <BottomRightChart />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import BottomLeftChart from '@/components/echart/bottom/bottomLeftChart/index'
+import BottomRightChart from '@/components/echart/bottom/bottomRightChart/index'
 export default {
   components: {
-    BottomLeftChart
+    BottomRightChart
   },
   data() {
     return {}
@@ -31,7 +31,7 @@ export default {
 </script>
 
 <style lang="scss">
-#bottomLeft {
+#bottomRight {
   padding: 0.3rem 0.2rem;
   height: 6.5rem;
   min-width: 3.75rem;

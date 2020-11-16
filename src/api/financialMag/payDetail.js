@@ -26,6 +26,19 @@ export function updateByAmountPaid(userId, AmountPaid, id) {
     }
   })
 }
+// 现金支付
+export function updateByIds(userId, id) {
+  return request({
+    url: '/paymentCycle/updateByAmountPaid',
+    method: 'post',
+    params: {
+      userId: userId,
+      AmountPaid: AmountPaid,
+      id: id
+    }
+  })
+}
+
 // 导出收费详情列表
 export function exportChargeBill(data) {
   return request({

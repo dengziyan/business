@@ -6,7 +6,7 @@
 
 <script>
 import Chart from './chart.vue'
-import { listDataByDate } from '@/api/financialMag/bigScreen'
+import { listCountResult } from '@/api/financialMag/countResult'
 export default {
   components: {
     Chart
@@ -35,22 +35,29 @@ export default {
       //   let rate = this.cdata.barData[i] / this.cdata.lineData[i]
       //   this.cdata.rateData.push(i)
       // }
+      this.cdata.rateData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      this.cdata.category = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      console.log(this.cdata.rateData)
       const query = {
         userId: this.$store.getters.id
       }
-      await listDataByDate(query).then(
+      await listCountResult(query).then(
         res => {
-          const dataMap = res.data.dataList || []
+          const dataMap = res.data.settlementDetails || []
           console.log(dataMap)
+          // y 轴坐标 右边数据
           this.cdata.rateData = dataMap.map(function(val) {
-            return val.total
+            return val.incomeCount
           })
+          // x 轴坐标 数据
           this.cdata.category = dataMap.map(function(val) {
-            return val.time
+            return val.communityName
           })
+          // y 轴坐标 左边数据
           this.cdata.barData = dataMap.map(function(val) {
-            return val.sum
+            return val.incomeSum
           })
+          console.log(this.cdata)
         }
       )
     }

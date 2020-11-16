@@ -81,6 +81,9 @@
           <dv-border-box-13 style="height: 530px; width: 630px">
             <bottomLeft />
           </dv-border-box-13>
+          <dv-border-box-13 style="height: 530px; width: 630px">
+            <bottomRight />
+          </dv-border-box-13>
         </div>
       </div>
     </div>
@@ -93,12 +96,15 @@ import centerRight1 from './centerRight1'
 import centerRight2 from './centerRight2'
 import center from './center'
 import bottomLeft from './bottomLeft'
+import bottomRight from './bottomRight'
+
 export default {
   components: {
     centerRight1,
     centerRight2,
     center,
-    bottomLeft
+    bottomLeft,
+    bottomRight
   },
   data() {
     return {
