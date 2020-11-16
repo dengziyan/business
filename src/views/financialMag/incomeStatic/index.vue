@@ -7,7 +7,7 @@
     </div>
     <div class="txt">
       <span>收入金额总计: {{ sum }}元<br></span>
-      <span>收入笔数: {{ total }}元<br></span>
+      <span>收入笔数: {{ total }}笔<br></span>
       <span>优惠金额金额总计: 0.0元<br></span>
     </div>
     <!--引入操作子组件        -->

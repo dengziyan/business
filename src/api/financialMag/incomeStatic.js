@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询列表
+// 查询收入统计
 export function listIncomeStatic(query) {
   return request({
     url: '/paymentTurnover/getIncomeStatistics',

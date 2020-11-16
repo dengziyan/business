@@ -17,7 +17,7 @@
           <h4>下辖小区</h4>
           <div class="leftAside-choose">
             <span class="txt">小区名称</span>
-            <el-input v-model="input1" placeholder="模糊查询" class="search"/>
+            <el-input v-model="input1" placeholder="模糊查询" class="search" />
           </div>
           <el-tree
             ref="expandMenuList"
@@ -35,15 +35,15 @@
           />
         </el-aside>
         <el-main class="main">
-          <h2>{{}}</h2>
+          <h2>{{ merchantName }}</h2>
           <div class="merchantTitle">
-            <span>商户编号：{{}}</span>
-            <span>物业管理人：{{}}</span>
+            <span>商户编号：{{ merchantId }}</span>
+            <span>物业管理人：{{ merchantAdmin }}</span>
           </div>
           <div class="merchantData">
-            <span><p>今日营业收入</p><p>￥{{}}</p></span>
-            <span><p>今日营收笔数</p><p>{{}}笔</p></span>
-            <span><p>下辖小区数</p><p>{{}}</p></span>
+            <span><p>今日营业收入</p><p>￥{{ sum }}</p></span>
+            <span><p>今日营收笔数</p><p>{{ total }}笔</p></span>
+            <span><p>下辖小区数</p><p>{{ communities }}</p></span>
           </div>
           <div class="bototm-box">
             <dv-border-box-13 style="height: 530px; width: 630px;background-color: #2F45BB;margin: 10px">
@@ -55,65 +55,66 @@
           </div>
         </el-main>
         <el-aside class="rightAside">
-          <span class="time">{{dateYear}} {{dateWeek}} {{dateDay}}</span>
+          <span class="time">{{ dateYear }} {{ dateWeek }} {{ dateDay }}</span>
           <h4>历史数据</h4>
-          <p><span></span><span>营收金额</span><span>营收笔数</span></p>
-          <p><span>总订</span><span>{{}}</span><span>{{}}</span></p>
-          <p><span>今日</span><span>{{}}</span><span>{{}}</span></p>
-          <p><span>近7日</span><span>{{}}</span><span>{{}}</span></p>
-          <p><span>近30日</span><span>{{}}</span><span>{{}}</span></p>
+          <p><span /><span>营收金额</span><span>营收笔数</span></p>
+          <p><span>总订</span><span>{{ allSum }}</span><span>{{ totals }}</span></p>
+          <p><span>今日</span><span>{{ sum }}</span><span>{{ total }}</span></p>
+          <p><span>近7日</span><span>{{ sumWeek }}</span><span>{{ countWeek }}</span></p>
+          <p><span>近30日</span><span>{{ sumMonth }}</span><span>{{ countMonth }}</span></p>
           <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
             <el-tab-pane class="tab1" label="支付笔数" name="first">
               <dv-scroll-ranking-board :config="config" style="width:500px;color: black" />
             </el-tab-pane>
             <el-tab-pane class="tab1" label="支付金额" name="second">
-              <dv-scroll-ranking-board :config="config" style="width:500px;color: black" />
+              <dv-scroll-ranking-board :config="config2" style="width:500px;color: black" />
             </el-tab-pane>
             <el-tab-pane class="tab1" label="支付占比排名" name="third">
-              <dv-scroll-ranking-board :config="config" style="width:500px;color: black" />
+              <dv-scroll-ranking-board :config="config3" style="width:500px;color: black" />
             </el-tab-pane>
           </el-tabs>
         </el-aside>
       </el-container>
     </el-container>
 
-
   </div>
 </template>
 
 <script>
 import { formatTime } from '@/utils'
-// import centerRight1 from './centerRight1'
-import centerRight2 from './centerRight2'
-// import center from './center'
 import bottomLeft from './bottomLeft'
 import bottomRight from './bottomRight'
 import ScreenTree from './ScreenTree'
-import {listProperty, listResident} from '@/api/CommunityMag/community'
+import { listProperty, listResident } from '@/api/CommunityMag/community'
+import { listDataByDate } from '@/api/financialMag/bigScreen'
+import { listIncomeStatic } from '@/api/financialMag/incomeStatic'
 export default {
-  components: { bottomLeft, bottomRight, centerRight2 },
+  components: { bottomLeft, bottomRight },
   data() {
     return {
+      merchantName: undefined,
+      merchantAdmin: undefined,
+      merchantId: undefined,
+      sum: undefined,
+      communities: undefined,
+      totals: undefined,
+      allSum: undefined,
+      total: undefined,
+      countWeek: undefined,
+      sumWeek: undefined,
+      countMonth: 0,
+      sumMonth: 0,
       config: {
         data: [
-          { name: 'xx小区一期', value: 167 },
-          { name: 'xx小区二期', value: 23 },
-          { name: 'xx小区三期', value: 520 }
+          { name: '小区1', value: 15 },
+          { name: '小区2', value: 3 }
         ]
       },
       config2: {
-        data: [
-          { name: 'xx小区一期', value: 167 },
-          { name: 'xx小区二期', value: 23 },
-          { name: 'xx小区三期', value: 520 }
-        ]
+        data: []
       },
       config3: {
-        data: [
-          { name: 'xx小区一期', value: 167 },
-          { name: 'xx小区二期', value: 23 },
-          { name: 'xx小区三期', value: 520 }
-        ]
+        data: []
       },
       isLoadingTree: false,
       queryParams: { userId: undefined },
@@ -128,9 +129,11 @@ export default {
       }
     }
   },
+  created() {
+    this.getList()
+  },
   mounted() {
     this.loadingMain()
-    this.getList()
     this.timeFn()
     this.cancelLoading()
   },
@@ -196,41 +199,53 @@ export default {
     },
     // 获取小区列表、表格信息
     getList() {
-      // console.log(12345678)
+      console.log(12345678)
       this.loadingTable = true
       this.searchData.userId = this.$store.getters.id
-      this.searchData.data.mobilePhone = this.searchData.mobilePhone
-      this.searchData.data.residentName = this.searchData.residentName
-      // console.log(this.searchData)
-      listResident(this.searchData).then((response) => {
-        const row = response.data.rows || []
-        this.list = row.map(function(val) {
-          val.identity = val.residentIdentity
-          if (val.residentIdentity !== undefined) {
-            val.residentIdentity = val.residentIdentity + 0 === 1 ? '住户' : '租户'
+      listDataByDate(this.searchData).then(
+        res => {
+          const listData = res.data.listData || []
+          console.log('1213')
+          console.log(res.data)
+          this.merchantName = res.data.merchantName
+          this.merchantAdmin = res.data.merchantAdmin
+          this.merchantId = res.data.merchantId
+          this.sum = res.data.sum
+          this.communities = res.data.communities
+          this.total = res.data.total
+          this.countWeek = res.data.countWeek
+          this.sumWeek = res.data.sumWeek
+          for (let i = 0; i < listData.length; i++) {
+            this.sumMonth += listData[i].incomeSum - 0
+            this.countMonth += listData[i].incomeCount - 0
           }
-          return val
+        }
+      )
+      // 总计金额
+      listIncomeStatic(this.searchData).then(
+        res => {
+          this.allSum = res.data.sum
+          this.totals = res.data.total
+          this.config.data = res.data.maps.map(function(val) {
+            return { name: val.communityName, value: val.incomeCount }
+          })
+          console.log(this.config)
         })
-        this.total = response.data.total
-        this.loadingTable = false
-        this.loading = false
-      })
     },
     handleClick(tab, event) {
-      console.log(tab, event);
+      console.log(tab, event)
     },
     timeFn() {
       setInterval(() => {
         this.dateDay = formatTime(new Date(), 'HH: mm: ss')
-        // console.log(this.dateDay)
         this.dateYear = formatTime(new Date(), 'yyyy-MM-dd')
         this.dateWeek = this.weekday[new Date().getDay()]
-      }, 6000)
+      }, 1000)
     },
     cancelLoading() {
       setTimeout(() => {
         this.loading = false
-      }, 5000)
+      }, 1000)
     }
   }
 }
