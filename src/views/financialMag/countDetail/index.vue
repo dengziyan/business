@@ -19,8 +19,7 @@ import TableVue from '@/components/TableVue'
 import moment from 'moment'
 import fileDownload from 'js-file-download'
 import { listCommunityOptions } from '@/api/financialMag/payBills'
-import { exportCountDetail } from '@/api/financialMag/countDetail'
-import { exportLogininfo } from '@/api/system/logininfor'
+import { exportCountResult } from '@/api/financialMag/countDetail'
 import { listCountResult } from '@/api/financialMag/countResult'
 
 export default {
@@ -94,14 +93,15 @@ export default {
         searchData.pageSize = undefined
         searchData.export = 'all'
       }
+      searchData.userId=this.$store.getters.id
       this.$confirm('是否确认导出退款明细表?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(function() {
-        exportCountDetail(searchData).then(res => {
+        exportCountResult(searchData).then(res => {
           const sysDate = moment(new Date()).format('YYYY-MM-DDHHmm')
-          fileDownload(res, sysDate + '退款明细.xlsx')
+          fileDownload(res, sysDate + '结算明细.xlsx')
         })
       }).catch(function() {
       })

@@ -18,17 +18,6 @@
           <i v-if="data.id !== 0" class="el-icon-delete" @click="deleteNode" /><!--删除分组-->
         </span>
         <span>
-          <!--              <el-dropdown trigger="click">-->
-          <!--                <span class="el-dropdown-link">-->
-          <!--                  <i class="el-icon-more" />-->
-          <!--                </span>-->
-          <!--                <el-dropdown-menu slot="dropdown">-->
-          <!--                  <el-dropdown-item v-show="firstLevel" @click.native="addSameLevelNode">新增同级</el-dropdown-item>-->
-          <!--                  <el-dropdown-item v-show="lastLevel" @click.native="addChildNode">新增下级</el-dropdown-item>-->
-          <!--                  <el-dropdown-item @click.native="editNode">编辑</el-dropdown-item>-->
-          <!--                  <el-dropdown-item @click.native="deleteNode">删除</el-dropdown-item>-->
-          <!--                </el-dropdown-menu>-->
-          <!--              </el-dropdown>-->
         </span>
       </span>
     </el-tree>

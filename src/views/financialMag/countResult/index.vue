@@ -124,12 +124,13 @@ export default {
         searchData.pageSize = undefined
         searchData.export = 'all'
       }
-      this.$confirm('是否确认导出退款明细表?', '警告', {
+      searchData.userId = this.$store.getters.id
+      this.$confirm('是否确认导出结算结果表?', '警告', {
         confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
       }).then(function() {
         exportCountResult(searchData).then(res => {
           const sysDate = moment(new Date()).format('YYYY-MM-DDHHmm')
-          fileDownload(res, sysDate + '退款明细.xlsx')
+          fileDownload(res, sysDate + '结算结果.xlsx')
         })
       }).catch(function() {
       })

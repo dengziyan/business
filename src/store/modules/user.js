@@ -76,7 +76,7 @@ const actions = {
       login({ userName: username.trim(), password: password }).then(response => {
         const data = response.data
         const token = data.token
-        const role = data.role
+        const role = data.role.id
         commit('SET_TOKEN', token) // token
         commit('SET_ID', data.user.id) // 用户编号
 

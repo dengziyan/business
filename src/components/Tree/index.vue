@@ -16,9 +16,11 @@
       <span>{{ DATA.name }}</span>
     </span>
     <span v-show="!DATA.treeIsEdit" class="tree-btn">
-      <i class="el-icon-plus" @click.stop="nodeAdd(STORE,DATA,NODE)" />
-      <i class="el-icon-edit" @click.stop="nodeEdit(STORE,DATA,NODE)" />
-      <i class="el-icon-delete" @click.stop="nodeDel(STORE,DATA,NODE)" />
+      <span v-if="(this.$store.state.user.role===1)||(this.$store.state.user.role===2&&NODE.level>1)||(this.$store.state.user.role===3&&NODE.level>=2)||(this.$store.state.user.role===4&&NODE.level>=3)">
+        <i class="el-icon-plus" @click.stop="nodeAdd(STORE,DATA,NODE)" />
+        <i class="el-icon-edit" @click.stop="nodeEdit(STORE,DATA,NODE)" />
+        <i class="el-icon-delete" @click.stop="nodeDel(STORE,DATA,NODE)" />
+      </span>
     </span>
   </span>
 </template>
