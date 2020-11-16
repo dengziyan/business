@@ -125,10 +125,10 @@ export default {
       }
       listChargeProjectOptions(chargeBatch).then(response => {
         chargeBatch.chargeProjectId = response.data.rows[0].id
-        console.log(JSON.parse(JSON.stringify(chargeBatch)))
+        // console.log(JSON.parse(JSON.stringify(chargeBatch)))
         formData.append('chargeBatch', JSON.stringify(chargeBatch))
         formData.append('file', val.file)
-        console.log(this.form)
+        // console.log(this.form)
         batchAddBatchBills(this.$store.getters.id, this.form.modle, formData).then(res => {
           val.onSuccess()
           if (response.code === 2000) {
@@ -150,7 +150,7 @@ export default {
     // 对话框按确定键之后提交上传文件
     submitFileForm() {
       this.$refs.form.$refs.upload[0].submit()
-      console.log(this.form)
+      // console.log(this.form)
     }
   }
 }

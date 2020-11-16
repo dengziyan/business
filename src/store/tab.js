@@ -64,7 +64,7 @@ export default {
       if (!menu || !menu.name) {
         return
       }
-      console.log(menu)
+      // console.log(menu)
       state.currentMenu = menu.name === 'dashboard' ? null : menu
       state.tabsList.forEach(function(value, index) {
         value.effect = 'plain'

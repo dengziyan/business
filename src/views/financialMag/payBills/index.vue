@@ -7,7 +7,7 @@
     </div>
     <!-- 各个操作按钮 -->
     <div class="anyButton">
-      <el-radio-group class="anyButton-left" v-model="searchData.billStatus" @change="getList">
+      <el-radio-group v-model="searchData.billStatus" class="anyButton-left" @change="getList">
         <el-radio-button v-for="dict in statusOptions" :key="dict.value" :value="dict.value" :label="dict.label" />
       </el-radio-group>
       <el-button class="anyButton-right" type="primary" icon="el-icon-plus" size="mini" :disabled="!multiple" @click="handleAdd">新增</el-button>
@@ -31,7 +31,7 @@
     </div>
     <!--点击新增后出现的弹框    -->
     <el-dialog title="新增账单批次" :visible.sync="newVisible" width="650px">
-      <new-dialog :visible.sync="newVisible"  @getList="getList" />
+      <new-dialog :visible.sync="newVisible" @getList="getList" />
     </el-dialog>
     <!--点击编辑后出现的弹框    -->
     <el-dialog v-if="editVisible" title="编辑账单批次" :visible.sync="editVisible" width="650px">
@@ -64,11 +64,11 @@ export default {
         billName: undefined, billStatus: undefined, userId: undefined }, // 查询参数
       searchForm: [
         { type: 'datetimerange', label: '账单开始日期', prop: 'chargeBeginTime', width: '1000px', change: this.getList },
-        { type: 'Select', label: '小区', prop: 'communityId', isDisabled: false, multiple: false, value: '请选择', options: [], change: this.getList },
+        { type: 'Select', label: '小区', prop: 'communityId', isDisabled: false, multiple: false, value: '请选择', options: [], change: this.getList},
         { type: 'Input', label: '账单名称', prop: 'billName', width: '100px', placeholder: '请输入账单名称...' }
       ],
       searchHandle: [
-        { label: '查询', type: 'primary', handle: this.getList },
+        { label: '查询', type: 'primary', handle: this.getListData },
         { label: '重置', type: 'primary', handle: this.resetForm }
       ],
       // table表格数据
@@ -89,19 +89,20 @@ export default {
     }
   },
   created() {
-    this.getList()
     this.getOperationStatusDict()
     this.getCommunity()
   },
   methods: {
     // 选项：小区
     getCommunity() {
+      this.loading = true
       listCommunityOptions(this.$store.getters.id).then(response => {
         this.communityOptions = response.data.map(function(val) {
           return { label: val.communityName, value: val.id }
         })
         this.searchForm[1].options = this.communityOptions
       })
+      this.getList()
     },
     // 表格重置
     resetForm() {
@@ -114,7 +115,7 @@ export default {
       })
     },
     // 审核按钮、详情按钮
-    handleCheck(row, index) {
+    handleCheck(row) {
       this.$router.push({
         path: 'payDetail',
         query: {
@@ -129,11 +130,9 @@ export default {
       this.newVisible = true
     },
     // 编辑
-    handleEdit(row, index) {
+    handleEdit(row) {
       this.editVisible = true
       this.editData = Object.assign({}, row)
-      console.log(this.editData)
-      // updatePayBills(row)
     },
     // 删除
     handleDelete(row) {
@@ -144,13 +143,12 @@ export default {
         return delBatch(batchIds)
       }).then(() => {
         this.getList()
-        this.msgSuccess('删除成功')
+        // this.msgSuccess('删除成功')
       }).catch(function() {
       })
     },
     // 查询批次列表
     async getList() {
-      this.loading = true
       // 根据审核状态查询
       if (this.searchData.billStatus === '未审核') {
         this.searchData.billStatus = 0
@@ -162,7 +160,7 @@ export default {
       // 调用查询方法
       const searchData = Object.assign({}, this.searchData)
       searchData.chargeBeginTime = undefined
-      listPayBills(this.addDateRange(searchData, this.searchData.chargeBeginTime)).then(
+      await listPayBills(this.addDateRange(searchData, this.searchData.chargeBeginTime)).then(
         async(response) => {
           const listData = response.data.rows || []
           this.total = response.data.total
@@ -179,10 +177,10 @@ export default {
               listData[i].communityId = response.data.communityName
             })
             // 根据 审核者ID查询 审核者账号
-            console.log(listData[i].reviewer)
-            getUserName(this.$store.getters.id, listData[i].reviewer).then(
+            // console.log(listData[i].reviewer)
+            await getUserName(this.$store.getters.id, listData[i].reviewer).then(
               response => {
-                console.log(response.data)
+                // console.log(response.data)
                 listData[i].reviewer = response.data[0].userAccount
               }
             )

@@ -81,7 +81,7 @@ export default {
         { type: 'Input', label: '审核状态', prop: 'approvalStatus', width: '100px', placeholder: '' }
       ],
       searchHandle: [
-        { label: '查询', type: 'primary', handle: this.getList },
+        { label: '查询', type: 'primary', handle: this.getListData },
         { label: '重置', type: 'primary', handle: this.resetForm }
       ],
       // table表格数据
@@ -108,7 +108,7 @@ export default {
     this.newDialogBatchId = this.$route.query.id
     this.getOperationStatusDict()
     this.getCommunity()
-    console.log(this.newDialogBatchId)
+    // console.log(this.newDialogBatchId)
   },
   mounted() {
     // 第一种方法
@@ -120,7 +120,7 @@ export default {
   },
   destroyed() {
     window.name = ''
-    console.log('销毁')
+    // console.log('销毁')
   },
   methods: {
     // 选项：小区
@@ -163,10 +163,14 @@ export default {
         }
       )
     },
+    getListData() {
+      this.loading = true
+      this.getList()
+    },
     // 查询详情列表
     async getList() {
       this.searchData.batchId = this.$route.query.id
-      console.log(this.searchData.batchId)
+      // console.log(this.searchData.batchId)
       await listPayDetail(this.searchData).then(
         (response) => {
           this.list = response.data.rows
