@@ -13,7 +13,7 @@
       <el-table-column label="操作">
         <template scope="scope">
           <!--<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>-->
-          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <el-button size="small" type="danger" :disabled="scope.row.isShow" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -89,9 +89,9 @@ export default {
     },
     // 多选框选中
     handleSelectionChange(selection) {
-      console.log(selection)
+      // console.log(selection)
       this.ids = selection.map(item => item.id)
-      // console.log(this.ids)
+      console.log(this.ids)
     },
     getList() {
       this.loading = true
@@ -102,8 +102,10 @@ export default {
         this.loading = false
         for (let i = 0; i < this.list.length; i++) {
           if (this.list[i].paymentStatus === 0) {
+            this.list[i].isShow = false
             this.list[i].paymentStatus = '未缴'
           } else if (this.list[i].paymentStatus === 1) {
+            this.list[i].isShow = true
             this.list[i].paymentStatus = '已缴'
           }
         }

@@ -92,13 +92,7 @@ export default {
     // 查询列表
     getList() {
       this.loading = true
-      listIncomeStatic(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then((response) => {
-        this.list = response.data.rows
-        this.sum = response.data.sum
-        console.log(this.list)
-        this.total = response.data.total
-        this.loading = false
-      })
+
       listIncomeStatic(this.addDateRange(this.searchData, this.searchData.chargeBeginTime)).then(
         (response) => {
           this.list = response.data.maps

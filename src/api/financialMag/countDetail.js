@@ -9,3 +9,12 @@ export function listCountDetail(query) {
     params: query
   })
 }
+// 导出结算明细列表
+export function exportCountResult(data) {
+  return request({
+    url: '/paymentTurnover/export/2',
+    method: 'get',
+    responseType: 'arraybuffer',
+    params: data
+  })
+}

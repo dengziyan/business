@@ -19,7 +19,7 @@ import TableVue from '@/components/TableVue'
 import moment from 'moment'
 import fileDownload from 'js-file-download'
 import { listCommunityOptions } from '@/api/financialMag/payBills'
-import { listCountDetail } from '@/api/financialMag/countDetail'
+import { exportCountDetail } from '@/api/financialMag/countDetail'
 import { exportLogininfo } from '@/api/system/logininfor'
 import { listCountResult } from '@/api/financialMag/countResult'
 
@@ -99,7 +99,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(function() {
-        exportLogininfo(searchData).then(res => {
+        exportCountDetail(searchData).then(res => {
           const sysDate = moment(new Date()).format('YYYY-MM-DDHHmm')
           fileDownload(res, sysDate + '退款明细.xlsx')
         })

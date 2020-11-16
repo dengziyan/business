@@ -62,7 +62,7 @@ export default {
       editInfo: {}, // 编辑相关数据
       newDialogBatchId: undefined,
       loading: false,
-      chargeBill: { communityId: undefined, billName: undefined, billStatus: undefined, beginTime: undefined,
+      chargeBill: { communityName: undefined, billName: undefined, billStatus: undefined, beginTime: undefined,
         endTime: undefined, batchId: undefined
       },
       query: { userId: undefined, data: {}},
@@ -71,11 +71,11 @@ export default {
       newdialogVisible: false, newdialoEdit: false,
       // 查询表单
       searchData: {
-        pageNum: 1, pageSize: 5, communityId: undefined, billName: undefined, billStatus: undefined,
+        pageNum: 1, pageSize: 5, communityName: undefined, billName: undefined, billStatus: undefined,
         beginTime: undefined, endTime: undefined, batchId: undefined
       },
       searchForm: [// multiple:是否开启多选
-        { type: 'Select', isDisabled: false, multiple: false, label: '小区', prop: 'communityId', value: '车位停车费', options: [], change: this.getList },
+        { type: 'Select', isDisabled: false, multiple: false, label: '小区', prop: 'communityName', value: '车位停车费', options: [], change: this.getList },
         { type: 'Select', isDisabled: false, multiple: false, label: '账单名称', prop: 'billName', value: '车位停车费', options: [], change: this.getList },
         { type: 'Input', label: '房屋（栋-单元-室/车位号/车牌号）', prop: 'buildingName', width: '100px', placeholder: '' },
         { type: 'Input', label: '审核状态', prop: 'approvalStatus', width: '100px', placeholder: '' }

@@ -10,14 +10,14 @@
       <div class="d-flex jc-center body-box" style=" margin-top: 0;">
         <dv-capsule-chart :config="config" style="width: 100%;height:2rem" />
         <!-- ---------------------------------------- -->
-        <centreRight2Chart1 />
+<!--        <centreRight2Chart1 />-->
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import centreRight2Chart1 from "@/components/echart/centerRight/centerRightChart";
+// import centreRight2Chart1 from "@/components/echart/centerRight/centerRightChart";
 
 export default {
   data() {
@@ -48,7 +48,7 @@ export default {
       }
     };
   },
-  components: { centreRight2Chart1 },
+  // components: { centreRight2Chart1 },
   mounted() {},
   methods: {}
 };

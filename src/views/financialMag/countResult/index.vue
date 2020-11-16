@@ -29,7 +29,7 @@
 <script>
 import SearchForm from '@/components/SearchForm'
 import TableVue from '@/components/TableVue'
-import { listCountResult } from '@/api/financialMag/countResult'
+import { listCountResult, exportCountResult } from '@/api/financialMag/countResult'
 import { exportLogininfo } from '@/api/system/logininfor'
 import moment from 'moment'
 import fileDownload from 'js-file-download'
@@ -127,7 +127,7 @@ export default {
       this.$confirm('是否确认导出退款明细表?', '警告', {
         confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
       }).then(function() {
-        exportLogininfo(searchData).then(res => {
+        exportCountResult(searchData).then(res => {
           const sysDate = moment(new Date()).format('YYYY-MM-DDHHmm')
           fileDownload(res, sysDate + '退款明细.xlsx')
         })

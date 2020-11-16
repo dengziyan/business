@@ -27,20 +27,19 @@ export function updateByAmountPaid(userId, AmountPaid, id) {
   })
 }
 // 现金支付
-export function updateByIds(userId, id) {
+export function updateByIds(userId, ids) {
   return request({
-    url: '/paymentCycle/updateByAmountPaid',
+    url: '/paymentCycle/batchPay',
     method: 'post',
     params: {
       userId: userId,
-      AmountPaid: AmountPaid,
-      id: id
+      ids: ids + ''
     }
   })
 }
 
 // 导出收费详情列表
-export function exportChargeBill(data) {
+export function exportCountDetail(data) {
   return request({
     url: '/chargeBill/export',
     method: 'get',

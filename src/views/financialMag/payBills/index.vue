@@ -64,7 +64,7 @@ export default {
         billName: undefined, billStatus: undefined, userId: undefined }, // 查询参数
       searchForm: [
         { type: 'datetimerange', label: '账单开始日期', prop: 'chargeBeginTime', width: '1000px', change: this.getList },
-        { type: 'Select', label: '小区', prop: 'communityId', isDisabled: false, multiple: false, value: '请选择', options: [], change: this.getList},
+        { type: 'Select', label: '小区', prop: 'communityId', isDisabled: false, multiple: false, value: '请选择', options: [], change: this.getList },
         { type: 'Input', label: '账单名称', prop: 'billName', width: '100px', placeholder: '请输入账单名称...' }
       ],
       searchHandle: [
@@ -166,11 +166,15 @@ export default {
           this.total = response.data.total
           for (let i = 0; i < listData.length; i++) {
             const query = {
+              userId: this.$store.getters.id,
               chargeProjectId: listData[i].chargeProjectId
             }
             // 根据收费项目ID 获取收费项目名称
             await listChargeProject(query).then(response => {
-              listData[i].chargeProjectId = response.data.rows[0].chargeProjectName
+              const project = response.data.rows || []
+              if (project.length !== 0) {
+                listData[i].chargeProjectId = [0].chargeProjectName
+              }
             })
             // 根据小区id查询小区名称
             await listCommunity(listData[i].communityId).then(response => {
