@@ -128,7 +128,7 @@ export default {
       this.loading = true
       listCommunityOptions(this.$store.getters.id).then(response => {
         this.communityOptions = response.data.map(function(val) {
-          return { label: val.communityName, value: val.id }
+          return { label: val.communityName, value: val.communityName }
         })
         this.searchForm[0].options = this.communityOptions
       })
