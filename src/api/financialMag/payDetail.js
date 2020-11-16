@@ -62,3 +62,11 @@ export function addPayDetail(data) {
     data: data
   })
 }
+// 编辑收费详情
+export function updatePayDetail(data) {
+  return request({
+    url: '/chargeBill/',
+    method: 'put',
+    data: data
+  })
+}

@@ -12,9 +12,8 @@
 
 <script>
 import FormVue from '@/components/FormVue'
-import { addPayItems, updatePayItems } from '@/api/financialMag/payItems'
 import { listUserProperty } from '@/api/CommunityMag/community'
-import { addPayDetail } from '@/api/financialMag/payDetail'
+import { addPayDetail, updatePayDetail } from '@/api/financialMag/payDetail'
 
 export default {
   name: 'NewDialog',
@@ -33,6 +32,7 @@ export default {
       loading: false,
       communityOptions: [],
       form: {
+        id: undefined,
         paymentCycle: undefined,
         communityId: undefined,
         buildingId: undefined,
@@ -69,7 +69,13 @@ export default {
       this.property.push(edit.unitId)
       this.property.push(edit.roomId)
       this.editInfo.propertyName = this.property
-      this.form = Object.assign({}, this.editInfo)
+      this.form.id = this.editInfo.id
+      this.form.propertyName = this.editInfo.propertyName
+      this.form.residentName = this.editInfo.residentName
+      this.form.mobilePhone = this.editInfo.mobilePhone
+      this.form.amount = this.editInfo.amount
+      this.form.paymentCycle = this.editInfo.paymentCycle
+      this.form.note = this.editInfo.note
       console.log(this.form)
     }
   },
@@ -103,7 +109,9 @@ export default {
     // 对话框按确定键之后的方法
     handleDialogConfirm() {
       if (this.isEdit) { // 更新资源数据（即编辑修改）
-        updatePayDetail(this.form).then(response => {
+        const resident = Object.assign({}, this.form)
+        resident.propertyName = undefined
+        updatePayDetail(resident).then(response => {
           if (response.code === 2000) {
             this.$message({
               message: response.message,
