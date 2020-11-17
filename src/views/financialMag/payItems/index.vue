@@ -10,7 +10,7 @@
     </div>
     <!--点击新增后出现的弹框    -->
     <el-dialog :title="isEdit?'编辑收费项目':'添加收费项目'" :visible.sync="dialogVisible" :edit.sync="isEdit" width="700px">
-      <new-dialog v-if="dialogVisible" :visible.sync="dialogVisible" :edit.sync="isEdit" :edit-info="editInfo"/>
+      <new-dialog v-if="dialogVisible" :visible.sync="dialogVisible" :edit.sync="isEdit" :edit-info="editInfo"  @getList="getList" />
     </el-dialog>
     <!--引入表格组件        -->
     <TableVue v-loading="loading" :columns="columns" :data="list" empty-text="暂无数据">

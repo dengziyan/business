@@ -172,8 +172,8 @@ export default {
             // 根据收费项目ID 获取收费项目名称
             await listChargeProject(query).then(response => {
               const project = response.data.rows || []
-              if (project.length !== 0) {
-                listData[i].chargeProjectId = [0].chargeProjectName
+              if (project.length >= 0) {
+                listData[i].chargeProjectId = project[0].chargeProjectName
               }
             })
             // 根据小区id查询小区名称
@@ -184,8 +184,11 @@ export default {
             // console.log(listData[i].reviewer)
             await getUserName(this.$store.getters.id, listData[i].reviewer).then(
               response => {
+                const dataUser = response.data || []
                 // console.log(response.data)
-                listData[i].reviewer = response.data[0].userAccount
+                if (dataUser.length > 0) {
+                  listData[i].reviewer = dataUser[0].userAccount
+                }
               }
             )
             // 显示账单状态

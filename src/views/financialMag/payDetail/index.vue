@@ -185,6 +185,9 @@ export default {
             } else if (this.list[i].approvalStatus === 1) {
               this.list[i].isShow = true
               this.list[i].approvalStatus = '已审核'
+            } else if (this.list[i].approvalStatus === 2) {
+              this.list[i].isShow = true
+              this.list[i].approvalStatus = '已拒绝'
             }
             // 判断 缴费状态
             // 显示账单状态

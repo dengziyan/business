@@ -226,9 +226,14 @@ export default {
         res => {
           this.allSum = res.data.sum
           this.totals = res.data.total
+          const lists = res.data.maps
           this.config.data = res.data.maps.map(function(val) {
             return { name: val.communityName, value: val.incomeCount }
           })
+          for (let i = 0; i < lists.length; i++) {
+            this.config.data[0].name = lists[0].communityName
+            this.config.data[0].value = lists[0].incomeCount
+          }
           console.log(this.config)
         })
     },
